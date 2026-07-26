@@ -9,11 +9,11 @@ Guides are written in a readable Lua format, so anyone can extend or add their o
 
 ## Showcase
 
-https://github.com/user-attachments/assets/265b56bf-0233-4322-b043-6df8b3daf903
 
-<img width="2186" height="777" alt="questhelpergit1" src="https://github.com/user-attachments/assets/b302d260-a1e5-474e-ae17-03193ce309dc" />
 
-<img width="1731" height="797" alt="questhelpergit2" src="https://github.com/user-attachments/assets/50b4347e-3eb0-4078-a466-ef592beeb1d7" />
+https://github.com/user-attachments/assets/a28e2438-a4f6-4489-b669-f720379a4330
+
+
 
 
 ---
