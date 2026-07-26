@@ -1085,21 +1085,22 @@ return {
                         },
                     },
                 },
-                keyitems_needed = { 336 },
+                keyitems_needed = {
+                    336,
+                    136,  -- Crimson Orb - opens the Wall of Banishing
+                },
                 trigger_on_keyitem_obtain = { 336 },
             },
             {
                 text = "Step 3: Quadav Crest - Qulun Dome (enter from Beadeaux).\n \n" ..
                        "Sneak on (Invisible not needed). Follow the YELLOW arrows: map 1 ramp at (H-7), then map 2 to the Qulun Dome entrance at (I-7).\n \n" ..
-                       "BLUE detour: examine 'The Mute' at (G-7) for Silence, which lets you pass 'The Afflictor' without being Cursed. Echo Drop it off after.\n \n" ..
+                       "BLUE Line detour: examine 'The Mute' for Silence, which lets you pass 'The Afflictor' without being Cursed.\n \n" ..
                        "Door at (G-8) needs one member carrying KI:Silver Bell + KI:Coruscant Rosary + KI:Black Matinee Necklace, with Mysteries of Beadeaux I & II done (or Rank 5+). They must stay OUTSIDE - it cannot be opened from inside.\n \n" ..
                        "??? is in the NW corner, second room. WARNING: Ruby Quadav has True Hearing (hears through Sneak).\n",
-                route_to = "Beadeaux",
-                destination_highlight = { position = "H-7", offsetX = 16, offsetY = 16 },
                 onmob_target = {"The Mute1",
-                                "Qulun Door 1",
-                                "qulun-dome-i6-quadav-crest-???"},
-                zone_max_distance = 35,
+                                "beadeaux-the-mute-k8",
+                                "qulun-dome-quadav-crest-???"},
+                zone_max_distance = 25,
                 visual_zones = {
                     -- Survival Guide
                     { zone_name = "Beadeaux", type = 'square', center = { x = -264.0, y = 1.6, z = 107.0 }, size = 1, floor_id = 1, colour = "green" },
@@ -1113,13 +1114,100 @@ return {
                     { zone_name = "Beadeaux", type = 'arrow', center = { x = -61.3, y = 1.4, z = 97.1 }, size = 4, direction = "down", floor_id = 1, colour = "yellow" },
 
                     -- Map 2 east to the Qulun Dome entrance (I-7)
-                    { zone_name = "Beadeaux", type = 'arrow', center = { x = -59.2, y = 23.8, z = 62.9 }, size = 4, direction = "right", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = -59.2, y = 23.8, z = 62.9 }, size = 4, direction = "left", floor_id = 15, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = -93.8, y = 24.0, z = 58.8 }, size = 4, direction = "sw", floor_id = 15, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = -101.6, y = 24.1, z = 24.3 }, size = 4, direction = "left", floor_id = 15, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = -139.8, y = 24.4, z = 25.9 }, size = 4, direction = "up", floor_id = 15, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = -150.0, y = 23.9, z = 59.6 }, size = 4, direction = "left", floor_id = 15, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = -179.3, y = 24.0, z = 63.6 }, size = 4, direction = "left", floor_id = 15, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = -214.9, y = 24.0, z = 55.4 }, size = 4, direction = "sw", floor_id = 15, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = -220.0, y = 22.4, z = 29.4 }, size = 4, direction = "se", floor_id = 15, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = -196.8, y = 15.9, z = 25.7 }, size = 4, direction = "ne", floor_id = 15, colour = "yellow" },
 
                     -- Optional detour: 'The Mute' at (G-7) for Silence vs. The Afflictor
-                    { zone_name = "Beadeaux", type = 'arrow', center = { x = -58.7, y = 22.4, z = 90.2 }, size = 4, direction = "down", floor_id = 2, colour = "cyan" },
-                    { zone_name = "Beadeaux", type = 'arrow', center = { x = -62.3, y = 24.1, z = 63.1 }, size = 4, direction = "left", floor_id = 2, colour = "cyan" },
-                    { zone_name = "Beadeaux", type = 'arrow', center = { x = -95.8, y = 24.2, z = 62.4 }, size = 4, direction = "up", floor_id = 2, colour = "cyan" },
-                    { zone_name = "Beadeaux", type = 'arrow', center = { x = -99.3, y = 24.1, z = 86.1 }, size = 4, direction = "up", floor_id = 2, colour = "cyan" },
+                    { zone_name = "Beadeaux", type = 'line', start = { x = -94.8, y = 24.0, z = 62.0 }, stop = { x = -96.8, y = 23.7, z = 69.4 }, floor_id = 15, colour = "cyan" },
+                    { zone_name = "Beadeaux", type = 'line', start = { x = -96.8, y = 23.7, z = 69.4 }, stop = { x = -99.0, y = 24.1, z = 81.9 }, floor_id = 15, colour = "cyan" },
+                    { zone_name = "Beadeaux", type = 'line', start = { x = -99.0, y = 24.1, z = 81.9 }, stop = { x = -99.6, y = 24.3, z = 92.1 }, floor_id = 15, colour = "cyan" },
+                    { zone_name = "Beadeaux", type = 'line', start = { x = -99.6, y = 24.3, z = 92.1 }, stop = { x = -99.8, y = 24.1, z = 101.1 }, floor_id = 15, colour = "cyan" },
+                    -- to ramp 1
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = -216.6, y = 1.0, z = 13.1 }, size = 4, direction = "down", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = -220.3, y = 1.0, z = -39.0 }, size = 4, direction = "down", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = -210.4, y = 0.8, z = -65.5 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = -175.7, y = 1.0, z = -67.7 }, size = 4, direction = "down", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = -176.2, y = 1.2, z = -90.3 }, size = 4, direction = "sw", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = -204.9, y = 1.0, z = -117.9 }, size = 4, direction = "sw", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = -231.5, y = 1.0, z = -139.0 }, size = 4, direction = "left", floor_id = 1, colour = "yellow" },
+
+                    -- To K-6
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = -257.5, y = 1.0, z = -139.0 }, size = 4, direction = "nw", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = -268.6, y = -3.1, z = -127.9 }, size = 4, direction = "sw", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = -281.2, y = -3.5, z = -167.2 }, size = 4, direction = "down", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = -280.2, y = -3.3, z = -200.0 }, size = 4, direction = "down", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = -279.8, y = -3.1, z = -222.9 }, size = 4, direction = "se", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = -250.8, y = -3.3, z = -237.8 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = -220.5, y = -3.1, z = -234.6 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = -196.9, y = -3.5, z = -231.4 }, size = 4, direction = "ne", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = -168.0, y = -3.0, z = -207.8 }, size = 4, direction = "ne", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = -141.4, y = -3.4, z = -192.3 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = -98.5, y = -2.9, z = -193.8 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = -60.7, y = -3.2, z = -193.7 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = -49.0, y = -3.4, z = -189.4 }, size = 4, direction = "ne", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = -23.7, y = -3.0, z = -157.1 }, size = 4, direction = "ne", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = -6.2, y = -3.0, z = -136.4 }, size = 4, direction = "ne", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = 12.4, y = -3.2, z = -121.2 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = 35.7, y = -3.3, z = -119.4 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = 57.9, y = -3.0, z = -113.6 }, size = 4, direction = "up", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = 61.3, y = -3.0, z = -80.0 }, size = 4, direction = "up", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = 63.1, y = -3.0, z = -51.3 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = 96.6, y = -3.0, z = -47.6 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = 128.6, y = -3.0, z = -49.9 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = 163.3, y = -3.3, z = -43.8 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = 195.6, y = -3.3, z = -40.2 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = 218.7, y = -3.2, z = -44.0 }, size = 4, direction = "ne", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = 235.1, y = -3.3, z = -15.4 }, size = 4, direction = "ne", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = 256.5, y = -3.3, z = 6.8 }, size = 4, direction = "up", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = 256.5, y = -3.0, z = 44.4 }, size = 4, direction = "up", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = 256.6, y = -3.0, z = 79.7 }, size = 4, direction = "up", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = 255.6, y = -3.0, z = 104.2 }, size = 4, direction = "nw", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = 227.5, y = -3.2, z = 125.0 }, size = 4, direction = "nw", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = 193.0, y = -3.1, z = 143.0 }, size = 4, direction = "left", floor_id = 1, colour = "yellow" },
+
+                    -- Map 2
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = 182.6, y = 1.5, z = 144.5 }, size = 4, direction = "up", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = 160.6, y = 11.2, z = 162.0 }, size = 4, direction = "sw", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = 158.2, y = 16.4, z = 144.6 }, size = 4, direction = "se", floor_id = 15, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = 180.1, y = 22.8, z = 153.4 }, size = 4, direction = "up", floor_id = 15, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = 190.7, y = 30.5, z = 180.1 }, size = 4, direction = "right", floor_id = 15, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = 219.4, y = 38.9, z = 165.4 }, size = 4, direction = "down", floor_id = 15, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = 230.1, y = 39.8, z = 139.6 }, size = 4, direction = "right", floor_id = 15, colour = "yellow" },
+
+                    -- Line to Mute to be silenced.
+                    { zone_name = "Beadeaux", type = 'line', start = { x = 224.3, y = 40.1, z = 136.7 }, stop = { x = 221.2, y = 40.1, z = 125.0 }, floor_id = 15, colour = "cyan" },
+                    { zone_name = "Beadeaux", type = 'line', start = { x = 221.2, y = 40.1, z = 125.0 }, stop = { x = 219.9, y = 40.1, z = 113.7 }, floor_id = 15, colour = "cyan" },
+                    { zone_name = "Beadeaux", type = 'line', start = { x = 219.9, y = 40.1, z = 113.7 }, stop = { x = 217.7, y = 40.0, z = 101.1 }, floor_id = 15, colour = "cyan" },
+                    { zone_name = "Beadeaux", type = 'line', start = { x = 217.7, y = 40.0, z = 101.1 }, stop = { x = 208.5, y = 41.0, z = 90.3 }, floor_id = 15, colour = "cyan" },
+                    { zone_name = "Beadeaux", type = 'line', start = { x = 208.5, y = 41.0, z = 90.3 }, stop = { x = 197.8, y = 41.0, z = 76.5 }, floor_id = 15, colour = "cyan" },
+                    { zone_name = "Beadeaux", type = 'line', start = { x = 197.8, y = 41.0, z = 76.5 }, stop = { x = 188.7, y = 40.2, z = 66.2 }, floor_id = 15, colour = "cyan" },
+                    { zone_name = "Beadeaux", type = 'line', start = { x = 188.7, y = 40.2, z = 66.2 }, stop = { x = 180.3, y = 40.1, z = 55.9 }, floor_id = 15, colour = "cyan" },
+                    { zone_name = "Beadeaux", type = 'line', start = { x = 180.3, y = 40.1, z = 55.9 }, stop = { x = 180.0, y = 40.1, z = 46.2 }, floor_id = 15, colour = "cyan" },
+                    { zone_name = "Beadeaux", type = 'line', start = { x = 180.0, y = 40.1, z = 46.2 }, stop = { x = 179.6, y = 40.1, z = 32.5 }, floor_id = 15, colour = "cyan" },
+                    { zone_name = "Beadeaux", type = 'line', start = { x = 179.6, y = 40.1, z = 32.5 }, stop = { x = 179.2, y = 40.2, z = 20.2 }, floor_id = 15, colour = "cyan" },
+
+                    -- To Qulin Dome
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = 258.5, y = 40.2, z = 136.6 }, size = 4, direction = "right", floor_id = 15, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = 291.7, y = 38.2, z = 139.2 }, size = 4, direction = "right", floor_id = 15, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = 318.6, y = 32.2, z = 140.2 }, size = 4, direction = "right", floor_id = 15, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = 341.0, y = 25.9, z = 127.3 }, size = 4, direction = "down", floor_id = 15, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = 339.4, y = 24.0, z = 102.0 }, size = 4, direction = "right", floor_id = 15, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = 368.1, y = 24.8, z = 99.8 }, size = 4, direction = "right", floor_id = 15, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'rect', center = { x = 371.1, y = 23.1, z = 100.0 }, width = 3.00, height = 3.75, floor_id = 15, colour = "cyan", vertical_axis = 'z' },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = 380.4, y = 24.8, z = 100.9 }, size = 4, direction = "down", floor_id = 15, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'rect', center = { x = 380.0, y = 23.3, z = 91.1 }, width = 3.00, height = 3.50, floor_id = 15, colour = "cyan", vertical_axis = 'ns' },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = 379.4, y = 24.7, z = 85.5 }, size = 4, direction = "down", floor_id = 15, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = 383.4, y = 23.9, z = 59.7 }, size = 4, direction = "right", floor_id = 15, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = 418.5, y = 30.6, z = 48.5 }, size = 4, direction = "down", floor_id = 15, colour = "yellow" },
+                    { zone_name = "Beadeaux", type = 'arrow', center = { x = 404.0, y = 39.7, z = 20.2 }, size = 4, direction = "left", floor_id = 15, colour = "yellow" },
+
                 },
                 images = {
                     {
@@ -1129,7 +1217,8 @@ return {
                         zone_name = "Beadeaux",
                         floor_id = 1,
                         highlights = {
-                            { position = "H-7", offsetX = 16, offsetY = 16 },
+                            { position = "H-7", offsetX = 16, offsetY = 16, label = "1" },
+                            { position = "K-6", offsetX = 16, offsetY = 16, label = "2" },
                         },
                     },
                     {
@@ -1139,8 +1228,8 @@ return {
                         zone_name = "Beadeaux",
                         floor_id = 15,
                         highlights = {
-                            { position = "I-7", offsetX = 16, offsetY = 16, label = "D" },
-                            { position = "G-7", offsetX = 16, offsetY = 16, label = "M" },
+                            { position = "F-8", offsetX = 16, offsetY = 16, label = "1" },
+                            { position = "M-8", offsetX = 16, offsetY = 16, label = "2" },
                         },
                     },
                     {
@@ -1149,27 +1238,31 @@ return {
                         state = 3,
                         zone_name = "Qulun Dome",
                         highlights = {
-                            { position = "G-8", offsetX = 16, offsetY = 16, label = "D" },
-                            { position = "I-6", offsetX = 16, offsetY = 16, label = "?" },
+                            { position = "I-6", offsetX = 16, offsetY = 16, label = "KI" },
                         },
                     },
                 },
-                keyitems_needed = { 337 },
+                keyitems_needed = {
+                    337,
+                    46,
+                    47,
+                },
                 trigger_on_keyitem_obtain = { 337 },
             },
             {
                 -- Castle Oztroja navigation (daily_passwords + arrow chain + per-floor maps)
-                text = "Step 4: Yagudo Crest - Castle Oztroja. Follow the arrows! \n \n" ..
-                       "- CYAN arrows lead to the 3 password statues; YELLOW arrows are the main path onward. \n" ..
+                text = "Step 4: Yagudo Crest - Castle Oztroja. Follow the arrows! Passwords reset every game day at 00:00 so wait till a new day if it is close enough. Beyond 18:00 just wait if first time.  \n \n" ..
+                       "- BLUE arrows lead to the 3 password statues; YELLOW arrows are the main path onward. \n" ..
                        "- CRITICAL: Invisible for this ENTIRE section (Sneak for bats/leeches if low level). Lighting the torches needs the KI:Yagudo Torch (from Magicite). \n \n" ..
-                       "- Read all 3 statues (they reset every Vana'diel day; you enter them IN THIS ORDER later): \n" ..
-                       "  #1 - Floor 1 (H-9)    #2 - Basement 1 (H-9)    #3 - Floor 2 (I-8) \n \n" ..
-                       "- 4-lever door combo is read at the dead-end (I-10). \n" ..
+                       "- Read all 3 statues : \n" ..
+                       " #1 - Floor 1    (H-9) \n" ..
+                       " #2 - Basement 1 (H-9) \n" ..
+                       " #3 - Floor 2    (I-8) \n \n" ..
+                       "- A 4-lever door combo appears at the dead-end (G-8) with a Brass Door - the order is Random you just have to guess a combination to open it! \n" ..
                        "- At the trap-door room: touch a torch (G-7, G-8, H-7, or H-8) to open the Brass Door, stand on the wooden plank, click the statue and enter the 3 passwords IN ORDER - everyone drops through the trap door (safe landing). \n \n" ..
                        "- Re-invis, run the corridor to the big ramped room; the ??? for the Yagudo Crest is on the LOWER CENTRAL platform. Grab it and warp. \n \n" ..
                        "- Possible passwords (case-sensitive): Buxu, Deggi, Domi, Duxo, Duzu, Gadu, Haqa, Misu, Mjuu, Mong, Ouzi, Ovzi, Puqu, Quu, Xalmo, Xicu, Zhuu. \n \n" ..
                        "- WARNING: True-sight NMs here (Tzee Xicu the Manifest, Yagudo Avatar/High Priest/Templar) see through Invisible - stay out of their sight lines.\n",
-                route_to = "Castle Oztroja",
                 onmob_target = {"castle-oztroja-brass-statue-1-h9",
                                 "castle-oztroja-handle-1-i8",
                                 "castle-oztroja-handle-2-i8",
@@ -1182,7 +1275,10 @@ return {
                                 "castle-oztroja-torch-stand-4-h7",
                                 "castle-oztroja-brass-statue-4-h7",
                                 "castle-oztroja-yagudo-crest-???"},
-                keyitems_needed = { 338 },
+                keyitems_needed = {
+                    338,
+                    20,   -- Yagudo Torch - lights the torches (from Magicite)
+                },
                 trigger_on_keyitem_obtain = { 338 },
                 daily_passwords = {
                     wordlist = { "Buxu","Deggi","Domi","Duxo","Duzu","Gadu","Haqa","Misu",
@@ -1213,6 +1309,25 @@ return {
                     { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -56.8, y = 0.2, z = -25.4 }, size = 4, direction = "up", floor_id = 1, colour = "yellow", show_if_password = 1 },
                     { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -55.4, y = 0.3, z = 1.4 }, size = 4, direction = "up", floor_id = 1, colour = "yellow", show_if_password = 1 },
                     { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -55.0, y = 0.3, z = 19.9 }, size = 4, direction = "right", floor_id = 1, colour = "yellow", show_if_password = 1 },
+
+                    -- if player falls level its 50/50 this will help them get back to start
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = 16.2, y = 24.0, z = -25.6 }, size = 4, direction = "right", floor_id = 15, colour = "yellow",show_if_password = 1 },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = 19.3, y = 40.3, z = -26.5 }, size = 4, direction = "down", floor_id = 15, colour = "yellow",show_if_password = 1 },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = 18.8, y = 33.5, z = -68.9 }, size = 4, direction = "down", floor_id = 15, colour = "yellow",show_if_password = 1 },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = 19.8, y = 25.5, z = -109.0 }, size = 4, direction = "down", floor_id = 15, colour = "yellow",show_if_password = 1 },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = 19.7, y = 19.3, z = -142.3 }, size = 4, direction = "down", floor_id = 15, colour = "yellow",show_if_password = 1 },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = 20.2, y = 16.3, z = -188.9 }, size = 4, direction = "down", floor_id = 15, colour = "yellow",show_if_password = 1 },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = 20.6, y = 12.0, z = -220.6 }, size = 4, direction = "right", floor_id = 15, colour = "yellow",show_if_password = 1 },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = 60.5, y = 4.0, z = -220.0 }, size = 4, direction = "up", floor_id = 15, colour = "yellow",show_if_password = 1 },
+
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = 59.2, y = -0.3, z = -180.1 }, size = 4, direction = "left", floor_id = 5, colour = "yellow",show_if_password = 1 },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = 17.7, y = -1.5, z = -179.4 }, size = 4, direction = "left", floor_id = 5, colour = "yellow",show_if_password = 1 },
+
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -29.8, y = 0.2, z = -178.4 }, size = 4, direction = "left", floor_id = 1, colour = "yellow",show_if_password = 1 },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -69.3, y = 0.3, z = -178.3 }, size = 4, direction = "left", floor_id = 1, colour = "yellow",show_if_password = 1 },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -97.7, y = 0.3, z = -175.9 }, size = 4, direction = "up", floor_id = 1, colour = "yellow",show_if_password = 1 },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -98.1, y = 0.3, z = -142.0 }, size = 4, direction = "up", floor_id = 1, colour = "yellow",show_if_password = 1 },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -99.3, y = 0.3, z = -95.0 }, size = 4, direction = "up", floor_id = 1, colour = "yellow",show_if_password = 1 },
 
                     -- To 2nd password
                     { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -21.0, y = 0.3, z = 6.1 }, size = 4, direction = "down", floor_id = 1, colour = "yellow", show_if_password = 1 },
@@ -1345,11 +1460,7 @@ return {
                     { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -99.9, y = -55.8, z = -17.7 }, size = 4, direction = "up", floor_id = 4, colour = "yellow" },
                     { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -100.8, y = -56.0, z = 21.5 }, size = 4, direction = "up", floor_id = 4, colour = "yellow" },
                     { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -99.7, y = -59.5, z = 39.3 }, size = 4, direction = "up", floor_id = 4, colour = "yellow" },
-                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -99.8, y = -60.6, z = 78.9 }, size = 4, direction = "up", floor_id = 4, colour = "yellow" },
-                    -- The ??? for the Yagudo Crest is on this lower central platform (VERIFY exact spot).
-                    { zone_name = "Castle Oztroja", type = 'rect', center = { x = -100.0, y = -61.3, z = 85.8 }, width = 4.50, height = 4.00, floor_id = 4, colour = "cyan", vertical_axis = 'ns' },
-                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -100.2, y = -58.4, z = 95.4 }, size = 4, direction = "up", floor_id = 4, colour = "yellow" },
-                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -100.7, y = -55.8, z = 115.3 }, size = 4, direction = "up", floor_id = 4, colour = "yellow" },
+
                 },
                 images = {
                     {

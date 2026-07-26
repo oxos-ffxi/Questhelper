@@ -250,6 +250,13 @@ return {
         floor_id = 1,
         max_distance = 45
     },
+    ["beadeaux-the-mute-k8"] = {
+        target_pos = { x = 180.1, y = 38.9, z = 16.0 },
+        visual_mode = "arc",
+        zone = "Beadeaux",
+        floor_id = 15,
+        max_distance = 20
+    },
     --Qulun Dome
     ["Qulun Door 1"] = {
         target_pos = { x = 59.9, y= 22, z=-6.7},
@@ -262,6 +269,13 @@ return {
         target_pos = { x = 9.5, y= 23, z=-84},
         visual_mode = "arc",
         zone = "Qulun Dome"
+    },
+    ["qulun-dome-quadav-crest-???"] = {
+        target_pos = { x = 259.9, y = 39.8, z = 79.5 },
+        visual_mode = "arc",
+        zone = "Qulun Dome",
+        floor_id = 0,
+        max_distance = 20
     },
     --Windurst
     -- Windurst Woods
@@ -786,6 +800,13 @@ return {
         zone = "Castle Oztroja",
         floor_id = 15,
         max_distance = 35
+    },
+    ["castle-oztroja-yagudo-crest-???"] = {
+        target_pos = { x = -100.5, y = -63.2, z = 60.3 },
+        visual_mode = "arc",
+        zone = "Castle Oztroja",
+        floor_id = 4,
+        max_distance = 25
     },
     -- Maze of Shakhrami
     ["maze-of-shakhrami-fossil-rock-h5-1"] = {
