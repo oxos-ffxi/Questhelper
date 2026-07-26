@@ -1,0 +1,447 @@
+return {
+    ["Wall of Banishing"] = {
+        -- Crimson Orb mini-quest. No level requirement, but the pools/orcs sit in a
+        -- Lv.50+ zone - bring Invisible and expect wandering high-level Orcs.
+        steps = {
+            {
+                text = "Step 1: Touch the Wall of Banishing at (J-9), THEN accept from Sedal-Godjal at (J-8).\n \n" ..
+                       "Keep Invisible up - high-level Orcs wander the whole area.\n \n",
+                onmob_target = {"davoi-wall-of-banishing-j9"},
+                zone_max_distance = 35,
+                trigger_on_talk = "The cave has been sealed off by some sort of barrier.",
+                visual_zones = {
+                    -- Survival Guide
+                    { zone_name = "Davoi", type = 'square', center = { x = 223.0, y = -0.2, z = -10.0 }, size = 1, floor_id = 0, colour = "green" },
+                    -- To H-11 (Monastic Cavern entrance), first MAP Davoi
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 215.7, y = -0.4, z = -12.6 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 218.5, y = 3.3, z = -67.1 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 237.6, y = 4.0, z = -93.1 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 220.0, y = 3.7, z = -131.4 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 240.0, y = 0.0, z = -179.2 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 279.4, y = 4.0, z = -192.3 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 277.4, y = 4.0, z = -242.7 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 275.0, y = 4.0, z = -288.3 }, size = 4, direction = "sw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 235.0, y = -0.2, z = -299.0 }, size = 4, direction = "sw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 216.7, y = -1.6, z = -306.1 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 205.0, y = -0.0, z = -259.8 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 162.7, y = 0.0, z = -259.2 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 111.1, y = -0.4, z = -265.6 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 76.0, y = -0.2, z = -259.0 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 50.4, y = -2.0, z = -266.4 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 67.6, y = -1.8, z = -297.1 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 57.0, y = 0.7, z = -341.1 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+
+                    -- Inside Monastic Cavern, back to I-8 to zone out into central Davoi
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 27.4, y = -13.6, z = -376.5 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = -15.1, y = -4.6, z = -381.5 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = -22.2, y = -0.3, z = -340.5 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 13.3, y = -2.2, z = -334.4 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 16.5, y = -1.6, z = -305.3 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 45.7, y = -0.2, z = -278.0 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 61.2, y = -0.2, z = -244.4 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 53.4, y = -0.1, z = -218.0 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 16.5, y = -0.5, z = -217.5 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = -20.4, y = -0.4, z = -214.2 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = -20.4, y = -0.3, z = -167.2 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = -20.3, y = -0.3, z = -137.2 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 22.4, y = -0.4, z = -141.9 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 34.2, y = -6.9, z = -181.1 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 74.2, y = -15.0, z = -179.9 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+
+                    -- ...then north to Banshing Wall
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 89.2, y = 0.6, z = -152.4 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 79.8, y = -2.5, z = -151.9 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 81.3, y = -4.0, z = -140.1 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 129.7, y = 0.4, z = -142.0 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 141.4, y = -0.1, z = -179.4 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 179.5, y = -0.1, z = -179.1 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 180.3, y = 1.0, z = -207.4 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+
+                },
+                images = {
+                    {
+                        width = 512,
+                        height = 512,
+                        state = 1,
+                        zone_name = "Davoi",
+                        floor_id = 0,
+                        highlights = {
+                            { position = "H-11", offsetX = 16, offsetY = 16, label = "1" },
+                            { position = "J-9", offsetX = 16, offsetY = 16, label = "W" },
+                        },
+                    },
+                    {
+                        width = 512,
+                        height = 512,
+                        state = 1,
+                        zone_name = "Monastic Cavern",
+                        floor_id = 0,
+                        highlights = {
+                            { position = "I-8", offsetX = 16, offsetY = 16 },
+                        },
+                    },
+                },
+            },
+              {
+                text = "Step 2: Accept the quest from Sedal-Godjal at (J-8).\n \n",
+                onmob_target = {"Sedal-Godjal"},
+                zone_max_distance = 35,
+                visual_zones = {
+                    -- Survival Guide
+                    { zone_name = "Davoi", type = 'square', center = { x = 223.0, y = -0.2, z = -10.0 }, size = 1, floor_id = 0, colour = "green" },
+                    -- To H-11 (Monastic Cavern entrance), first MAP Davoi
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 215.7, y = -0.4, z = -12.6 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 218.5, y = 3.3, z = -67.1 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 237.6, y = 4.0, z = -93.1 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 220.0, y = 3.7, z = -131.4 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 240.0, y = 0.0, z = -179.2 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 279.4, y = 4.0, z = -192.3 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 277.4, y = 4.0, z = -242.7 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 275.0, y = 4.0, z = -288.3 }, size = 4, direction = "sw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 235.0, y = -0.2, z = -299.0 }, size = 4, direction = "sw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 216.7, y = -1.6, z = -306.1 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 205.0, y = -0.0, z = -259.8 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 162.7, y = 0.0, z = -259.2 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 111.1, y = -0.4, z = -265.6 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 76.0, y = -0.2, z = -259.0 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 50.4, y = -2.0, z = -266.4 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 67.6, y = -1.8, z = -297.1 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 57.0, y = 0.7, z = -341.1 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+
+                    -- Inside Monastic Cavern, back to I-8 to zone out into central Davoi
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 27.4, y = -13.6, z = -376.5 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = -15.1, y = -4.6, z = -381.5 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = -22.2, y = -0.3, z = -340.5 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 13.3, y = -2.2, z = -334.4 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 16.5, y = -1.6, z = -305.3 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 45.7, y = -0.2, z = -278.0 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 61.2, y = -0.2, z = -244.4 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 53.4, y = -0.1, z = -218.0 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 16.5, y = -0.5, z = -217.5 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = -20.4, y = -0.4, z = -214.2 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = -20.4, y = -0.3, z = -167.2 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = -20.3, y = -0.3, z = -137.2 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 22.4, y = -0.4, z = -141.9 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 34.2, y = -6.9, z = -181.1 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 74.2, y = -15.0, z = -179.9 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+
+                    -- ...then north to Sedal-Godjal (J-8)
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 89.2, y = 0.6, z = -152.4 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 79.8, y = -2.5, z = -151.9 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 81.3, y = -4.0, z = -140.1 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 129.7, y = 0.4, z = -142.0 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 141.4, y = -0.1, z = -179.4 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 179.5, y = -0.1, z = -179.1 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 180.8, y = 0.6, z = -213.4 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 180.8, y = -1.9, z = -146.4 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 180.1, y = -2.7, z = -118.0 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                },
+                images = {
+                    {
+                        width = 512,
+                        height = 512,
+                        state = 2,
+                        zone_name = "Davoi",
+                        floor_id = 0,
+                        highlights = {
+                            { position = "H-11", offsetX = 16, offsetY = 16, label = "1" },
+                            { position = "J-8", offsetX = 16, offsetY = 16, label = "S" },
+                        },
+                    },
+                    {
+                        width = 512,
+                        height = 512,
+                        state = 2,
+                        zone_name = "Monastic Cavern",
+                        floor_id = 0,
+                        highlights = {
+                            { position = "I-8", offsetX = 16, offsetY = 16 },
+                        },
+                    },
+                },
+                keyitems_needed = { 131 },
+                trigger_on_keyitem_obtain = { 131 },
+            },
+            -- Steps 3-6: the 4 pond dips. The pools may be done in ANY order; the orb key item
+            -- upgrades by dip COUNT (White -> Pink -> Red -> Blood -> Cursed), so each step below
+            -- advances on the next orb regardless of which pool the player actually touched.
+            -- All 4 pond NPC names are listed on every step because the server-side name -> pond
+            -- mapping (_45g.._45j) is not published; any of them can fire the dip.
+            {
+                text = "Step 3 (dip 1 of 4): Dip the White Orb in Howling Pond (H-10).\n \n" ..
+                       "- KI:White Orb becomes KI:Pink Orb.\n" ..
+                       "- Pools can be dipped in ANY order - this step completes on the 1st dip wherever you do it.\n",
+                onmob_target = {"davoi-groaning-pond-i6"},
+                zone_max_distance = 35,
+                visual_zones = {
+                        -- Groaning Pond
+                        { zone_name = "Davoi", type = 'arrow', center = { x = 184.0, y = -2.7, z = -116.7 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Davoi", type = 'arrow', center = { x = 177.6, y = -2.7, z = -118.0 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Davoi", type = 'arrow', center = { x = 179.6, y = -1.5, z = -148.1 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Davoi", type = 'arrow', center = { x = 179.4, y = -0.1, z = -178.1 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Davoi", type = 'arrow', center = { x = 140.4, y = -0.1, z = -177.6 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Davoi", type = 'arrow', center = { x = 124.6, y = -0.0, z = -140.0 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Davoi", type = 'arrow', center = { x = 84.0, y = -3.7, z = -140.0 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Davoi", type = 'arrow', center = { x = 82.3, y = -3.5, z = -116.8 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Davoi", type = 'line', start = { x = 86.8, y = -4.1, z = -112.5 }, stop = { x = 91.0, y = 3.9, z = -108.9 }, floor_id = 0, colour = "yellow" },
+                        { zone_name = "Davoi", type = 'arrow', center = { x = 89.3, y = 3.8, z = -107.8 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Davoi", type = 'arrow', center = { x = 75.2, y = 3.7, z = -95.0 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Davoi", type = 'arrow', center = { x = 60.9, y = 3.8, z = -88.8 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Davoi", type = 'arrow', center = { x = 59.3, y = 3.8, z = -45.4 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Davoi", type = 'arrow', center = { x = 61.6, y = 3.8, z = -11.9 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Davoi", type = 'arrow', center = { x = 63.2, y = 3.8, z = 19.8 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Davoi", type = 'arrow', center = { x = 53.7, y = 3.8, z = 59.3 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Davoi", type = 'arrow', center = { x = 77.0, y = 0.0, z = 59.8 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                },
+                images = {
+                    {
+                        width = 512,
+                        height = 512,
+                        state = 3,
+                        zone_name = "Davoi",
+                        floor_id = 0,
+                        highlights = {
+                            { position = "H-6", offsetX = 16, offsetY = 16, label = "1" },
+                        },
+                    },
+                },
+                keyitems_needed = { 132 },
+                trigger_on_keyitem_obtain = { 132 },
+            },
+            {
+                text = "Step 4 (dip 2 of 4): Dip the Pink Orb in Wailing Pond (L-9).\n \n" ..
+                       "- KI:Pink Orb becomes KI:Red Orb.\n",
+                onmob_target = {"davoi-wailing-pond-l9"},
+                zone_max_distance = 35,
+                visual_zones = {
+                    -- Wailing Pond (L-9)
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 98.2, y = -0.5, z = 59.3 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 68.7, y = 2.8, z = 62.7 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 58.9, y = 3.4, z = 58.6 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 65.4, y = 3.7, z = 22.9 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 59.7, y = 3.8, z = -1.0 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 56.1, y = 3.8, z = -53.8 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 60.3, y = 3.8, z = -95.0 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 83.1, y = 3.9, z = -102.8 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 92.4, y = 3.8, z = -126.6 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 102.9, y = 4.0, z = -155.1 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 100.9, y = 3.9, z = -186.6 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 106.2, y = 3.8, z = -218.5 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 137.0, y = 3.8, z = -225.8 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 141.9, y = 3.8, z = -281.5 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 148.2, y = 3.8, z = -298.8 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 175.1, y = 3.8, z = -296.9 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 216.7, y = -1.4, z = -304.3 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 243.5, y = 0.1, z = -299.4 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 277.8, y = 4.0, z = -288.7 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 284.2, y = 3.8, z = -259.9 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 317.5, y = 0.0, z = -258.2 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 341.8, y = -0.3, z = -244.2 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 334.6, y = 3.8, z = -214.6 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 300.5, y = 3.8, z = -188.8 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 310.2, y = 0.4, z = -141.2 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 341.1, y = -0.2, z = -141.3 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 354.3, y = -0.0, z = -180.2 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                },
+                images = {
+                    {
+                        width = 512,
+                        height = 512,
+                        state = 4,
+                        zone_name = "Davoi",
+                        floor_id = 0,
+                        highlights = {
+                            { position = "L-9", offsetX = 16, offsetY = 16, label = "2" },
+                        },
+                    },
+                },
+                keyitems_needed = { 133 },
+                trigger_on_keyitem_obtain = { 133 },
+            },
+            {
+                text = "Step 5 (dip 3 of 4): Dip the Red Orb in Screaming Pond (E-8).\n \n" ..
+                       "- KI:Red Orb becomes KI:Blood Orb.\n",
+                onmob_target = {"davoi-screaming-pond-e8"},
+                zone_max_distance = 35,
+                visual_zones = {
+                    -- Screaming Pond (E-8)
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 379.0, y = -0.5, z = -180.5 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 343.4, y = 0.9, z = -172.8 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 341.9, y = -0.2, z = -142.1 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 344.7, y = -0.3, z = -111.2 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 340.7, y = 0.0, z = -81.1 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 334.1, y = 0.1, z = -57.7 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 303.0, y = 0.0, z = -53.5 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 275.6, y = 0.1, z = -59.1 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 256.1, y = 4.0, z = -59.6 }, size = 4, direction = "sw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 237.7, y = 4.0, z = -73.5 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 192.3, y = 4.0, z = -78.5 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 163.2, y = 4.0, z = -81.6 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 139.3, y = 3.0, z = -56.2 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 137.1, y = -0.2, z = -19.1 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 95.9, y = -0.1, z = -14.3 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 73.3, y = -1.0, z = -18.7 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 36.3, y = -0.0, z = -22.3 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 0.7, y = 0.0, z = -19.8 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = -20.3, y = -0.4, z = -19.1 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = -21.5, y = -0.1, z = 21.5 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = -76.3, y = -0.1, z = 21.1 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = -118.3, y = 4.0, z = 18.9 }, size = 4, direction = "sw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = -129.2, y = 3.9, z = 7.2 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = -165.7, y = 4.0, z = 4.3 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = -180.6, y = 2.3, z = 26.5 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = -179.8, y = -0.5, z = 61.7 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = -221.7, y = -0.3, z = 57.4 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = -224.0, y = -0.3, z = 4.0 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = -221.2, y = -0.1, z = -65.7 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                },
+                images = {
+                    {
+                        width = 512,
+                        height = 512,
+                        state = 5,
+                        zone_name = "Davoi",
+                        floor_id = 0,
+                        highlights = {
+                            { position = "E-8", offsetX = 16, offsetY = 16, label = "3" },
+                        },
+                    },
+                },
+                keyitems_needed = { 134 },
+                trigger_on_keyitem_obtain = { 134 },
+            },
+            {
+                text = "Step 6 (dip 4 of 4): Dip the Blood Orb in Groaning Pond (H-6 river).\n \n" ..
+                       "- KI:Blood Orb becomes KI:Cursed Orb.\n \n" ..
+                       "WARNING: The 4th dip (whichever pool is last) CURSES you (~15 min). Cursna, Healing Waltz, or a WHM Trust removes it.\n",
+                onmob_target = {"davoi-howling-pond-h10"},
+                zone_max_distance = 35,
+                visual_zones = {
+                    -- Howling Pond (H-6 river)
+                    { zone_name = "Davoi", type = 'arrow', center = { x = -219.5, y = -0.4, z = -99.0 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = -218.2, y = -0.0, z = -63.5 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = -183.3, y = -0.3, z = -64.4 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = -150.3, y = 0.4, z = -60.9 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = -138.0, y = -0.0, z = -78.2 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = -127.7, y = 0.0, z = -99.7 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = -99.7, y = 0.2, z = -105.0 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = -98.4, y = -1.3, z = -129.9 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = -100.5, y = -0.3, z = -179.1 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = -99.4, y = 1.5, z = -211.1 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = -100.4, y = 4.0, z = -237.8 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = -86.6, y = 3.8, z = -261.7 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = -81.5, y = 4.0, z = -281.6 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = -66.8, y = 3.8, z = -293.1 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = -51.4, y = 1.5, z = -299.6 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = -13.3, y = -0.9, z = -299.4 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 22.3, y = -0.1, z = -297.1 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 21.1, y = -0.0, z = -277.6 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+
+                },
+                images = {
+                    {
+                        width = 512,
+                        height = 512,
+                        state = 6,
+                        zone_name = "Davoi",
+                        floor_id = 0,
+                        highlights = {
+                            { position = "H-10", offsetX = 16, offsetY = 16, label = "4" },
+                        },
+                    },
+                },
+                keyitems_needed = { 135 },
+                trigger_on_keyitem_obtain = { 135 },
+            },
+            {
+                text = "Step 7: Return to Sedal-Godjal at (J-8) with the Cursed Orb.\n \n",
+                onmob_target = {"Sedal-Godjal"},
+                zone_max_distance = 35,
+                visual_zones = {
+                    -- Survival Guide
+                    { zone_name = "Davoi", type = 'square', center = { x = 223.0, y = -0.2, z = -10.0 }, size = 1, floor_id = 0, colour = "green" },
+                    -- To H-11 (Monastic Cavern entrance), first MAP Davoi
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 215.7, y = -0.4, z = -12.6 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 218.5, y = 3.3, z = -67.1 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 237.6, y = 4.0, z = -93.1 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 220.0, y = 3.7, z = -131.4 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 240.0, y = 0.0, z = -179.2 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 279.4, y = 4.0, z = -192.3 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 277.4, y = 4.0, z = -242.7 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 275.0, y = 4.0, z = -288.3 }, size = 4, direction = "sw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 235.0, y = -0.2, z = -299.0 }, size = 4, direction = "sw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 216.7, y = -1.6, z = -306.1 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 205.0, y = -0.0, z = -259.8 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 162.7, y = 0.0, z = -259.2 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 111.1, y = -0.4, z = -265.6 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 76.0, y = -0.2, z = -259.0 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 50.4, y = -2.0, z = -266.4 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 67.6, y = -1.8, z = -297.1 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 57.0, y = 0.7, z = -341.1 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+
+                    -- add more arrows in to find this path again.
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 21.4, y = -0.6, z = -262.5 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 21.3, y = -0.2, z = -300.6 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+
+                    -- Inside Monastic Cavern, back to I-8 to zone out into central Davoi
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 27.4, y = -13.6, z = -376.5 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = -15.1, y = -4.6, z = -381.5 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = -22.2, y = -0.3, z = -340.5 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 13.3, y = -2.2, z = -334.4 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 16.5, y = -1.6, z = -305.3 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 45.7, y = -0.2, z = -278.0 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 61.2, y = -0.2, z = -244.4 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 53.4, y = -0.1, z = -218.0 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 16.5, y = -0.5, z = -217.5 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = -20.4, y = -0.4, z = -214.2 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = -20.4, y = -0.3, z = -167.2 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = -20.3, y = -0.3, z = -137.2 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 22.4, y = -0.4, z = -141.9 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 34.2, y = -6.9, z = -181.1 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 74.2, y = -15.0, z = -179.9 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+
+                    -- ...then north to Sedal-Godjal (J-8)
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 89.2, y = 0.6, z = -152.4 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 79.8, y = -2.5, z = -151.9 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 81.3, y = -4.0, z = -140.1 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 129.7, y = 0.4, z = -142.0 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 141.4, y = -0.1, z = -179.4 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 179.5, y = -0.1, z = -179.1 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 180.8, y = 0.6, z = -213.4 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 180.8, y = -1.9, z = -146.4 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 180.1, y = -2.7, z = -118.0 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                },
+                images = {
+                    {
+                        width = 512,
+                        height = 512,
+                        state = 7,
+                        zone_name = "Davoi",
+                        floor_id = 0,
+                        highlights = {
+                            { position = "J-8", offsetX = 16, offsetY = 16, label = "S" },
+                            { position = "H-11", offsetX = 16, offsetY = 16, label = "1" },
+                        },
+                    },
+                    {
+                        width = 512,
+                        height = 512,
+                        state = 7,
+                        zone_name = "Monastic Cavern",
+                        floor_id = 0,
+                        highlights = {
+                            { position = "I-8", offsetX = 16, offsetY = 16 },
+                        },
+                    },
+                },
+                keyitems_needed = { 136 },
+                trigger_on_keyitem_obtain = { 136 },
+            },
+        },
+        reward = {
+            text = "Key Item: Crimson Orb.\n \n" ..
+                   "- Opens the Wall of Banishing (J-9) to Monastic Cavern.\n" ..
+                   "- Needed to reach the Orcish Crest for Genkai 3 (Whence Blows the Wind).\n \n",
+        },
+    },
+}
