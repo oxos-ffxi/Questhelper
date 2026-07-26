@@ -436,6 +436,11 @@ ashita.events.register('d3d_present', 'present_callback', function()
             if missionData.steps[step_idx] then
                 local step_data = missionData.steps[step_idx]
 
+                -- Resolve a randomised objective (dynamic_target) so the NPC beam below
+                -- targets the captured pick rather than nothing. Passthrough for every
+                -- step that has no dynamic_target, which is all but a handful.
+                step_data = utils.resolveDynamicStep(step_data, currentTopCategory, currentSubfile, current_mission, quest_state)
+
                 -- Check zone entry trigger
                 if triggers_module.checkZoneTrigger(step_data, player_module.zoneId, zone_data,
                                                    quest_state, currentTopCategory, currentSubfile,
@@ -1596,6 +1601,48 @@ ashita.events.register('command', 'command_callback', function(e)
         return true
     end
 
+    -- /qh_clues            -> show what has been captured for the active mission
+    -- /qh_clues clear      -> wipe the active mission's captures (re-hear from the NPC)
+    -- /qh_clues clearall   -> wipe every mission's captures (test/retry path)
+    if command_base == 'qh_clues' then
+        local arg = (args[2] or ''):lower()
+
+        if arg == 'clearall' then
+            local n = quest_state.clearQuestChoices()
+            print(string.format('[%s] Cleared ALL captured clues (%d slot%s).', addon.name, n, n == 1 and '' or 's'))
+        elseif arg == 'clear' then
+            if not currentTopCategory or not currentSubfile or not current_mission then
+                print(string.format('[%s] No mission selected - use /qh_clues clearall to wipe everything.', addon.name))
+            else
+                local n = quest_state.clearQuestChoices(currentTopCategory, currentSubfile, current_mission)
+                print(string.format('[%s] Cleared %d captured clue%s for "%s". Re-speak to the NPC to capture again.',
+                    addon.name, n, n == 1 and '' or 's', current_mission))
+            end
+        else
+            if not currentTopCategory or not currentSubfile or not current_mission then
+                print(string.format('[%s] No mission selected.', addon.name))
+            else
+                local choices = quest_state.getQuestChoices(currentTopCategory, currentSubfile, current_mission)
+                local count = 0
+                for slot, c in pairs(choices) do
+                    count = count + 1
+                    print(string.format('[%s]   %-11s [%s] %s - %s%s', addon.name, slot,
+                        tostring(c.index), tostring(c.npc), tostring(c.zone),
+                        c.pos and (' (' .. c.pos .. ')') or ''))
+                end
+                if count == 0 then
+                    print(string.format('[%s] No clues captured yet for "%s".', addon.name, current_mission))
+                else
+                    print(string.format('[%s] %d clue%s captured for "%s".', addon.name, count,
+                        count == 1 and '' or 's', current_mission))
+                end
+            end
+        end
+
+        e.blocked = true
+        return true
+    end
+
     if command_base == 'qh_validate' then
         local mission_errors = {}
         local passing        = {}
@@ -1758,6 +1805,11 @@ ashita.events.register('text_in', 'text_in_callback', function(e)
         -- Daily password capture (e.g. Castle Oztroja statues)
         triggers_module.handleDailyPasswordText(e, incoming_text, currentTopCategory, currentSubfile, current_mission,
                                                quest_data, quest_state)
+
+        -- Randomised-objective capture (e.g. Genkai 4 clue NPCs). Mission-scoped, so
+        -- re-hearing the hints later in the quest still registers.
+        triggers_module.handleClueText(e, incoming_text, currentTopCategory, currentSubfile, current_mission,
+                                       quest_data, quest_state)
 
         -- Fame capture from reputation NPC dialogue (global - not tied to a mission/step)
         triggers_module.handleFameText(e, incoming_text, quest_state, player_module.zoneId)

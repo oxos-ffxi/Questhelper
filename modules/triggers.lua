@@ -587,6 +587,76 @@ function triggers.handleDailyPasswordText(e, incoming_text, currentTopCategory, 
     end
 end
 
+-- HANDLE: event_choices (e.g. Genkai 4 "Riding on the Clouds").
+--
+-- Some quests have the SERVER pick objectives at random and tell the player in plain
+-- dialogue. This watches for the distinctive `match` fragment of each candidate in
+-- data/clue_tables.lua and records which one was named.
+--
+-- Deliberately MISSION-scoped, not step-scoped like handleDailyPasswordText: the NPC
+-- will re-read the hints at any point in the quest (Maat's event 89), so a player who
+-- is already on step 3 and walks back to re-hear them must still be able to capture.
+-- We therefore scan every step of the current mission for an event_choices block.
+--
+-- One dialogue line can only name one candidate, but a single text_in event may carry
+-- several, so this does NOT early-out on the first hit.
+function triggers.handleClueText(e, incoming_text, currentTopCategory, currentSubfile, current_mission, quest_data, quest_state)
+    if not currentTopCategory or not currentSubfile or not current_mission then return end
+    if ignored_chat_modes[e.mode] then return end  -- ignore player chat
+    if not incoming_text or incoming_text == '' then return end
+
+    local missionData = quest_data[currentTopCategory] and quest_data[currentTopCategory][currentSubfile]
+        and quest_data[currentTopCategory][currentSubfile][current_mission]
+    if not missionData or not missionData.steps then return end
+
+    -- Find the event_choices block anywhere in this mission (see MISSION-scoped note).
+    local ec
+    for _, step_data in ipairs(missionData.steps) do
+        if type(step_data) == 'table' and step_data.event_choices then
+            ec = step_data.event_choices
+            break
+        end
+    end
+    if not ec or not ec.table or not ec.slots then return end
+
+    local ok, clue_tables = pcall(require, 'data.clue_tables')
+    if not ok or type(clue_tables) ~= 'table' then return end
+
+    local tbl = clue_tables[ec.table]
+    if type(tbl) ~= 'table' then
+        debug_print(string.format('[QuestHelper] event_choices: no clue table named %q', tostring(ec.table)))
+        return
+    end
+
+    -- Case-INSENSITIVE compare. Confirmed necessary in-game: Maat says "rolanberry
+    -- souvenirs" in lower case where the wiki (and this table) capitalise Rolanberry.
+    -- Same approach the daily-password handler uses.
+    local lower_text = incoming_text:lower()
+
+    debug_print(string.format('[QuestHelper] clue scan: %s', incoming_text))
+
+    for _, slot in ipairs(ec.slots) do
+        local candidates = tbl[slot]
+        if type(candidates) == 'table' then
+            -- 0-based and sparse by design - pairs(), never ipairs().
+            for index, entry in pairs(candidates) do
+                if type(entry) == 'table' and entry.match
+                   and lower_text:find(entry.match:lower(), 1, true) then
+
+                    local existing = quest_state.getQuestChoice(currentTopCategory, currentSubfile, current_mission, slot)
+                    if not existing or existing.index ~= index then
+                        quest_state.setQuestChoice(currentTopCategory, currentSubfile, current_mission, slot, index, entry)
+                        print(string.format('\30\106[QH]\30\01 Clue matched (%s): %s - %s%s',
+                            tostring(slot), tostring(entry.npc), tostring(entry.zone),
+                            entry.pos and (' (' .. entry.pos .. ')') or ''))
+                    end
+                    break  -- one candidate per slot
+                end
+            end
+        end
+    end
+end
+
 -- HANDLE: fame (reputation) checker dialogue.
 -- The client is never sent a numeric fame value, so we recover it by fingerprinting
 -- the checker NPC's reply (see modules/fame.lua). Unlike the other text handlers this

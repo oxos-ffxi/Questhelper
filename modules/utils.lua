@@ -85,6 +85,20 @@ function utils.get_images_for_step(topCat, subfile, mission, stepIndex, quest_da
     if not mdata or not mdata.steps then return {} end
     local step_data = mdata.steps[stepIndex]
 
+    -- Narrow a randomised objective (dynamic_target) BEFORE anything below reads
+    -- route_to / destination_highlight - otherwise those steps have no route_to yet
+    -- and fall through to "No maps available for this step".
+    --
+    -- Lazy require on purpose: quest_state pulls modules.utils back in (currentVanaDay),
+    -- so a top-level require here would be circular. Both modules are fully loaded by
+    -- the time this function is actually called.
+    do
+        local qs_ok, qs = pcall(require, 'modules.quest_state')
+        if qs_ok then
+            step_data = utils.resolveDynamicStep(step_data, topCat, subfile, mission, qs)
+        end
+    end
+
     -- If step has manually-defined images, return them or route to nearest image zone
     if type(step_data) == 'table' and step_data.images then
         local matched = {}
@@ -259,6 +273,50 @@ function utils.getAllKeyItemsNeeded(missionData, keyitems_db)
     table.sort(allKeyItems, function(a, b) return a.id < b.id end)
 
     return allKeyItems
+end
+
+--- Resolves a step's `dynamic_target` against the choices captured for this mission.
+---
+--- Steps for quests where the server randomises the objective (e.g. Genkai 4) are
+--- authored with every candidate listed in the step text, plus a `dynamic_target`
+--- naming which slot they belong to. Once the capture handler has seen the NPC name
+--- that slot's pick, this narrows the step down to the single real target.
+---
+--- Returns the ORIGINAL table untouched when there is no dynamic_target or nothing
+--- has been captured yet - so steps stay usable (all candidates listed) before
+--- capture, and every non-dynamic step in every other quest is a no-op passthrough.
+--- Never mutates the source table; callers get a shallow copy only when substituting.
+function utils.resolveDynamicStep(step_data, cat, sub, mis, quest_state)
+    if type(step_data) ~= 'table' or not step_data.dynamic_target then return step_data end
+    if not quest_state or not quest_state.getQuestChoice then return step_data end
+
+    local dt = step_data.dynamic_target
+    if not dt.slot then return step_data end
+
+    local choice = quest_state.getQuestChoice(cat, sub, mis, dt.slot)
+    if not choice or not choice.npc then return step_data end
+
+    local resolved = {}
+    for k, v in pairs(step_data) do resolved[k] = v end
+
+    resolved.route_to     = choice.zone or resolved.route_to
+    resolved.onmob_target = choice.npc
+    if choice.pos then
+        resolved.destination_highlight = { position = choice.pos, offsetX = 16, offsetY = 16 }
+    end
+
+    local where = choice.zone or '?'
+    if choice.pos then where = where .. ' (' .. choice.pos .. ')' end
+
+    -- Kept OUT of `text` deliberately. The step heading must stay first and keep the
+    -- normal step colour (orange when active); the UI renders this banner underneath
+    -- it in its own colour. Callers that only measure height should append it to the
+    -- text they measure, or the block will clip.
+    resolved.dynamic_banner = string.format('>> YOUR TARGET: %s - %s <<%s',
+        tostring(choice.npc), where,
+        choice.clue and ('\n \nMaat said: "' .. choice.clue .. '"') or '')
+
+    return resolved
 end
 
 return utils

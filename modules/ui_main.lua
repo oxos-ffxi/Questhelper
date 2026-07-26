@@ -25,6 +25,7 @@ local search_results = T{}
 -- Hardcoded progression guide
 local progression_guide = require('data.progression_guide')
 local player_module = require('modules.player')
+local step_utils = require('modules.utils')  -- resolveDynamicStep (randomised-objective quests)
 
 -- Inventory checking (periodic, not every frame)
 local inventory_results = {} -- Cached results
@@ -403,7 +404,13 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                 -- Use viewed step for height calculation (will be initialized in navigation section)
                 local step_index_to_use = collapsed_viewed_step or math.min(current_step_index, #steps)
                 local step_data = steps[step_index_to_use]
+                -- Narrow a randomised objective to its captured target (no-op otherwise)
+                step_data = step_utils.resolveDynamicStep(step_data, currentTopCategory, currentSubfile, current_mission, quest_state)
                 local text = (type(step_data) == 'table' and step_data.text) or tostring(step_data)
+                -- Banner is rendered separately but still takes vertical space - measure it.
+                if type(step_data) == 'table' and step_data.dynamic_banner then
+                    text = text .. '\n \n' .. step_data.dynamic_banner
+                end
 
                 -- Estimate text height: Count newlines + account for line wrapping
                 -- Each line wraps at ~55 chars (to account for scrollbar), each line is ~20px tall
@@ -1229,6 +1236,7 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                 -- In collapsed mode: use viewed step, in expanded mode: use current step
                 local route_step_index = ui_settings.show_all_steps and current_step_index or collapsed_viewed_step
                 local route_step_data = steps[route_step_index]
+                route_step_data = step_utils.resolveDynamicStep(route_step_data, currentTopCategory, currentSubfile, current_mission, quest_state)
                 if route_step_data and type(route_step_data) == 'table' and route_step_data.route_to then
                     -- Track the expanded state for dynamic height calculation
                     local route_header_expanded = imgui.CollapsingHeader("Route:", ui_settings.route_section_expanded and ImGuiTreeNodeFlags_DefaultOpen or 0)
@@ -1312,7 +1320,13 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
 
                 for _, i in ipairs(steps_to_show) do
                     local step_data = steps[i]
-                    local text = (type(step_data) == 'table' and step_data.text) or tostring(step_data)
+                    step_data = step_utils.resolveDynamicStep(step_data, currentTopCategory, currentSubfile, current_mission, quest_state)
+                    local base_text = (type(step_data) == 'table' and step_data.text) or tostring(step_data)
+                    local dyn_banner = (type(step_data) == 'table') and step_data.dynamic_banner or nil
+                    -- `text` drives the height/scroll maths below and must include the
+                    -- banner; `base_text` and `dyn_banner` are rendered separately so the
+                    -- banner can carry its own colour.
+                    local text = dyn_banner and (base_text .. '\n \n' .. dyn_banner) or base_text
                     local st = quest_state.getStepState(currentTopCategory, currentSubfile, current_mission, i)
                     local cbLabel = string.format("##step_%d", i)
                     local ref = { st }
@@ -1368,13 +1382,19 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                     -- Render the step text
                     -- Use narrower wrap width when scrollbar is present to prevent text cutoff
                     local wrap_width = use_scrollable_text and 55 or 60
-                    local wrapped = utils.wrap_text(text, wrap_width)
+                    local wrapped = utils.wrap_text(base_text, wrap_width)
                     if ref[1] then
                         imgui.TextColored({0, 1, 0, 1}, wrapped)
                     elseif i == current_step_index then
                         imgui.TextColored({1, 0.55, 0, 1}, wrapped)
                     else
                         imgui.Text(wrapped)
+                    end
+
+                    -- Resolved randomised target, under the step heading and in its own
+                    -- colour so it stands out against the orange active-step text.
+                    if dyn_banner then
+                        imgui.TextColored({0.3, 1, 0.5, 1}, utils.wrap_text(dyn_banner, wrap_width))
                     end
 
                     -- End scrollable container if we started one

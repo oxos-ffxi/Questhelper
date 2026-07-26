@@ -1555,9 +1555,88 @@ return {
         },
     },
 
-    ["Genkai 4: Cap 65 -> 70 (TODO name)"] = {
+    -- Genkai 4. Maat picks ONE NPC per region at random and hands the four choices to
+    -- the client as event params (see data/clue_tables.lua). Steps 2-5 therefore carry
+    -- a `dynamic_target` that is resolved at display time once those params are captured.
+    -- Until that engine support lands these steps still work: each one lists all eight
+    -- candidates for its region, so the player can match Maat's clue by hand.
+    ["Genkai 4: Riding on the Clouds"] = {
+        prerequisites = {
+            {category = "Limit Breaks", subfile = "Genkai", name = "Genkai 3: Whence Blows the Wind"},
+        },
+        requirements = {
+            level = 61,
+        },
         steps = {
-            { text = "TODO: author. Shared across all jobs." },
+            {
+                text = "Step 1: Speak to Maat in Ru'Lude Gardens (H-5) to start the quest.\n \n" ..
+                       "- Requires Lv.61-65 with your cap already raised to 65 (Genkai 3 complete).\n" ..
+                       "- Maat gives you FOUR clues: one NPC in San d'Oria, one in Bastok, one in Windurst, and one in Selbina/Mhaura.\n" ..
+                       "- The picks are RANDOM per player and are recorded when you accept.\n \n" ..
+                       "TIP: Once flagged you can be any job or level to trade the seals. You can re-speak to Maat at any time to hear the clues again.\n \n" ..
+                       "You need 4x Kindred's Seal. (Trade any 3 seals to Shami to get 1 Kindred's Seal.)\n",
+                route_to = "Ru'Lude Gardens",
+                onmob_target = "Maat",
+                destination_highlight = { position = "H-5", offsetX = 16, offsetY = 16 },
+                items_needed = { { item = "Kindred's Seal", quantity = 4 } },
+                trigger_on_event_id = { 88 },
+                -- Captures Maat's four picks from the event params.
+                -- Event 89 is the reminder re-speak and carries the SAME four params.
+                event_choices = {
+                    table = "Genkai 4: Riding on the Clouds",
+                    event_ids = { 88, 89 },
+                    params = { 0, 1, 2, 3 },
+                    slots = { "sandoria", "bastok", "windurst", "otherlands" },
+                },
+            },
+            {
+                text = "Step 2: San d'Oria - trade a Kindred's Seal for the Scowling Stone.\n \n",
+                dynamic_target = { table = "Genkai 4: Riding on the Clouds", slot = "sandoria" },
+                keyitems_needed = { 467 },
+                trigger_on_keyitem_obtain = { 467 },
+            },
+            {
+                text = "Step 3: Bastok - trade a Kindred's Seal for the Smiling Stone.\n \n",
+                dynamic_target = { table = "Genkai 4: Riding on the Clouds", slot = "bastok" },
+                keyitems_needed = { 466 },
+                trigger_on_keyitem_obtain = { 466 },
+            },
+            {
+                text = "Step 4: Windurst - trade a Kindred's Seal for the Spirited Stone.\n \n",
+                dynamic_target = { table = "Genkai 4: Riding on the Clouds", slot = "windurst" },
+                keyitems_needed = { 469 },
+                trigger_on_keyitem_obtain = { 469 },
+            },
+            {
+                text = "Step 5: Otherlands - trade a Kindred's Seal for the Somber Stone.\n \n" ..
+                       "Maat's Selbina/Mhaura clue points at ONE of these eight:\n" ..
+                       "  Mathilde - Selbina (H-9)\n" ..
+                       "  Vobo - Selbina (I-7)\n" ..
+                       "  Melyon - Selbina (I-9)\n" ..
+                       "  Gabwaleid - Selbina (H-9)\n" ..
+                       "  Celestina - Mhaura (G-8)\n" ..
+                       "  Ekokoko - Mhaura (F-9)\n" ..
+                       "  Bihoro-Guhoro - Mhaura (G-9)\n" ..
+                       "  Jikka-Abukka - Mhaura (H-9)\n \n" ..
+                       "TIP: Selbina and Mhaura are linked by the ferry, so this leg is one trip either way.\n",
+                dynamic_target = { table = "Genkai 4: Riding on the Clouds", slot = "otherlands" },
+                keyitems_needed = { 468 },
+                trigger_on_keyitem_obtain = { 468 },
+            },
+            {
+                text = "Step 6: Return to Maat in Ru'Lude Gardens (H-5) with all four stones.\n \n" ..
+                       "He takes the Scowling, Smiling, Spirited and Somber Stones and raises your cap to 70.\n",
+                route_to = "Ru'Lude Gardens",
+                onmob_target = "Maat",
+                destination_highlight = { position = "H-5", offsetX = 16, offsetY = 16 },
+                keyitems_needed = { 466, 467, 468, 469 },
+                require_all_keyitems = true,
+                trigger_on_event_id = { 90 },
+            },
+        },
+        reward = {
+            text = "Title: Cloud Breaker.\n \n" ..
+                   "- Your level cap is raised to 70.\n \n",
         },
     },
 

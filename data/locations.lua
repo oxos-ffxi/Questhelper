@@ -867,6 +867,23 @@ return {
         floor_id = 0,
         max_distance = 50
     },
+    ["Raminel"] = {
+        target_pos = { x = -66.9, y = 0.8, z = -13.9 },
+        dynamic_pos = true,
+        y_offset = -1.2,
+        trigger_npc = "Raminel",
+        visual_mode = "arc",
+        zone = "Southern San d'Oria",
+        floor_id = 0,
+        max_distance = 100
+    },
+    ["Sobane"] = {
+        target_pos = { x = -189.0, y = -5.0, z = 99.2 },
+        visual_mode = "arc",
+        zone = "Southern San d'Oria",
+        floor_id = 0,
+        max_distance = 30
+    },
     --Northern San d'Oria
     ["Baraka"] = {
         target_pos = { x = 38.65, y= -3.5, z=-5.75},
@@ -921,6 +938,52 @@ return {
         zone = "Northern San d'Oria",
         floor_id = 0,
         max_distance = 10
+    },
+    ["Taurette"] = {
+        target_pos = { x = -161.8, y = -1.2, z = 90.0 },
+        visual_mode = "arc",
+        zone = "Northern San d'Oria",
+        floor_id = 0,
+        max_distance = 35
+    },
+    ["Maloquedil"] = {
+        target_pos = { x = 35.1, y = -2.3, z = 60.4 },
+        visual_mode = "arc",
+        zone = "Northern San d'Oria",
+        floor_id = 0,
+        max_distance = 35
+    },
+    -- Port San d'Oria
+    ["Brifalien"] = {
+        target_pos = { x = -19.4, y = -5.2, z = -74.1 },
+        dynamic_pos = true,
+        y_offset = -1.2,
+        trigger_npc = "Brifalien",
+        visual_mode = "arc",
+        zone = "Port San d'Oria",
+        floor_id = 0,
+        max_distance = 20
+    },
+    ["Fontoumant"] = {
+        target_pos = { x = -10.6, y = -10.2, z = -122.2 },
+        visual_mode = "arc",
+        zone = "Port San d'Oria",
+        floor_id = 0,
+        max_distance = 30,
+    },
+    ["Sheridan"] = {
+        target_pos = { x = -19.1, y = -9.8, z = -129.7 },
+        visual_mode = "arc",
+        zone = "Port San d'Oria",
+        floor_id = 0,
+        max_distance = 30
+    },
+    ["Rugiette"] = {
+        target_pos = { x = 71.4, y = -10.0, z = -73.7 },
+        visual_mode = "arc",
+        zone = "Port San d'Oria",
+        floor_id = 0,
+        max_distance = 50
     },
     -- West Ronfaure
     ["west-ronfaure-???-e8"] = {

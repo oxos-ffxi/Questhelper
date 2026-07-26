@@ -18,6 +18,8 @@ local default_settings = T{
     partial_progress = T{},
     kill_counts = T{},
     daily_progress = T{},  -- Day-stamped scratch state (e.g. Castle Oztroja passwords); resets each Vana'diel day
+    quest_choices = T{},   -- Server-randomised objectives captured from NPC dialogue (e.g. Genkai 4 clues).
+                           -- NOT day-stamped: these hold until the quest is finished or cleared by hand.
     current_map = T{},  -- Tracks active map number per zone ID
     keyitem_cache = T{},  -- Cached list of owned key item IDs (array of numbers)
     fame_cache = T{},     -- [area] = {level = n, day = vana_day_stamp}; last value seen from a reputation NPC
@@ -159,6 +161,71 @@ function quest_state.setDailyPassword(cat, sub, mis, step, slot, word)
     entry.words[slot] = word
     debug_print(string.format("[QuestHelper] Password slot %d = %s", slot, tostring(word)))
     settings.save(QUESTHELPER_ALIAS, quest_state.settings)
+end
+
+-- Quest choice cache (server-randomised objectives, e.g. Genkai 4's four clue NPCs).
+--
+-- Deliberately NOT day-stamped, unlike daily_progress: Maat's picks are fixed for the
+-- life of the quest, so they must survive Vana'diel day rollovers, zoning and addon
+-- reloads. Cleared explicitly via clearQuestChoices (/qh_clearclues) or when the
+-- quest is completed.
+--
+-- Shape: quest_choices[cat][sub][mis][slot] = { index = n, npc = "...", zone = "...", pos = "..." }
+
+--- Returns the captured choice table for a mission, keyed by slot name (may be empty).
+function quest_state.getQuestChoices(cat, sub, mis)
+    if not quest_state.settings.quest_choices then
+        quest_state.settings.quest_choices = T{}
+    end
+    return ensure_key_path(quest_state.settings.quest_choices, cat, sub, mis)
+end
+
+--- Returns a single captured choice, or nil if that slot has not been seen yet.
+function quest_state.getQuestChoice(cat, sub, mis, slot)
+    return quest_state.getQuestChoices(cat, sub, mis)[slot]
+end
+
+--- Records one resolved choice. `entry` is the matched row from data/clue_tables.lua.
+function quest_state.setQuestChoice(cat, sub, mis, slot, index, entry)
+    local choices = quest_state.getQuestChoices(cat, sub, mis)
+    choices[slot] = T{
+        index = index,
+        npc   = entry.npc,
+        zone  = entry.zone,
+        pos   = entry.pos,
+        clue  = entry.clue,
+    }
+    debug_print(string.format("[QuestHelper] Choice %s = [%d] %s (%s)",
+        tostring(slot), index, tostring(entry.npc), tostring(entry.zone)))
+    settings.save(QUESTHELPER_ALIAS, quest_state.settings)
+end
+
+--- Wipes captured choices. Omit `mis` to clear every mission's choices.
+--- Returns how many slots were removed.
+function quest_state.clearQuestChoices(cat, sub, mis)
+    if not quest_state.settings.quest_choices then return 0 end
+
+    local removed = 0
+    if cat and sub and mis then
+        local path = ensure_key_path(quest_state.settings.quest_choices, cat, sub)
+        if type(path[mis]) == 'table' then
+            for _ in pairs(path[mis]) do removed = removed + 1 end
+            path[mis] = nil
+        end
+    else
+        -- Full wipe (test/retry path)
+        for _, subs in pairs(quest_state.settings.quest_choices) do
+            for _, miss in pairs(subs) do
+                for _, slots in pairs(miss) do
+                    for _ in pairs(slots) do removed = removed + 1 end
+                end
+            end
+        end
+        quest_state.settings.quest_choices = T{}
+    end
+
+    settings.save(QUESTHELPER_ALIAS, quest_state.settings)
+    return removed
 end
 
 -- Returns the last fame level seen for an area, plus how many Vana'diel days ago it
