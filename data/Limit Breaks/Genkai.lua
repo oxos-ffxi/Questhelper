@@ -755,7 +755,7 @@ return {
         prerequisites = {
             { any = {
                 {category = "Limit Breaks", subfile = "Genkai", name = "Genkai 1: In Defiant Challenge - Item Drop"},
-                {category = "Limit Breaks", subfile = "Genkai", name = "Genkai 1: In Defiant Challenge - Key Item Method"},
+                {category = "Limit Breaks", subfile = "Genkai", name = "Genkai 1: In Defiant Challenge - Key Item"},
             } },
         },
         requirements = {
@@ -1069,7 +1069,7 @@ return {
                         floor_id = 0,
                         highlights = {
                             { position = "H-11", offsetX = 16, offsetY = 16, label = "1" },
-                            { position = "J-9", offsetX = 16, offsetY = 16, label = "W" },
+                            { position = "I-8", offsetX = 16, offsetY = 16, label = "W" },
                         },
                     },
                     {
@@ -1882,13 +1882,13 @@ return {
                        "===== Before you go in =====\n" ..
                        "CRITICAL: Your SUB JOB is disabled inside. Take /BLM for the Warp out, or a Warp Ring.\n" ..
                        "CRITICAL: The 10 minute clock starts when you ZONE IN, not when you engage - resting and\n" ..
-                       "buffing inside eats your timer. Bring food, meds and medicines before you enter.\n \n" ..
+                       "buffing inside eats your timer. Bring food, meds and medicines!\n \n" ..
                        "===== The fight =====\n" ..
                        "- Maat fights as WHITE MAGE with your job's abilities including Benediction, but he always\n" ..
                        "  swings Hand-to-Hand and uses H2H weapon skills.\n" ..
                        "- Uncapped. He is NOT aggressive, so you get the first move.\n" ..
                        "- He usually concedes before he actually dies, so do not panic at his HP bar.\n" ..
-                       "- WHM can win by a special condition rather than damage - see the wiki job strategy page.\n" ..
+                       "- WHM can win by a special condition rather than damage - surviving 5 MINUTES from the moment you engage Matt!\n" ..
                        "- If you have never beaten Maat on ANY job you lose NO experience on a loss. After your first win anywhere, later losses DO cost experience.\n" ..
                        "- If you have Rhapsody in Umber, you can call Trusts once you are inside.\n \n",
                 zone_max_distance = 35,
@@ -1969,6 +1969,3274 @@ return {
         },
         reward = {
             text = "Title: Star Breaker (first clear) and Maat Masher, Level Cap raised to 75!\n \n",
+        },
+    },
+
+    ["Genkai 5: Shattering Stars (Thief)"] = {
+        progress_group = "Genkai 5: Shattering Stars",
+        job_id = 6, -- xi.job.THF - marks this entry when you are on Thief
+        prerequisites = {
+            {category = "Limit Breaks", subfile = "Genkai", name = "Genkai 4: Riding on the Clouds"},
+        },
+        requirements = {
+            level = 66,
+        },
+        steps = {
+            {
+                text = "Step 1: Speak to Maat in Ru'Lude Gardens (H-5) to start the quest.\n \n" ..
+                       "NOTE: Only needed for your FIRST Maat fight. If you have already beaten him on another\n" ..
+                       "job, tick this and go straight to the burning circle.\n",
+                route_to = "Ru'Lude Gardens",
+                onmob_target = "Maat",
+                destination_highlight = { position = "H-5", offsetX = 16, offsetY = 16 },
+                trigger_on_event_id = { 92 },
+                skip_if_any_job_level = 71, -- cap already broken, so event 92 is spent
+            },
+            {
+                text = "Step 2: STEAL a Thief's Testimony.\n \n" ..
+                       "Primary target: Goblin Bandit (Lv.65-68) in Cape Teriggan around (G-8) - Use Outpost Warp if you have it - Look for the RED highlighted Goblins!\n \n" ..
+                       "As Thief you do not have to wait on the drop - STEAL it. Sneak up, Steal, and walk away;\n" ..
+                       "you never have to fight the goblin at all, which makes this the fastest testimony in the game.\n \n" ..
+                       "TIP: One testimony is good for THREE attempts at Maat. It only vanishes on the third trade to\n" ..
+                       "the burning circle, so a single steal covers two retries.\n",
+                route_to = "Cape Teriggan",
+                destination_highlight = { position = "G-8", offsetX = 16, offsetY = 16 },
+                items_needed = { "Thief's Testimony" },
+                onmob_enemy = { "Goblin Bandit" },
+                onmob_enemy_colour = "red",
+                trigger_on_item_obtain = { "Thief's Testimony" },
+            },
+            {
+                text = "Step 3: Trade the Thief's Testimony to Maat in Ru'Lude Gardens (H-5).\n \n" ..
+                       "You cannot enter the battlefield the first time without doing this - he has to challenge\n" ..
+                       "you before the burning circle will let you in.\n \n" ..
+                       "- He then offers to warp you straight to Waughroon Shrine. Say YES, it saves the walk.\n" ..
+                       "- Do your prep BEFORE you accept: once you confirm, you are in and the clock is running.\n \n" ..
+                       "NOTE: Only needed for your FIRST Maat fight. After your first win he stops offering the\n" ..
+                       "warp entirely and you go straight to the burning circle - tick this and move on.\n",
+                route_to = "Ru'Lude Gardens",
+                onmob_target = "Maat",
+                destination_highlight = { position = "H-5", offsetX = 16, offsetY = 16 },
+                trigger_on_event_id = { 64 },
+                skip_if_any_job_level = 71, -- cap already broken, so Maat no longer warps you
+            },
+            {
+                text = "Step 4: Beat Maat in Waughroon Shrine as THIEF.\n \n" ..
+                       "TIP: Home Point to Palborough Mines #1 puts you right outside the BCNM.\n \n" ..
+                       "===== Before you go in =====\n" ..
+                       "CRITICAL: Your SUB JOB is disabled inside. Take /BLM for the Warp out, or a Warp Ring.\n" ..
+                       "CRITICAL: The 10 minute clock starts when you ZONE IN, not when you engage - resting and\n" ..
+                       "buffing inside eats your timer. Bring food, meds and an Icarus Wing before you enter.\n \n" ..
+                       "===== The fight =====\n" ..
+                       "- Maat fights as THIEF with your job's abilities including Perfect Dodge, but he always\n" ..
+                       "  swings Hand-to-Hand and uses H2H weapon skills.\n" ..
+                       "- Uncapped. He is NOT aggressive, so you get the first move - open with Sneak Attack.\n" ..
+                       "- He usually concedes before he actually dies, so do not panic at his HP bar.\n" ..
+                       "- THF can win by a special condition - using STEAL to grab an Instant Warp makes it an instant win against Maat!\n" ..
+                       "- If you have never beaten Maat on ANY job you lose NO experience on a loss. After your first win anywhere, later losses DO cost experience.\n" ..
+                       "- If you have Rhapsody in Umber, you can call Trusts once you are inside.\n \n",
+                route_to = "Palborough Mines 3",
+                destination_highlight = { position = "H-10", offsetX = 16, offsetY = 16 },
+                zone_max_distance = 35,
+                onmob_target = {"palborough-mines-elevator-lever-i8","waughroon-shrine-burning-circle"},
+                kill_requirement = {
+                    count = 1,
+                    enemies = {"Maat"},
+                    display_only = true,
+                    reset_on_zone_entry = true,
+                },
+                onmob_enemy = "Maat",
+                onmob_enemy_size = 1,
+                visual_zones = {
+                    --floor 1 to the elevator
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 59.0, y = 0.4, z = 66.5 }, size = 4, direction = "up", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 60.0, y = 0.2, z = 99.6 }, size = 4, direction = "left", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 19.2, y = 0.1, z = 118.3 }, size = 4, direction = "up", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 62.0, y = 0.9, z = 140.4 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 99.9, y = -0.1, z = 135.7 }, size = 4, direction = "down", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 100.5, y = -0.1, z = 87.2 }, size = 4, direction = "down", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 99.9, y = 0.2, z = 58.2 }, size = 4, direction = "down", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 99.9, y = -7.8, z = -2.0 }, size = 4, direction = "down", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 130.7, y = -8.0, z = -20.2 }, size = 4, direction = "ne", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 140.4, y = -9.5, z = 10.0 }, size = 4, direction = "ne", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 180.1, y = -14.5, z = 19.1 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 220.3, y = -9.3, z = 33.2 }, size = 4, direction = "up", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 206.9, y = -1.2, z = 59.4 }, size = 4, direction = "left", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 186.7, y = 0.3, z = 63.1 }, size = 4, direction = "left", floor_id = 1, colour = "yellow" },
+
+                    --floor 3
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 186.4, y = -32.0, z = 61.4 }, size = 4, direction = "right", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 219.7, y = -32.0, z = 64.9 }, size = 4, direction = "up", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 219.4, y = -32.0, z = 99.4 }, size = 4, direction = "up", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 216.7, y = -32.0, z = 140.3 }, size = 4, direction = "left", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 180.6, y = -32.0, z = 139.6 }, size = 4, direction = "left", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 139.9, y = -32.0, z = 139.8 }, size = 4, direction = "left", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 111.5, y = -32.0, z = 141.1 }, size = 4, direction = "nw", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 89.9, y = -32.1, z = 143.0 }, size = 4, direction = "sw", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 60.3, y = -32.1, z = 127.2 }, size = 4, direction = "down", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 59.5, y = -31.3, z = 96.7 }, size = 4, direction = "down", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 67.8, y = -31.6, z = 59.6 }, size = 4, direction = "right", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 99.4, y = -32.0, z = 59.1 }, size = 4, direction = "down", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 100.4, y = -31.7, z = 36.6 }, size = 4, direction = "down", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 99.8, y = -31.7, z = 3.2 }, size = 4, direction = "down", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 90.3, y = -32.0, z = -19.6 }, size = 4, direction = "left", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 60.3, y = -32.0, z = -30.7 }, size = 4, direction = "down", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 66.0, y = -32.0, z = -60.0 }, size = 4, direction = "right", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 99.8, y = -32.0, z = -62.3 }, size = 4, direction = "down", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 100.3, y = -32.2, z = -89.8 }, size = 4, direction = "down", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 101.0, y = -32.8, z = -124.5 }, size = 4, direction = "down", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 104.8, y = -38.4, z = -146.9 }, size = 4, direction = "ne", floor_id = 3, colour = "yellow" },
+
+                    --home point
+                    { zone_name = "Palborough Mines", type = 'square', center = { x = 109.0, y = -38.4, z = -147.0 }, size = 1, floor_id = 3, colour = "green" },
+                },
+                trigger_on_event_id = { 32001 },
+            },
+            {
+                text = "Step 5: Return to Maat in Ru'Lude Gardens (H-5).\n \n" ..
+                       "On your FIRST win this conversation is required, for subsequent job fights skip this step manually.\n \n" ..
+                       "TIP: If you have not done The Road to Aht Urhgan, a surviving testimony can be traded to\n" ..
+                       "Faursel in Lower Jeuno for the Boarding Permit.\n",
+                route_to = "Ru'Lude Gardens",
+                onmob_target = "Maat",
+                destination_highlight = { position = "H-5", offsetX = 16, offsetY = 16 },
+                trigger_on_event_id = { 93 },
+                skip_if_any_job_level = 71, -- cap already broken, so event 93 is spent
+            },
+        },
+        reward = {
+            text = "Title: Star Breaker (first clear) and Maat Masher, Level Cap raised to 75!\n \n",
+        },
+    },
+
+    ["Genkai 5: Shattering Stars (Beastmaster)"] = {
+        progress_group = "Genkai 5: Shattering Stars",
+        job_id = 9, -- xi.job.BST - marks this entry when you are on Beastmaster
+        prerequisites = {
+            {category = "Limit Breaks", subfile = "Genkai", name = "Genkai 4: Riding on the Clouds"},
+        },
+        requirements = {
+            level = 66,
+        },
+        steps = {
+            {
+                text = "Step 1: Speak to Maat in Ru'Lude Gardens (H-5) to start the quest.\n \n" ..
+                       "NOTE: Only needed for your FIRST Maat fight. If you have already beaten him on another\n" ..
+                       "job, tick this and go straight to the burning circle.\n",
+                route_to = "Ru'Lude Gardens",
+                onmob_target = "Maat",
+                destination_highlight = { position = "H-5", offsetX = 16, offsetY = 16 },
+                trigger_on_event_id = { 92 },
+                skip_if_any_job_level = 71, -- cap already broken, so event 92 is spent
+            },
+            {
+                text = "Step 2: Farm a Beastmaster's Testimony.\n \n" ..
+                       "Primary target: Goblin Shepherd (Lv.65-68) in Cape Teriggan around (G-8) - Use Outpost Warp if you have it - Look for the RED highlighted Goblins!\n \n" ..
+                       "TIP: Charm a local mob to do the fighting for you, or bring a jug pet - you keep your\n" ..
+                       "pet the whole time you are out here, so this is a cheap solo farm.\n \n" ..
+                       "TIP: One testimony is good for THREE attempts at Maat. It only vanishes on the third trade to\n" ..
+                       "the burning circle, so a single drop covers two retries.\n",
+                route_to = "Cape Teriggan",
+                destination_highlight = { position = "G-8", offsetX = 16, offsetY = 16 },
+                items_needed = { "Beastmaster's Testimony" },
+                onmob_enemy = { "Goblin Shepherd" },
+                onmob_enemy_colour = "red",
+                trigger_on_item_obtain = { "Beastmaster's Testimony" },
+            },
+            {
+                text = "Step 3: Trade the Beastmaster's Testimony to Maat in Ru'Lude Gardens (H-5).\n \n" ..
+                       "You cannot enter the battlefield the first time without doing this - he has to challenge\n" ..
+                       "you before the burning circle will let you in.\n \n" ..
+                       "- He then offers to warp you straight to Waughroon Shrine. Say YES, it saves the walk.\n" ..
+                       "- Do your prep BEFORE you accept: once you confirm, you are in and the clock is running.\n \n" ..
+                       "NOTE: Only needed for your FIRST Maat fight. After your first win he stops offering the\n" ..
+                       "warp entirely and you go straight to the burning circle - tick this and move on.\n",
+                route_to = "Ru'Lude Gardens",
+                onmob_target = "Maat",
+                destination_highlight = { position = "H-5", offsetX = 16, offsetY = 16 },
+                trigger_on_event_id = { 64 },
+                skip_if_any_job_level = 71, -- cap already broken, so Maat no longer warps you
+            },
+            {
+                text = "Step 4: Beat Maat in Waughroon Shrine as BEASTMASTER.\n \n" ..
+                       "Same burning circle as Thief. Enter Palborough Mines from North Gustaberg (K-3), take the\n" ..
+                       "elevator on floor 1 at (I-8), then follow the arrows across floor 3 to (H-10).\n \n" ..
+                       "TIP: Home Point to Palborough Mines #1 puts you right outside the BCNM.\n \n" ..
+                       "===== Before you go in =====\n" ..
+                       "CRITICAL: Your SUB JOB is disabled inside. Take /BLM for the Warp out, or a Warp Ring.\n" ..
+                       "CRITICAL: There is nothing to charm inside, so bring your jug pets - and bring SPARES.\n" ..
+                       "A pet that dies with no replacement leaves you fighting Maat bare.\n" ..
+                       "CRITICAL: The 10 minute clock starts when you ZONE IN, not when you engage - calling and\n" ..
+                       "buffing a pet inside eats your timer.\n \n" ..
+                       "===== The fight =====\n" ..
+                       "- Maat fights as BEASTMASTER with your job's abilities including Familiar, but he always\n" ..
+                       "  swings Hand-to-Hand and uses H2H weapon skills.\n" ..
+                       "- Uncapped. He is NOT aggressive, so you get the first move - send your pet in first.\n" ..
+                       "- He usually concedes before he actually dies, so do not panic at his HP bar.\n" ..
+                       "- If you have never beaten Maat on ANY job you lose NO experience on a loss. After your first win anywhere, later losses DO cost experience.\n" ..
+                       "- If you have Rhapsody in Umber, you can call Trusts once you are inside.\n \n",
+                route_to = "Palborough Mines 3",
+                destination_highlight = { position = "H-10", offsetX = 16, offsetY = 16 },
+                zone_max_distance = 35,
+                onmob_target = {"palborough-mines-elevator-lever-i8","waughroon-shrine-burning-circle"},
+                kill_requirement = {
+                    count = 1,
+                    enemies = {"Maat"},
+                    display_only = true,
+                    reset_on_zone_entry = true,
+                },
+                onmob_enemy = "Maat",
+                onmob_enemy_size = 1,
+                visual_zones = {
+                    --floor 1 to the elevator
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 59.0, y = 0.4, z = 66.5 }, size = 4, direction = "up", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 60.0, y = 0.2, z = 99.6 }, size = 4, direction = "left", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 19.2, y = 0.1, z = 118.3 }, size = 4, direction = "up", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 62.0, y = 0.9, z = 140.4 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 99.9, y = -0.1, z = 135.7 }, size = 4, direction = "down", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 100.5, y = -0.1, z = 87.2 }, size = 4, direction = "down", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 99.9, y = 0.2, z = 58.2 }, size = 4, direction = "down", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 99.9, y = -7.8, z = -2.0 }, size = 4, direction = "down", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 130.7, y = -8.0, z = -20.2 }, size = 4, direction = "ne", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 140.4, y = -9.5, z = 10.0 }, size = 4, direction = "ne", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 180.1, y = -14.5, z = 19.1 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 220.3, y = -9.3, z = 33.2 }, size = 4, direction = "up", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 206.9, y = -1.2, z = 59.4 }, size = 4, direction = "left", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 186.7, y = 0.3, z = 63.1 }, size = 4, direction = "left", floor_id = 1, colour = "yellow" },
+
+                    --floor 3
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 186.4, y = -32.0, z = 61.4 }, size = 4, direction = "right", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 219.7, y = -32.0, z = 64.9 }, size = 4, direction = "up", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 219.4, y = -32.0, z = 99.4 }, size = 4, direction = "up", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 216.7, y = -32.0, z = 140.3 }, size = 4, direction = "left", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 180.6, y = -32.0, z = 139.6 }, size = 4, direction = "left", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 139.9, y = -32.0, z = 139.8 }, size = 4, direction = "left", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 111.5, y = -32.0, z = 141.1 }, size = 4, direction = "nw", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 89.9, y = -32.1, z = 143.0 }, size = 4, direction = "sw", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 60.3, y = -32.1, z = 127.2 }, size = 4, direction = "down", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 59.5, y = -31.3, z = 96.7 }, size = 4, direction = "down", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 67.8, y = -31.6, z = 59.6 }, size = 4, direction = "right", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 99.4, y = -32.0, z = 59.1 }, size = 4, direction = "down", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 100.4, y = -31.7, z = 36.6 }, size = 4, direction = "down", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 99.8, y = -31.7, z = 3.2 }, size = 4, direction = "down", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 90.3, y = -32.0, z = -19.6 }, size = 4, direction = "left", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 60.3, y = -32.0, z = -30.7 }, size = 4, direction = "down", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 66.0, y = -32.0, z = -60.0 }, size = 4, direction = "right", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 99.8, y = -32.0, z = -62.3 }, size = 4, direction = "down", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 100.3, y = -32.2, z = -89.8 }, size = 4, direction = "down", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 101.0, y = -32.8, z = -124.5 }, size = 4, direction = "down", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 104.8, y = -38.4, z = -146.9 }, size = 4, direction = "ne", floor_id = 3, colour = "yellow" },
+
+                    --home point
+                    { zone_name = "Palborough Mines", type = 'square', center = { x = 109.0, y = -38.4, z = -147.0 }, size = 1, floor_id = 3, colour = "green" },
+                },
+                trigger_on_event_id = { 32001 },
+            },
+            {
+                text = "Step 5: Return to Maat in Ru'Lude Gardens (H-5).\n \n" ..
+                       "On your FIRST win this conversation is required, for subsequent job fights skip this step manually.\n \n" ..
+                       "TIP: If you have not done The Road to Aht Urhgan, a surviving testimony can be traded to\n" ..
+                       "Faursel in Lower Jeuno for the Boarding Permit.\n",
+                route_to = "Ru'Lude Gardens",
+                onmob_target = "Maat",
+                destination_highlight = { position = "H-5", offsetX = 16, offsetY = 16 },
+                trigger_on_event_id = { 93 },
+                skip_if_any_job_level = 71, -- cap already broken, so event 93 is spent
+            },
+        },
+        reward = {
+            text = "Title: Star Breaker (first clear) and Maat Masher, Level Cap raised to 75!\n \n",
+        },
+    },
+
+    ["Genkai 5: Shattering Stars (Monk)"] = {
+        progress_group = "Genkai 5: Shattering Stars",
+        job_id = 2, -- xi.job.MNK - marks this entry when you are on Monk
+        prerequisites = {
+            {category = "Limit Breaks", subfile = "Genkai", name = "Genkai 4: Riding on the Clouds"},
+        },
+        requirements = {
+            level = 66,
+        },
+        steps = {
+            {
+                text = "Step 1: Speak to Maat in Ru'Lude Gardens (H-5) to start the quest.\n \n" ..
+                       "NOTE: Only needed for your FIRST Maat fight. If you have already beaten him on another\n" ..
+                       "job, tick this and go straight to the burning circle.\n",
+                route_to = "Ru'Lude Gardens",
+                onmob_target = "Maat",
+                destination_highlight = { position = "H-5", offsetX = 16, offsetY = 16 },
+                trigger_on_event_id = { 92 },
+                skip_if_any_job_level = 71, -- cap already broken, so event 92 is spent
+            },
+            {
+                text = "Step 2: Farm a Monk's Testimony in Davoi.\n \n" ..
+                       "Target: Orcish Champion (Lv.64-68) - Look for the RED highlighted Orcs - there will be some on the way just kill any you see!\n \n" ..
+                       "WARNING: Orcs detect by SIGHT and bats by SOUND. Keep Invisible up while you move between\n" ..
+                       "pulls - at Lv.66 a Champion is a real fight, but a train of them is not.\n \n" ..
+                       "TIP: One testimony is good for THREE attempts at Maat. It only vanishes on the third trade to\n" ..
+                       "the burning circle, so a single drop covers two retries.\n",
+                items_needed = { "Monk's Testimony" },
+                onmob_enemy = { "Orcish Champion" },
+                onmob_enemy_colour = "red",
+                trigger_on_item_obtain = { "Monk's Testimony" },
+                zone_max_distance = 35,
+                visual_zones = {
+                    -- Survival Guide
+                    { zone_name = "Davoi", type = 'square', center = { x = 223.0, y = -0.2, z = -10.0 }, size = 1, floor_id = 0, colour = "green" },
+                    -- South-east toward the Monastic Cavern entrance (H-11)
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 215.7, y = -0.4, z = -12.6 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 218.5, y = 3.3, z = -67.1 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 237.6, y = 4.0, z = -93.1 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 220.0, y = 3.7, z = -131.4 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 240.0, y = 0.0, z = -179.2 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 279.4, y = 4.0, z = -192.3 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 277.4, y = 4.0, z = -242.7 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 275.0, y = 4.0, z = -288.3 }, size = 4, direction = "sw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 235.0, y = -0.2, z = -299.0 }, size = 4, direction = "sw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 216.7, y = -1.6, z = -306.1 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 205.0, y = -0.0, z = -259.8 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 162.7, y = 0.0, z = -259.2 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 111.1, y = -0.4, z = -265.6 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 76.0, y = -0.2, z = -259.0 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 50.4, y = -2.0, z = -266.4 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 67.6, y = -1.8, z = -297.1 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 57.0, y = 0.7, z = -341.1 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+
+                    -- Inside Monastic Cavern, back to I-8 to zone out into central Davoi
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 27.4, y = -13.6, z = -376.5 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = -15.1, y = -4.6, z = -381.5 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = -22.2, y = -0.3, z = -340.5 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 13.3, y = -2.2, z = -334.4 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 16.5, y = -1.6, z = -305.3 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 45.7, y = -0.2, z = -278.0 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 61.2, y = -0.2, z = -244.4 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 53.4, y = -0.1, z = -218.0 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 16.5, y = -0.5, z = -217.5 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = -20.4, y = -0.4, z = -214.2 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = -20.4, y = -0.3, z = -167.2 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = -20.3, y = -0.3, z = -137.2 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 22.4, y = -0.4, z = -141.9 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 34.2, y = -6.9, z = -181.1 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 74.2, y = -15.0, z = -179.9 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+
+                    -- Extra from prereq quest arrows if needed
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 177.1, y = -2.7, z = -117.3 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 179.8, y = 0.0, z = -161.8 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                },
+                images = {
+                    {
+                        width = 512,
+                        height = 512,
+                        state = 2,
+                        zone_name = "Davoi",
+                        floor_id = 0,
+                        highlights = {
+                            { position = "H-11", offsetX = 16, offsetY = 16, label = "1" },
+                            { position = "I-8", offsetX = 16, offsetY = 16, label = "T" },
+                        },
+                    },
+                    {
+                        width = 512,
+                        height = 512,
+                        state = 2,
+                        zone_name = "Monastic Cavern",
+                        floor_id = 0,
+                        highlights = {
+                            { position = "I-8", offsetX = 16, offsetY = 16, label = "1" },
+                        },
+                    },
+                },
+            },
+            {
+                text = "Step 3: Trade the Monk's Testimony to Maat in Ru'Lude Gardens (H-5).\n \n" ..
+                       "You cannot enter the battlefield the first time without doing this - he has to challenge\n" ..
+                       "you before the burning circle will let you in.\n \n" ..
+                       "- He then offers to warp you straight to Balga's Dais. Say YES, it saves the walk.\n" ..
+                       "- Do your prep BEFORE you accept: once you confirm, you are in and the clock is running.\n \n" ..
+                       "NOTE: Only needed for your FIRST Maat fight. After your first win he stops offering the\n" ..
+                       "warp entirely and you go straight to the burning circle - tick this and move on.\n",
+                route_to = "Ru'Lude Gardens",
+                onmob_target = "Maat",
+                destination_highlight = { position = "H-5", offsetX = 16, offsetY = 16 },
+                trigger_on_event_id = { 64 },
+                skip_if_any_job_level = 71, -- cap already broken, so Maat no longer warps you
+            },
+            {
+                text = "Step 4: Beat Maat in Balga's Dais as MONK.\n \n" ..
+                       "Same burning circle as White Mage. Head into Giddeus and follow the arrows to the Burning\n" ..
+                       "Circle at (F-12), then pick the \"Shattering Stars\" arena.\n \n" ..
+                       "TIP: Home Point to Giddeus #1 (G-12) puts you right outside Balga's Dais.\n \n" ..
+                       "===== Before you go in =====\n" ..
+                       "CRITICAL: Your SUB JOB is disabled inside. Take /BLM for the Warp out, or a Warp Ring.\n" ..
+                       "CRITICAL: The 10 minute clock starts when you ZONE IN, not when you engage - resting and\n" ..
+                       "buffing inside eats your timer. Bring food, meds, an Icarus Wing, and an Opo-opo Necklace\n" ..
+                       "with Sleeping Potions to build TP before you enter.\n \n" ..
+                       "===== The fight =====\n" ..
+                       "- Maat fights as MONK with your job's abilities including HUNDRED FISTS, and he always\n" ..
+                       "  swings Hand-to-Hand anyway - this is the version of him that hits hardest and fastest.\n" ..
+                       "- Watch for him popping Hundred Fists and be ready to blow your own, or to heal through it.\n" ..
+                       "- Uncapped. He is NOT aggressive, so you get the first move.\n" ..
+                       "- He usually concedes before he actually dies, so do not panic at his HP bar.\n" ..
+                       "- If you have never beaten Maat on ANY job you lose NO experience on a loss. After your first win anywhere, later losses DO cost experience.\n" ..
+                       "- If you have Rhapsody in Umber, you can call Trusts once you are inside.\n \n",
+                zone_max_distance = 35,
+                onmob_target = "balga-dais-burning-circle",
+                kill_requirement = {
+                    count = 1,
+                    enemies = {"Maat"},
+                    display_only = true,
+                    reset_on_zone_entry = true,
+                },
+                onmob_enemy = "Maat",
+                onmob_enemy_size = 1,
+                visual_zones = {
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -100.7, y = -0.3, z = 404.4 }, size = 4, direction = "down", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -101.4, y = -0.2, z = 382.8 }, size = 4, direction = "left", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -140.1, y = 0.4, z = 376.9 }, size = 4, direction = "down", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -136.4, y = 3.9, z = 341.4 }, size = 4, direction = "sw", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -159.8, y = 4.0, z = 319.3 }, size = 4, direction = "sw", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -182.6, y = 4.0, z = 298.7 }, size = 4, direction = "down", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -180.8, y = -0.1, z = 274.4 }, size = 4, direction = "down", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -172.4, y = 0.0, z = 259.0 }, size = 4, direction = "right", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -140.2, y = -0.5, z = 256.1 }, size = 4, direction = "down", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -139.9, y = -4.0, z = 200.3 }, size = 4, direction = "down", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -138.6, y = -0.2, z = 154.5 }, size = 4, direction = "down", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -137.4, y = -0.8, z = 100.7 }, size = 4, direction = "right", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -100.0, y = -0.7, z = 94.4 }, size = 4, direction = "down", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -99.6, y = -1.2, z = 71.6 }, size = 4, direction = "sw", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -108.8, y = -2.7, z = 60.2 }, size = 4, direction = "left", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -138.3, y = -0.9, z = 51.4 }, size = 4, direction = "down", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -140.7, y = -1.2, z = -1.9 }, size = 4, direction = "down", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -138.4, y = -1.2, z = -44.0 }, size = 4, direction = "down", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -133.4, y = 1.1, z = -65.2 }, size = 4, direction = "se", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -112.6, y = 1.0, z = -80.1 }, size = 4, direction = "down", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -112.3, y = 0.9, z = -105.7 }, size = 4, direction = "se", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -86.0, y = 1.0, z = -134.6 }, size = 4, direction = "down", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -77.5, y = 1.0, z = -160.9 }, size = 4, direction = "se", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -57.6, y = -0.2, z = -186.9 }, size = 4, direction = "down", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -66.8, y = -2.8, z = -220.1 }, size = 4, direction = "left", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -108.4, y = 0.6, z = -222.8 }, size = 4, direction = "sw", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -121.9, y = 1.0, z = -241.0 }, size = 4, direction = "se", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -99.1, y = -0.9, z = -258.0 }, size = 4, direction = "se", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -98.2, y = -3.1, z = -278.0 }, size = 4, direction = "down", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -113.6, y = -3.4, z = -300.6 }, size = 4, direction = "left", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -130.7, y = -2.5, z = -299.5 }, size = 4, direction = "left", floor_id = 1, colour = "cyan" },
+                },
+                images = {
+                      {
+                          width    = 512,
+                          height   = 512,
+                          state    = 4,
+                          zone_name = "Giddeus",
+                          floor_id = 1,
+                          highlights = {
+                              { position = "F-12", offsetX = 16, offsetY = 16 },
+                          },
+                      },
+                      {
+                          width    = 512,
+                          height   = 512,
+                          state    = 4,
+                          zone_name = "Balga's Dais",
+                          floor_id = 0,
+                      },
+                },
+                trigger_on_event_id = { 32001 },
+            },
+            {
+                text = "Step 5: Return to Maat in Ru'Lude Gardens (H-5).\n \n" ..
+                       "On your FIRST win this conversation is required, for subsequent job fights skip this step manually.\n \n" ..
+                       "TIP: If you have not done The Road to Aht Urhgan, a surviving testimony can be traded to\n" ..
+                       "Faursel in Lower Jeuno for the Boarding Permit.\n",
+                route_to = "Ru'Lude Gardens",
+                onmob_target = "Maat",
+                destination_highlight = { position = "H-5", offsetX = 16, offsetY = 16 },
+                trigger_on_event_id = { 93 },
+                skip_if_any_job_level = 71, -- cap already broken, so event 93 is spent
+            },
+        },
+        reward = {
+            text = "Title: Star Breaker (first clear) and Maat Masher, Level Cap raised to 75!\n \n",
+        },
+    },
+
+    ["Genkai 5: Shattering Stars (Dragoon)"] = {
+        progress_group = "Genkai 5: Shattering Stars",
+        job_id = 14, -- xi.job.DRG - marks this entry when you are on Dragoon
+        prerequisites = {
+            {category = "Limit Breaks", subfile = "Genkai", name = "Genkai 4: Riding on the Clouds"},
+        },
+        requirements = {
+            level = 66,
+        },
+        steps = {
+            {
+                text = "Step 1: Speak to Maat in Ru'Lude Gardens (H-5) to start the quest.\n \n" ..
+                       "NOTE: Only needed for your FIRST Maat fight. If you have already beaten him on another\n" ..
+                       "job, tick this and go straight to the burning circle.\n",
+                route_to = "Ru'Lude Gardens",
+                onmob_target = "Maat",
+                destination_highlight = { position = "H-5", offsetX = 16, offsetY = 16 },
+                trigger_on_event_id = { 92 },
+                skip_if_any_job_level = 71, -- cap already broken, so event 92 is spent
+            },
+            {
+                text = "Step 2: Farm a Dragoon's Testimony in Davoi.\n \n" ..
+                       "Target: Orcish Dragoon (Lv.64-68) - Look for the RED highlighted Orcs - there will be some on the way just kill any you see!\n \n" ..
+                       "WARNING: Orcs detect by SIGHT and bats by SOUND. Keep Invisible up while you move between\n" ..
+                       "pulls - at Lv.66 a Dragoon is a real fight, but a train of them is not.\n \n" ..
+                       "TIP: One testimony is good for THREE attempts at Maat. It only vanishes on the third trade to\n" ..
+                       "the burning circle, so a single drop covers two retries.\n",
+                items_needed = { "Dragoon's Testimony" },
+                onmob_enemy = { "Orcish Dragoon" },
+                onmob_enemy_colour = "red",
+                trigger_on_item_obtain = { "Dragoon's Testimony" },
+                zone_max_distance = 35,
+                visual_zones = {
+                    -- Survival Guide
+                    { zone_name = "Davoi", type = 'square', center = { x = 223.0, y = -0.2, z = -10.0 }, size = 1, floor_id = 0, colour = "green" },
+                    -- South-east toward the Monastic Cavern entrance (H-11)
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 215.7, y = -0.4, z = -12.6 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 218.5, y = 3.3, z = -67.1 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 237.6, y = 4.0, z = -93.1 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 220.0, y = 3.7, z = -131.4 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 240.0, y = 0.0, z = -179.2 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 279.4, y = 4.0, z = -192.3 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 277.4, y = 4.0, z = -242.7 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 275.0, y = 4.0, z = -288.3 }, size = 4, direction = "sw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 235.0, y = -0.2, z = -299.0 }, size = 4, direction = "sw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 216.7, y = -1.6, z = -306.1 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 205.0, y = -0.0, z = -259.8 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 162.7, y = 0.0, z = -259.2 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 111.1, y = -0.4, z = -265.6 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 76.0, y = -0.2, z = -259.0 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 50.4, y = -2.0, z = -266.4 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 67.6, y = -1.8, z = -297.1 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 57.0, y = 0.7, z = -341.1 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+
+                    -- Inside Monastic Cavern, back to I-8 to zone out into central Davoi
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 27.4, y = -13.6, z = -376.5 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = -15.1, y = -4.6, z = -381.5 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = -22.2, y = -0.3, z = -340.5 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 13.3, y = -2.2, z = -334.4 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 16.5, y = -1.6, z = -305.3 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 45.7, y = -0.2, z = -278.0 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 61.2, y = -0.2, z = -244.4 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 53.4, y = -0.1, z = -218.0 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 16.5, y = -0.5, z = -217.5 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = -20.4, y = -0.4, z = -214.2 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = -20.4, y = -0.3, z = -167.2 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = -20.3, y = -0.3, z = -137.2 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 22.4, y = -0.4, z = -141.9 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 34.2, y = -6.9, z = -181.1 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 74.2, y = -15.0, z = -179.9 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+
+                    -- Extra from prereq quest arrows if needed
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 177.1, y = -2.7, z = -117.3 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 179.8, y = 0.0, z = -161.8 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                },
+                images = {
+                    {
+                        width = 512,
+                        height = 512,
+                        state = 2,
+                        zone_name = "Davoi",
+                        floor_id = 0,
+                        highlights = {
+                            { position = "H-11", offsetX = 16, offsetY = 16, label = "1" },
+                            { position = "I-8", offsetX = 16, offsetY = 16, label = "T" },
+                        },
+                    },
+                    {
+                        width = 512,
+                        height = 512,
+                        state = 2,
+                        zone_name = "Monastic Cavern",
+                        floor_id = 0,
+                        highlights = {
+                            { position = "I-8", offsetX = 16, offsetY = 16, label = "1" },
+                        },
+                    },
+                },
+            },
+            {
+                text = "Step 3: Trade the Dragoon's Testimony to Maat in Ru'Lude Gardens (H-5).\n \n" ..
+                       "You cannot enter the battlefield the first time without doing this - he has to challenge\n" ..
+                       "you before the burning circle will let you in.\n \n" ..
+                       "- He then offers to warp you straight to the Chamber of Oracles. Say YES - this is by far\n" ..
+                       "  the longest walk of the five battlefields, so take the free ride.\n" ..
+                       "- Do your prep BEFORE you accept: once you confirm, you are in and the clock is running.\n \n" ..
+                       "NOTE: Only needed for your FIRST Maat fight. After your first win he stops offering the\n" ..
+                       "warp entirely and you go straight to the burning circle - tick this and move on.\n",
+                route_to = "Ru'Lude Gardens",
+                onmob_target = "Maat",
+                destination_highlight = { position = "H-5", offsetX = 16, offsetY = 16 },
+                trigger_on_event_id = { 64 },
+                skip_if_any_job_level = 71, -- cap already broken, so Maat no longer warps you
+            },
+            {
+                text = "Step 4: Beat Maat in the Chamber of Oracles as DRAGOON.\n \n" ..
+                       "TIP: Home Point #1 of Quicksand Caves warps you directly to the Chamber of Oracles\n" ..
+                       "WARNING: Sneak the whole way - Antica and Sabotenders aggro in the caves.\n \n" ..
+                       "===== Before you go in =====\n" ..
+                       "CRITICAL: Your SUB JOB is disabled inside. Take /BLM for the Warp out, or a Warp Ring.\n" ..
+                       "CRITICAL: The 10 minute clock starts when you ZONE IN, not when you engage - resting and\n" ..
+                       "buffing inside eats your timer. Bring food, meds and an Icarus Wing before you enter.\n \n" ..
+                       "===== The fight =====\n" ..
+                       "- Maat fights as DRAGOON with your job's abilities including Spirit Surge, but he always\n" ..
+                       "  swings Hand-to-Hand and uses H2H weapon skills.\n" ..
+                       "- Uncapped. He is NOT aggressive, so you get the first move.\n" ..
+                       "- He usually concedes before he actually dies, so do not panic at his HP bar.\n" ..
+                       "- If you have never beaten Maat on ANY job you lose NO experience on a loss. After your first win anywhere, later losses DO cost experience.\n" ..
+                       "- If you have Rhapsody in Umber, you can call Trusts once you are inside.\n \n",
+                destination_highlight = { position = "C-11", offsetX = 16, offsetY = 16 },
+                keyitems_needed = { 2051 },
+                onmob_target = "chamber-of-oracles-shimmering-circle",
+                zone_max_distance = 35,
+                kill_requirement = {
+                    count = 1,
+                    enemies = {"Maat"},
+                    display_only = true,
+                    reset_on_zone_entry = true,
+                },
+                onmob_enemy = "Maat",
+                onmob_enemy_size = 1,
+                visual_zones = {
+                    -- Western Altepa Desert down into Quicksand Caves
+                    { zone_name = "Western Altepa Desert", type = 'arrow', center = { x = -833.6, y = -8.8, z = -605.8 }, size = 4, direction = 'se', floor_id = 0, colour = "yellow" },
+                    { zone_name = "Western Altepa Desert", type = 'arrow', center = { x = -802, y = -19.1, z = -698.6 }, size = 4, direction = 'up', floor_id = 0, colour = "yellow" },
+                    { zone_name = "Western Altepa Desert", type = 'arrow', center = { x = -779.9, y = -16.6, z = -616.3 }, size = 4, direction = 'down', floor_id = 0, colour = "yellow" },
+                    { zone_name = "Western Altepa Desert", type = 'arrow', center = { x = -774, y = -8.4, z = -702.5 }, size = 4, direction = 'right', floor_id = 0, colour = "yellow" },
+
+                    -- Quicksand Caves
+                    { zone_name = "Quicksand Caves", type = 'square', center = { x = -780.0, y = 0.0, z = -459.5 }, size = 6, floor_id = 4, colour = "cyan" },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -780.1, y = -0.4, z = -453.5 }, size = 4, direction = "up", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -779.9, y = 0.0, z = -441.5 }, size = 4, direction = "up", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -781.5, y = 0.0, z = -420.0 }, size = 4, direction = "left", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -819.1, y = 0.0, z = -417.8 }, size = 4, direction = "up", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'square', center = { x = -819.8, y = 0.0, z = -379.6 }, size = 6, floor_id = 4, colour = "cyan" },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -826.0, y = 0.0, z = -379.8 }, size = 4, direction = "left", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -838.2, y = 0.0, z = -379.8 }, size = 4, direction = "left", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'rect', center = { x = -850.0, y = -2.3, z = -380.0 }, width = 4.00, height = 4.75, floor_id = 4, colour = "cyan", vertical_axis = 'z' },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -856.5, y = 0.0, z = -380.5 }, size = 4, direction = "left", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -886.4, y = 0.0, z = -381.3 }, size = 4, direction = "left", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'line', start = { x = -890.0, y = 0.0, z = -381.6 }, stop = { x = -895.6, y = 19.5, z = -382.6 }, floor_id = 4, colour = "yellow" },
+
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -898.7, y = 21.1, z = -386.9 }, size = 4, direction = "down", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -906.4, y = 17.2, z = -419.7 }, size = 4, direction = "left", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -940.3, y = 17.0, z = -405.1 }, size = 4, direction = "up", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -940.4, y = 17.2, z = -365.8 }, size = 4, direction = "up", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -938.8, y = 17.2, z = -327.5 }, size = 4, direction = "up", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -950.8, y = 16.9, z = -301.3 }, size = 4, direction = "left", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -980.2, y = 17.0, z = -289.0 }, size = 4, direction = "up", floor_id = 4, colour = "yellow" },
+                },
+                images = {
+                    {
+                        width = 512,
+                        height = 512,
+                        state = 4,
+                        zone_name = "Western Altepa Desert",
+                        floor_id = 0,
+                        highlights = {
+                            { position = "C-11", offsetX = 16, offsetY = 16},
+                        },
+                    },
+                    {
+                        width = 512,
+                        height = 512,
+                        state = 4,
+                        zone_name = "Quicksand Caves",
+                        floor_id = 4,
+                        highlights = {
+                            { position = "I-9", offsetX = 16, offsetY = 16, label = "1" },
+                            { position = "H-7", offsetX = 16, offsetY = 16, label = "2" },
+                            { position = "F-7", offsetX = 16, offsetY = 16, label = "3" },
+                            { position = "D-4", offsetX = 16, offsetY = 16, label = "4" },
+                        },
+                    },
+                },
+                trigger_on_event_id = { 32001 },
+            },
+            {
+                text = "Step 5: Return to Maat in Ru'Lude Gardens (H-5).\n \n" ..
+                       "On your FIRST win this conversation is required, for subsequent job fights skip this step manually.\n \n" ..
+                       "TIP: If you have not done The Road to Aht Urhgan, a surviving testimony can be traded to\n" ..
+                       "Faursel in Lower Jeuno for the Boarding Permit.\n",
+                route_to = "Ru'Lude Gardens",
+                onmob_target = "Maat",
+                destination_highlight = { position = "H-5", offsetX = 16, offsetY = 16 },
+                trigger_on_event_id = { 93 },
+                skip_if_any_job_level = 71, -- cap already broken, so event 93 is spent
+            },
+        },
+        reward = {
+            text = "Title: Star Breaker (first clear) and Maat Masher, Level Cap raised to 75!\n \n",
+        },
+    },
+
+    ["Genkai 5: Shattering Stars (Ranger)"] = {
+        progress_group = "Genkai 5: Shattering Stars",
+        job_id = 11, -- xi.job.RNG - marks this entry when you are on Ranger
+        prerequisites = {
+            {category = "Limit Breaks", subfile = "Genkai", name = "Genkai 4: Riding on the Clouds"},
+        },
+        requirements = {
+            level = 66,
+        },
+        steps = {
+            {
+                text = "Step 1: Speak to Maat in Ru'Lude Gardens (H-5) to start the quest.\n \n" ..
+                       "NOTE: Only needed for your FIRST Maat fight. If you have already beaten him on another\n" ..
+                       "job, tick this and go straight to the burning circle.\n",
+                route_to = "Ru'Lude Gardens",
+                onmob_target = "Maat",
+                destination_highlight = { position = "H-5", offsetX = 16, offsetY = 16 },
+                trigger_on_event_id = { 92 },
+                skip_if_any_job_level = 71, -- cap already broken, so event 92 is spent
+            },
+            {
+                text = "Step 2: Farm a Ranger's Testimony in Davoi.\n \n" ..
+                       "Target: Orcish Farkiller (Lv.64-68) - Look for the RED highlighted Orcs - there will be some on the way just kill any you see!\n \n" ..
+                       "WARNING: Orcs detect by SIGHT and bats by SOUND. Keep Invisible up while you move between\n" ..
+                       "pulls - at Lv.66 a Farkiller is a real fight, but a train of them is not.\n \n" ..
+                       "TIP: One testimony is good for THREE attempts at Maat. It only vanishes on the third trade to\n" ..
+                       "the burning circle, so a single drop covers two retries.\n",
+                items_needed = { "Ranger's Testimony" },
+                onmob_enemy = { "Orcish Farkiller" },
+                onmob_enemy_colour = "red",
+                trigger_on_item_obtain = { "Ranger's Testimony" },
+                zone_max_distance = 35,
+                visual_zones = {
+                    -- Survival Guide
+                    { zone_name = "Davoi", type = 'square', center = { x = 223.0, y = -0.2, z = -10.0 }, size = 1, floor_id = 0, colour = "green" },
+                    -- South-east toward the Monastic Cavern entrance (H-11)
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 215.7, y = -0.4, z = -12.6 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 218.5, y = 3.3, z = -67.1 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 237.6, y = 4.0, z = -93.1 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 220.0, y = 3.7, z = -131.4 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 240.0, y = 0.0, z = -179.2 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 279.4, y = 4.0, z = -192.3 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 277.4, y = 4.0, z = -242.7 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 275.0, y = 4.0, z = -288.3 }, size = 4, direction = "sw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 235.0, y = -0.2, z = -299.0 }, size = 4, direction = "sw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 216.7, y = -1.6, z = -306.1 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 205.0, y = -0.0, z = -259.8 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 162.7, y = 0.0, z = -259.2 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 111.1, y = -0.4, z = -265.6 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 76.0, y = -0.2, z = -259.0 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 50.4, y = -2.0, z = -266.4 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 67.6, y = -1.8, z = -297.1 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 57.0, y = 0.7, z = -341.1 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+
+                    -- Inside Monastic Cavern, back to I-8 to zone out into central Davoi
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 27.4, y = -13.6, z = -376.5 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = -15.1, y = -4.6, z = -381.5 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = -22.2, y = -0.3, z = -340.5 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 13.3, y = -2.2, z = -334.4 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 16.5, y = -1.6, z = -305.3 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 45.7, y = -0.2, z = -278.0 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 61.2, y = -0.2, z = -244.4 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 53.4, y = -0.1, z = -218.0 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 16.5, y = -0.5, z = -217.5 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = -20.4, y = -0.4, z = -214.2 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = -20.4, y = -0.3, z = -167.2 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = -20.3, y = -0.3, z = -137.2 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 22.4, y = -0.4, z = -141.9 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 34.2, y = -6.9, z = -181.1 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 74.2, y = -15.0, z = -179.9 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+
+                    -- Extra from prereq quest arrows if needed
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 177.1, y = -2.7, z = -117.3 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 179.8, y = 0.0, z = -161.8 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                },
+                images = {
+                    {
+                        width = 512,
+                        height = 512,
+                        state = 2,
+                        zone_name = "Davoi",
+                        floor_id = 0,
+                        highlights = {
+                            { position = "H-11", offsetX = 16, offsetY = 16, label = "1" },
+                            { position = "I-8", offsetX = 16, offsetY = 16, label = "T" },
+                        },
+                    },
+                    {
+                        width = 512,
+                        height = 512,
+                        state = 2,
+                        zone_name = "Monastic Cavern",
+                        floor_id = 0,
+                        highlights = {
+                            { position = "I-8", offsetX = 16, offsetY = 16, label = "1" },
+                        },
+                    },
+                },
+            },
+            {
+                text = "Step 3: Trade the Ranger's Testimony to Maat in Ru'Lude Gardens (H-5).\n \n" ..
+                       "You cannot enter the battlefield the first time without doing this - he has to challenge\n" ..
+                       "you before the burning circle will let you in.\n \n" ..
+                       "- He then offers to warp you straight to Horlais Peak. Say YES, it saves the walk.\n" ..
+                       "- Do your prep BEFORE you accept: once you confirm, you are in and the clock is running.\n \n" ..
+                       "NOTE: Only needed for your FIRST Maat fight. After your first win he stops offering the\n" ..
+                       "warp entirely and you go straight to the burning circle - tick this and move on.\n",
+                route_to = "Ru'Lude Gardens",
+                onmob_target = "Maat",
+                destination_highlight = { position = "H-5", offsetX = 16, offsetY = 16 },
+                trigger_on_event_id = { 64 },
+                skip_if_any_job_level = 71, -- cap already broken, so Maat no longer warps you
+            },
+            {
+                text = "Step 4: Beat Maat in Horlais Peak as RANGER.\n \n" ..
+                       "Trade the testimony at the Burning Circle and pick the \"Shattering Stars\" arena - or Home Point to Yughott Grotto #1.\n \n" ..
+                       "===== Before you go in =====\n" ..
+                       "CRITICAL: Your SUB JOB is disabled inside. Take /BLM for the Warp out, or a Warp Ring.\n" ..
+                       "CRITICAL: The 10 minute clock starts when you ZONE IN, not when you engage - resting and\n" ..
+                       "buffing inside eats your timer. Bring food, meds,blink band and an Icarus Wing.\n \n" ..
+                       "===== The fight =====\n" ..
+                       "- Maat fights as RANGER with your job's abilities including EAGLE EYE SHOT, but he always\n" ..
+                       "  swings Hand-to-Hand and uses H2H weapon skills.\n" ..
+                       "- Watch for Eagle Eye Shot - it is a single huge hit, so keep your HP out of one-shot range.\n" ..
+                       "- Uncapped. He is NOT aggressive, so you get the first move - open at max range.\n" ..
+                       "- He usually concedes before he actually dies, so do not panic at his HP bar.\n" ..
+                       "- If you have never beaten Maat on ANY job you lose NO experience on a loss. After your first win anywhere, later losses DO cost experience.\n" ..
+                       "- If you have Rhapsody in Umber, you can call Trusts once you are inside.\n \n",
+                zone_max_distance = 35,
+                onmob_target = "horlais-peak-burning-circle",
+                kill_requirement = {
+                    count = 1,
+                    enemies = {"Maat"},
+                    display_only = true,
+                    reset_on_zone_entry = true,
+                },
+                onmob_enemy = "Maat",
+                onmob_enemy_size = 1,
+                visual_zones = {
+                        --Ghelsba Outpost
+                        { zone_name = "Ghelsba Outpost", type = 'arrow', center = { x = 28.1, y = 0.1, z = 62.2 }, size = 4, direction = "sw", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Ghelsba Outpost", type = 'arrow', center = { x = -4.4, y = 0.0, z = 26.6 }, size = 4, direction = "se", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Ghelsba Outpost", type = 'arrow', center = { x = 19.9, y = 0.1, z = -4.8 }, size = 4, direction = "se", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Ghelsba Outpost", type = 'arrow', center = { x = 45.9, y = 0.0, z = -58.5 }, size = 4, direction = "left", floor_id = 1, colour = "yellow" },
+
+                        -- Yughott Grotto 1 to K-4
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = -225.1, y = -0.2, z = -91.6 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = -191.8, y = -1.0, z = -87.9 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = -141.4, y = -0.2, z = -60.4 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = -103.5, y = -0.0, z = -56.4 }, size = 4, direction = "ne", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = -92.0, y = -0.6, z = -38.2 }, size = 4, direction = "up", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = -78.9, y = 0.0, z = -9.7 }, size = 4, direction = "se", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = -21.5, y = -0.2, z = -25.1 }, size = 4, direction = "ne", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 18.8, y = -0.2, z = 2.0 }, size = 4, direction = "ne", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 56.4, y = -0.2, z = 32.4 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 137.1, y = -12.9, z = 61.9 }, size = 4, direction = "up", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 139.8, y = -12.4, z = 113.1 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 203.8, y = -12.0, z = 121.4 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 236.9, y = -12.2, z = 125.9 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 292.9, y = -23.7, z = 171.2 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 317.5, y = -24.2, z = 180.5 }, size = 4, direction = "up", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 329.4, y = -24.4, z = 215.5 }, size = 4, direction = "up", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 335.4, y = -24.1, z = 239.0 }, size = 4, direction = "up", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 322.3, y = -24.1, z = 251.7 }, size = 4, direction = "left", floor_id = 1, colour = "yellow" },
+
+                        -- Fort Ghelsba
+                        { zone_name = "Fort Ghelsba", type = 'arrow', center = { x = 207.9, y = -45.8, z = 100.5 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Fort Ghelsba", type = 'arrow', center = { x = 151.4, y = -44.0, z = 116.0 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Fort Ghelsba", type = 'arrow', center = { x = 93.8, y = -52.0, z = 116.8 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Fort Ghelsba", type = 'arrow', center = { x = 96.9, y = -59.8, z = 66.4 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Fort Ghelsba", type = 'arrow', center = { x = 101.0, y = -60.0, z = 1.5 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Fort Ghelsba", type = 'arrow', center = { x = 109.9, y = -63.6, z = -51.9 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Fort Ghelsba", type = 'arrow', center = { x = 146.6, y = -68.5, z = -62.1 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Fort Ghelsba", type = 'arrow', center = { x = 184.1, y = -75.7, z = -49.2 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Fort Ghelsba", type = 'arrow', center = { x = 177.5, y = -83.9, z = -3.6 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Fort Ghelsba", type = 'arrow', center = { x = 166.4, y = -84.6, z = 20.1 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Fort Ghelsba", type = 'arrow', center = { x = 176.7, y = -86.4, z = 20.6 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Fort Ghelsba", type = 'arrow', center = { x = 185.2, y = -86.4, z = 24.3 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Fort Ghelsba", type = 'arrow', center = { x = 198.8, y = -86.2, z = 19.8 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+
+                        --Yughott Grotto 2
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 283.4, y = -39.7, z = 148.5 }, size = 4, direction = "right", floor_id = 2, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 320.8, y = -40.3, z = 135.1 }, size = 4, direction = "sw", floor_id = 2, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 315.1, y = -40.1, z = 105.0 }, size = 4, direction = "ne", floor_id = 2, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 330.6, y = -42.1, z = 109.8 }, size = 4, direction = "right", floor_id = 2, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 374.5, y = -40.3, z = 105.9 }, size = 4, direction = "right", floor_id = 2, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 400.5, y = -40.2, z = 118.6 }, size = 4, direction = "up", floor_id = 2, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 405.5, y = -40.1, z = 148.4 }, size = 4, direction = "right", floor_id = 2, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 436.7, y = -40.1, z = 169.2 }, size = 4, direction = "right", floor_id = 2, colour = "yellow" },
+
+                        --Home point
+                        { zone_name = "Yughott Grotto", type = 'square', center = { x = 434.0, y = -40.0, z = 171.0 }, size = 1, floor_id = 2, colour = "green" },
+                },
+                images = {
+                      {
+                          width    = 512,
+                          height   = 512,
+                          state    = 4,
+                          zone_name = "Ghelsba Outpost",
+                          floor_id = 1,
+                          highlights = {
+                              { position = "H-11", offsetX = 16, offsetY = 16 },
+                          },
+                      },
+                      {
+                          width    = 512,
+                          height   = 512,
+                          state    = 4,
+                          zone_name = "Yughott Grotto",
+                          floor_id = 1,
+                          highlights = {
+                              { position = "K-5", offsetX = 16, offsetY = 16 },
+                          },
+                      },
+                      {
+                          width    = 512,
+                          height   = 512,
+                          state    = 4,
+                          zone_name = "Fort Ghelsba",
+                          highlights = {
+                              { position = "J-8", offsetX = 16, offsetY = 16 },
+                          },
+                      },
+                      {
+                          width    = 512,
+                          height   = 512,
+                          state    = 4,
+                          zone_name = "Yughott Grotto",
+                          floor_id = 2,
+                          highlights = {
+                              { position = "J-6", offsetX = 16, offsetY = 16 },
+                          },
+                      },
+                      {
+                          width    = 512,
+                          height   = 512,
+                          state    = 4,
+                          zone_name = "Horlais Peak",
+                          floor_id = 0,
+                      },
+                },
+                trigger_on_event_id = { 32001 },
+            },
+            {
+                text = "Step 5: Return to Maat in Ru'Lude Gardens (H-5).\n \n" ..
+                       "On your FIRST win this conversation is required, for subsequent job fights skip this step manually.\n \n" ..
+                       "TIP: If you have not done The Road to Aht Urhgan, a surviving testimony can be traded to\n" ..
+                       "Faursel in Lower Jeuno for the Boarding Permit.\n",
+                route_to = "Ru'Lude Gardens",
+                onmob_target = "Maat",
+                destination_highlight = { position = "H-5", offsetX = 16, offsetY = 16 },
+                trigger_on_event_id = { 93 },
+                skip_if_any_job_level = 71, -- cap already broken, so event 93 is spent
+            },
+        },
+        reward = {
+            text = "Title: Star Breaker (first clear) and Maat Masher, Level Cap raised to 75!\n \n",
+        },
+    },
+
+    ["Genkai 5: Shattering Stars (Red Mage)"] = {
+        progress_group = "Genkai 5: Shattering Stars",
+        job_id = 5, -- xi.job.RDM - marks this entry when you are on Red Mage
+        prerequisites = {
+            {category = "Limit Breaks", subfile = "Genkai", name = "Genkai 4: Riding on the Clouds"},
+        },
+        requirements = {
+            level = 66,
+        },
+        steps = {
+            {
+                text = "Step 1: Speak to Maat in Ru'Lude Gardens (H-5) to start the quest.\n \n" ..
+                       "NOTE: Only needed for your FIRST Maat fight. If you have already beaten him on another\n" ..
+                       "job, tick this and go straight to the burning circle.\n",
+                route_to = "Ru'Lude Gardens",
+                onmob_target = "Maat",
+                destination_highlight = { position = "H-5", offsetX = 16, offsetY = 16 },
+                trigger_on_event_id = { 92 },
+                skip_if_any_job_level = 71, -- cap already broken, so event 92 is spent
+            },
+            {
+                text = "Step 2: Farm a Red Mage's Testimony in Ro'Maeve.\n \n" ..
+                       "Target: Magic Flagon - Look for the RED highlighted mobs. They are around the whole zone, so\n" ..
+                       "there is no one camp - sweep around and take them as you find them. Some are hidden away in rooms.\n \n" ..
+                       "Enter Ro'Maeve from The Sanctuary of Zi'Tah at (F-5).\n \n" ..
+                       "CRITICAL: Everything in Ro'Maeve aggros to MAGIC and by SOUND. As Red Mage that is a\n" ..
+                       "problem - every cast is a dinner bell. Bring Silent Oils AND Prism Powders, or use\n" ..
+                       "Spectral Jig / Monomi: Ichi. Mounts work in Ro'Maeve and dodge aggro entirely.\n \n" ..
+                       "TIP: Use the Ro'Maeve Survival Guide for instant travel back here.\n \n" ..
+                       "TIP: One testimony is good for THREE attempts at Maat. It only vanishes on the third trade to\n" ..
+                       "the burning circle, so a single drop covers two retries.\n",
+                route_to = "Ro'Maeve",
+                items_needed = { "Red Mage's Testimony" },
+                onmob_enemy = { "Magic Flagon" },
+                onmob_enemy_colour = "red",
+                trigger_on_item_obtain = { "Red Mage's Testimony" },
+            },
+            {
+                text = "Step 3: Trade the Red Mage's Testimony to Maat in Ru'Lude Gardens (H-5).\n \n" ..
+                       "You cannot enter the battlefield the first time without doing this - he has to challenge\n" ..
+                       "you before the burning circle will let you in.\n \n" ..
+                       "- He then offers to warp you straight to Waughroon Shrine. Say YES, it saves the walk.\n" ..
+                       "- Do your prep BEFORE you accept: once you confirm, you are in and the clock is running.\n \n" ..
+                       "NOTE: Only needed for your FIRST Maat fight. After your first win he stops offering the\n" ..
+                       "warp entirely and you go straight to the burning circle - tick this and move on.\n",
+                route_to = "Ru'Lude Gardens",
+                onmob_target = "Maat",
+                destination_highlight = { position = "H-5", offsetX = 16, offsetY = 16 },
+                trigger_on_event_id = { 64 },
+                skip_if_any_job_level = 71, -- cap already broken, so Maat no longer warps you
+            },
+            {
+                text = "Step 4: Beat Maat in Waughroon Shrine as RED MAGE.\n \n" ..
+                       "TIP: Home Point to Palborough Mines #1 puts you right outside the BCNM.\n \n" ..
+                       "===== Before you go in =====\n" ..
+                       "CRITICAL: Your SUB JOB is disabled inside. Take /BLM for the Warp out, or a Warp Ring.\n" ..
+                       "CRITICAL: The 10 minute clock starts when you ZONE IN, not when you engage - resting and\n" ..
+                       "buffing inside eats your timer. Get your bar-spells and Phalanx up BEFORE you confirm.\n \n" ..
+                       "===== The fight =====\n" ..
+                       "- Maat fights as RED MAGE with your job's abilities including Chainspell, but he always\n" ..
+                       "  swings Hand-to-Hand and uses H2H weapon skills.\n" ..
+                       "- He often has blink up, try land a SLEEP, and start debuffing with SILENCE/DISPEL/PARALYZE/SLOW and Aero3 <-> SLEEP \n \n" ..
+                       "- WARNING: he buffs himself with magic even before you engage, so the longer you stand\n" ..
+                       "  there setting up, the more layered he gets. Red Mage especially should not dawdle.\n" ..
+                       "- Uncapped. He is NOT aggressive, so you get the first move.\n" ..
+                       "- He usually concedes before he actually dies, so do not panic at his HP bar.\n" ..
+                       "- If you have never beaten Maat on ANY job you lose NO experience on a loss. After your first win anywhere, later losses DO cost experience.\n" ..
+                       "- If you have Rhapsody in Umber, you can call Trusts once you are inside.\n \n",
+                route_to = "Palborough Mines 3",
+                destination_highlight = { position = "H-10", offsetX = 16, offsetY = 16 },
+                zone_max_distance = 35,
+                onmob_target = {"palborough-mines-elevator-lever-i8","waughroon-shrine-burning-circle"},
+                kill_requirement = {
+                    count = 1,
+                    enemies = {"Maat"},
+                    display_only = true,
+                    reset_on_zone_entry = true,
+                },
+                onmob_enemy = "Maat",
+                onmob_enemy_size = 1,
+                visual_zones = {
+                    --floor 1 to the elevator
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 59.0, y = 0.4, z = 66.5 }, size = 4, direction = "up", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 60.0, y = 0.2, z = 99.6 }, size = 4, direction = "left", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 19.2, y = 0.1, z = 118.3 }, size = 4, direction = "up", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 62.0, y = 0.9, z = 140.4 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 99.9, y = -0.1, z = 135.7 }, size = 4, direction = "down", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 100.5, y = -0.1, z = 87.2 }, size = 4, direction = "down", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 99.9, y = 0.2, z = 58.2 }, size = 4, direction = "down", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 99.9, y = -7.8, z = -2.0 }, size = 4, direction = "down", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 130.7, y = -8.0, z = -20.2 }, size = 4, direction = "ne", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 140.4, y = -9.5, z = 10.0 }, size = 4, direction = "ne", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 180.1, y = -14.5, z = 19.1 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 220.3, y = -9.3, z = 33.2 }, size = 4, direction = "up", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 206.9, y = -1.2, z = 59.4 }, size = 4, direction = "left", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 186.7, y = 0.3, z = 63.1 }, size = 4, direction = "left", floor_id = 1, colour = "yellow" },
+
+                    --floor 3
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 186.4, y = -32.0, z = 61.4 }, size = 4, direction = "right", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 219.7, y = -32.0, z = 64.9 }, size = 4, direction = "up", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 219.4, y = -32.0, z = 99.4 }, size = 4, direction = "up", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 216.7, y = -32.0, z = 140.3 }, size = 4, direction = "left", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 180.6, y = -32.0, z = 139.6 }, size = 4, direction = "left", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 139.9, y = -32.0, z = 139.8 }, size = 4, direction = "left", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 111.5, y = -32.0, z = 141.1 }, size = 4, direction = "nw", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 89.9, y = -32.1, z = 143.0 }, size = 4, direction = "sw", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 60.3, y = -32.1, z = 127.2 }, size = 4, direction = "down", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 59.5, y = -31.3, z = 96.7 }, size = 4, direction = "down", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 67.8, y = -31.6, z = 59.6 }, size = 4, direction = "right", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 99.4, y = -32.0, z = 59.1 }, size = 4, direction = "down", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 100.4, y = -31.7, z = 36.6 }, size = 4, direction = "down", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 99.8, y = -31.7, z = 3.2 }, size = 4, direction = "down", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 90.3, y = -32.0, z = -19.6 }, size = 4, direction = "left", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 60.3, y = -32.0, z = -30.7 }, size = 4, direction = "down", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 66.0, y = -32.0, z = -60.0 }, size = 4, direction = "right", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 99.8, y = -32.0, z = -62.3 }, size = 4, direction = "down", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 100.3, y = -32.2, z = -89.8 }, size = 4, direction = "down", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 101.0, y = -32.8, z = -124.5 }, size = 4, direction = "down", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 104.8, y = -38.4, z = -146.9 }, size = 4, direction = "ne", floor_id = 3, colour = "yellow" },
+
+                    --home point
+                    { zone_name = "Palborough Mines", type = 'square', center = { x = 109.0, y = -38.4, z = -147.0 }, size = 1, floor_id = 3, colour = "green" },
+                },
+                trigger_on_event_id = { 32001 },
+            },
+            {
+                text = "Step 5: Return to Maat in Ru'Lude Gardens (H-5).\n \n" ..
+                       "On your FIRST win this conversation is required, for subsequent job fights skip this step manually.\n \n" ..
+                       "TIP: If you have not done The Road to Aht Urhgan, a surviving testimony can be traded to\n" ..
+                       "Faursel in Lower Jeuno for the Boarding Permit.\n",
+                route_to = "Ru'Lude Gardens",
+                onmob_target = "Maat",
+                destination_highlight = { position = "H-5", offsetX = 16, offsetY = 16 },
+                trigger_on_event_id = { 93 },
+                skip_if_any_job_level = 71, -- cap already broken, so event 93 is spent
+            },
+        },
+        reward = {
+            text = "Title: Star Breaker (first clear) and Maat Masher, Level Cap raised to 75!\n \n",
+        },
+    },
+
+    ["Genkai 5: Shattering Stars (Dark Knight)"] = {
+        progress_group = "Genkai 5: Shattering Stars",
+        job_id = 8, -- xi.job.DRK - marks this entry when you are on Dark Knight
+        prerequisites = {
+            {category = "Limit Breaks", subfile = "Genkai", name = "Genkai 4: Riding on the Clouds"},
+        },
+        requirements = {
+            level = 66,
+        },
+        steps = {
+            {
+                text = "Step 1: Speak to Maat in Ru'Lude Gardens (H-5) to start the quest.\n \n" ..
+                       "NOTE: Only needed for your FIRST Maat fight. If you have already beaten him on another job, tick this and go straight to the burning circle.\n \n",
+                route_to = "Ru'Lude Gardens",
+                onmob_target = "Maat",
+                destination_highlight = { position = "H-5", offsetX = 16, offsetY = 16 },
+                trigger_on_event_id = { 92 },
+                skip_if_any_job_level = 71, -- cap already broken, so event 92 is spent
+            },
+            {
+                text = "Step 2: Farm a Dark Knight's Testimony in Gustav Tunnel.\n \n" ..
+                       "Target: Doom Soldier - Look for the RED highlighted mobs.\n \n" ..
+                       "Enter Gustav Tunnel from Valkurm Dunes at (B-8).\n \n" ..
+                       "WARNING: Doom Soldiers are undead - they do not sleep with Sleep, and they aggro by SOUND at night and to low HP. \n \n" ..
+                       "TIP: One testimony is good for THREE attempts at Maat. It only vanishes on the third trade to the burning circle, so a single drop covers two retries.\n",
+                items_needed = { "Dark Knight's Testimony" },
+                onmob_enemy = { "Doom Soldier" },
+                onmob_enemy_colour = "red",
+                trigger_on_item_obtain = { "Dark Knight's Testimony" },
+                zone_max_distance = 30,
+                visual_zones = {
+                    { zone_name = "Gustav Tunnel", type = 'square', center = { x = 296.0, y = -40.0, z = 64.0 }, size = 1, floor_id = 1, colour = "green" },
+                    { zone_name = "Gustav Tunnel", type = 'arrow', center = { x = 311.6, y = -39.9, z = 58.9 }, size = 3, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Gustav Tunnel", type = 'arrow', center = { x = 338.5, y = -30.0, z = 39.9 }, size = 3, direction = "down", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Gustav Tunnel", type = 'arrow', center = { x = 331.2, y = -30.1, z = 20.6 }, size = 3, direction = "left", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Gustav Tunnel", type = 'arrow', center = { x = 292.7, y = -23.3, z = 20.9 }, size = 3, direction = "left", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Gustav Tunnel", type = 'arrow', center = { x = 269.8, y = -20.6, z = 11.2 }, size = 3, direction = "sw", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Gustav Tunnel", type = 'arrow', center = { x = 248.9, y = -18.8, z = -18.2 }, size = 3, direction = "left", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Gustav Tunnel", type = 'arrow', center = { x = 201.6, y = -18.7, z = -21.2 }, size = 3, direction = "left", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Gustav Tunnel", type = 'arrow', center = { x = 171.7, y = -10.0, z = -28.3 }, size = 3, direction = "sw", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Gustav Tunnel", type = 'arrow', center = { x = 139.1, y = -10.0, z = -48.3 }, size = 3, direction = "left", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Gustav Tunnel", type = 'arrow', center = { x = 105.8, y = -10.8, z = -48.1 }, size = 3, direction = "sw", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Gustav Tunnel", type = 'arrow', center = { x = 79.5, y = -18.8, z = -62.6 }, size = 3, direction = "left", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Gustav Tunnel", type = 'arrow', center = { x = 43.6, y = -10.0, z = -68.4 }, size = 3, direction = "sw", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Gustav Tunnel", type = 'arrow', center = { x = 8.5, y = -10.8, z = -107.8 }, size = 3, direction = "sw", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Gustav Tunnel", type = 'arrow', center = { x = -22.4, y = -10.0, z = -138.7 }, size = 3, direction = "sw", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Gustav Tunnel", type = 'arrow', center = { x = -53.5, y = -9.2, z = -156.8 }, size = 3, direction = "up", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Gustav Tunnel", type = 'arrow', center = { x = -62.3, y = -9.8, z = -116.9 }, size = 3, direction = "up", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Gustav Tunnel", type = 'arrow', center = { x = -76.3, y = -9.9, z = -99.5 }, size = 3, direction = "left", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Gustav Tunnel", type = 'arrow', center = { x = -98.6, y = -0.1, z = -77.8 }, size = 3, direction = "up", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Gustav Tunnel", type = 'arrow', center = { x = -96.6, y = -0.7, z = -63.3 }, size = 3, direction = "right", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Gustav Tunnel", type = 'arrow', center = { x = -64.7, y = 1.0, z = -59.0 }, size = 3, direction = "up", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Gustav Tunnel", type = 'arrow', center = { x = -55.8, y = 1.1, z = -18.7 }, size = 3, direction = "right", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Gustav Tunnel", type = 'arrow', center = { x = -29.7, y = -0.5, z = -15.5 }, size = 3, direction = "ne", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Gustav Tunnel", type = 'arrow', center = { x = -20.7, y = -0.0, z = -1.1 }, size = 3, direction = "up", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Gustav Tunnel", type = 'arrow', center = { x = -21.1, y = -0.9, z = 19.5 }, size = 3, direction = "ne", floor_id = 2, colour = "yellow" },
+                },
+                images = {
+                    {
+                        width    = 512,
+                        height   = 512,
+                        state    = 2,
+                        highlights = {
+                            { position = "G-9", offsetX = 16, offsetY = 16 },
+                        },
+                        zone_name = "Gustav Tunnel",
+                        floor_id = 1,
+                    },
+                    {
+                        width    = 512,
+                        height   = 512,
+                        state    = 2,
+                        highlights = {
+                            { position = "G-6", offsetX = 16, offsetY = 16 },
+                        },
+                        zone_name = "Gustav Tunnel",
+                        floor_id = 2,
+                    },
+                },
+            },
+            {
+                text = "Step 3: Trade the Dark Knight's Testimony to Maat in Ru'Lude Gardens (H-5).\n \n" ..
+                       "You cannot enter the battlefield the first time without doing this - he has to challenge\n" ..
+                       "you before the burning circle will let you in.\n \n" ..
+                       "- He then offers to warp you straight to Qu'Bia Arena. Say YES, it saves a long trek.\n" ..
+                       "- Do your prep BEFORE you accept: once you confirm, you are in and the clock is running.\n \n" ..
+                       "NOTE: Only needed for your FIRST Maat fight. After your first win he stops offering the\n" ..
+                       "warp entirely and you go straight to the burning circle - tick this and move on.\n",
+                route_to = "Ru'Lude Gardens",
+                onmob_target = "Maat",
+                destination_highlight = { position = "H-5", offsetX = 16, offsetY = 16 },
+                trigger_on_event_id = { 64 },
+                skip_if_any_job_level = 71, -- cap already broken, so Maat no longer warps you
+            },
+            {
+                text = "Step 4: Beat Maat in Qu'Bia Arena as DARK KNIGHT.\n \n" ..
+                       "The Qu'Bia Arena entrance is at (K-8) in Fei'Yin - follow the arrows, then trade the\n" ..
+                       "testimony at the Burning Circle and pick the \"Shattering Stars\" arena.\n \n" ..
+                       "TIP: Home Point #1 inside Fei'Yin drops you right at the Qu'Bia Arena entrance.\n" ..
+                       "TIP: Domenic in Lower Jeuno (J-7) warps you to Qu'Bia Arena if you have done\n" ..
+                       "Beyond Infinity - you then just walk out.\n" ..
+                       "Otherwise: Beaucedine Glacier (J-4) into Fei'Yin, then across to (K-8).\n \n" ..
+                       "===== Before you go in =====\n" ..
+                       "CRITICAL: Your SUB JOB is disabled inside. Take /BLM for the Warp out, or a Warp Ring.\n" ..
+                       "CRITICAL: The 10 minute clock starts when you ZONE IN, not when you engage - resting and\n" ..
+                       "buffing inside eats your timer. Bring food, meds, an Icarus Wing, and an Opo-opo Necklace\n" ..
+                       "with Sleeping Potions to build TP before you enter.\n \n" ..
+                       "===== The fight =====\n" ..
+                       "- Maat fights as DARK KNIGHT with your job's abilities including Blood Weapon, but he\n" ..
+                       "  always swings Hand-to-Hand and uses H2H weapon skills.\n" ..
+                       "- Uncapped. He is NOT aggressive, so you get the first move.\n" ..
+                       "- He usually concedes before he actually dies, so do not panic at his HP bar.\n" ..
+                       "- If you have never beaten Maat on ANY job you lose NO experience on a loss. After your first win anywhere, later losses DO cost experience.\n" ..
+                       "- If you have Rhapsody in Umber, you can call Trusts once you are inside.\n \n",
+                route_to = "Fei'Yin 1",
+                destination_highlight = { position = "K-8", offsetX = 16, offsetY = 16 },
+                zone_max_distance = 35,
+                onmob_target = "qu-bia-arena-burning-circle",
+                kill_requirement = {
+                    count = 1,
+                    enemies = {"Maat"},
+                    display_only = true,
+                    reset_on_zone_entry = true,
+                },
+                onmob_enemy = "Maat",
+                onmob_enemy_size = 1,
+                visual_zones = {
+                    -- Rang pass arrows
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -206.7, y = -39.9, z = -197.0 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -165.0, y = -40.0, z = -204.5 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -118.9, y = -39.8, z = -219.1 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    -- Route to Fei'Yin in Beaucedine Glacier from Xarca good to help players navigate complicated map.
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -136.4, y = -79.8, z = 220.3 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -119.9, y = -79.5, z = 173.5 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -101.2, y = -80.0, z = 133.0 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -96.4, y = -76.2, z = 102.4 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -32.0, y = -63.2, z = 101.1 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 0.5, y = -59.1, z = 98.9 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 2.6, y = -59.0, z = 60.4 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 3.0, y = -59.6, z = 12.0 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 5.7, y = -59.7, z = -27.1 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 2.7, y = -59.1, z = -58.4 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -5.6, y = -59.9, z = -81.7 }, size = 4, direction = "sw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -29.7, y = -59.7, z = -105.7 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+
+                    --Survival guide
+                    { zone_name = "Beaucedine Glacier", type = 'square', center = { x = -28.0, y = -59.8, z = -125.0 }, size = 1, floor_id = 0, colour = "green" },
+
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -63.1, y = -58.2, z = -95.7 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -63.6, y = -47.5, z = -142.3 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -58.7, y = -39.6, z = -189.8 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -27.6, y = -39.7, z = -205.2 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 10.6, y = -40.1, z = -193.4 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 23.3, y = -40.1, z = -151.9 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 54.1, y = -40.9, z = -128.8 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 85.5, y = -40.0, z = -101.0 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 120.5, y = -40.0, z = -87.2 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 141.8, y = -40.4, z = -50.1 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 133.9, y = -40.5, z = -4.9 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 93.1, y = -39.5, z = 0.7 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 61.2, y = -39.2, z = 5.3 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 64.2, y = -36.0, z = 20.7 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 126.2, y = -23.1, z = 20.1 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 153.0, y = -19.3, z = 20.2 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 175.3, y = -19.9, z = 17.5 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 170.4, y = -20.4, z = -30.7 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 167.1, y = -19.8, z = -83.4 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 158.6, y = -19.9, z = -114.9 }, size = 4, direction = "sw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 128.2, y = -19.7, z = -142.5 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 80.9, y = -19.6, z = -148.7 }, size = 4, direction = "sw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 59.2, y = -17.4, z = -182.7 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 121.1, y = -3.7, z = -180.8 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 186.5, y = 0.4, z = -193.7 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+
+                    --Intersection
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 229.4, y = 0.3, z = -198.3 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 269.5, y = 0.3, z = -200.8 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 317.1, y = 0.0, z = -196.8 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 323.4, y = 0.8, z = -136.6 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 313.5, y = 0.2, z = -88.5 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 300.7, y = 0.6, z = -27.6 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 299.3, y = 0.1, z = 21.2 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 292.0, y = 0.4, z = 57.7 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 237.4, y = 0.2, z = 88.7 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 194.3, y = 0.1, z = 115.2 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 181.1, y = 0.1, z = 144.2 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 195.4, y = 0.0, z = 180.4 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 237.2, y = 0.0, z = 196.2 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 282.7, y = 0.9, z = 217.7 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 335.7, y = -0.2, z = 226.0 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 357.0, y = 0.0, z = 277.8 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 382.8, y = 1.9, z = 296.3 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 380.4, y = 16.4, z = 361.3 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 379.2, y = 21.0, z = 403.6 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 370.2, y = 20.1, z = 429.0 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 357.5, y = 20.0, z = 475.5 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 324.6, y = 20.5, z = 506.7 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 296.7, y = 20.7, z = 524.6 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 280.7, y = 20.0, z = 535.0 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+
+                    -- Fei'Yin across to the Qu'Bia Arena entrance at (K-8)
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = -176.1, y = -24.0, z = -171.4 }, size = 4, direction = "ne", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = -152.5, y = -24.0, z = -148.2 }, size = 4, direction = "ne", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = -133.5, y = -24.0, z = -140.4 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = -100.2, y = -19.0, z = -133.3 }, size = 4, direction = "up", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = -97.7, y = -16.0, z = -96.0 }, size = 4, direction = "ne", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = -74.6, y = -16.0, z = -69.5 }, size = 4, direction = "ne", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = -60.4, y = -16.0, z = -61.0 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = -20.7, y = -16.0, z = -61.7 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = 32.3, y = -16.0, z = -54.0 }, size = 4, direction = "up", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = 27.8, y = -16.0, z = -21.6 }, size = 4, direction = "left", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = -20.3, y = -16.0, z = -16.8 }, size = 4, direction = "up", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = -16.7, y = -16.0, z = 22.6 }, size = 4, direction = "ne", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = 13.8, y = -16.0, z = 49.1 }, size = 4, direction = "ne", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = 24.9, y = -16.0, z = 58.9 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = 63.1, y = -16.6, z = 59.1 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = 99.6, y = -24.0, z = 56.4 }, size = 4, direction = "se", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = 124.8, y = -24.0, z = 28.4 }, size = 4, direction = "se", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = 162.6, y = -23.7, z = 7.4 }, size = 4, direction = "ne", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = 182.3, y = -24.0, z = 19.8 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = 209.5, y = -24.0, z = 23.7 }, size = 4, direction = "ne", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = 221.8, y = -24.0, z = 37.2 }, size = 4, direction = "up", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = 218.2, y = -24.0, z = 60.0 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'rect', center = { x = 231.5, y = -29.6, z = 60.0 }, width = 4.75, height = 10.75, floor_id = 1, colour = "cyan", vertical_axis = 'z' },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = 237.3, y = -24.3, z = 59.5 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                },
+                trigger_on_event_id = { 32001 },
+            },
+            {
+                text = "Step 5: Return to Maat in Ru'Lude Gardens (H-5).\n \n" ..
+                       "On your FIRST win this conversation is required, for subsequent job fights skip this step manually.\n \n" ..
+                       "TIP: If you have not done The Road to Aht Urhgan, a surviving testimony can be traded to\n" ..
+                       "Faursel in Lower Jeuno for the Boarding Permit.\n",
+                route_to = "Ru'Lude Gardens",
+                onmob_target = "Maat",
+                destination_highlight = { position = "H-5", offsetX = 16, offsetY = 16 },
+                trigger_on_event_id = { 93 },
+                skip_if_any_job_level = 71, -- cap already broken, so event 93 is spent
+            },
+        },
+        reward = {
+            text = "Title: Star Breaker (first clear) and Maat Masher, Level Cap raised to 75!\n \n",
+        },
+    },
+
+    ["Genkai 5: Shattering Stars (Summoner)"] = {
+        progress_group = "Genkai 5: Shattering Stars",
+        job_id = 15, -- xi.job.SMN - marks this entry when you are on Summoner
+        prerequisites = {
+            {category = "Limit Breaks", subfile = "Genkai", name = "Genkai 4: Riding on the Clouds"},
+        },
+        requirements = {
+            level = 66,
+        },
+        steps = {
+            {
+                text = "Step 1: Speak to Maat in Ru'Lude Gardens (H-5) to start the quest.\n \n" ..
+                       "NOTE: Only needed for your FIRST Maat fight. If you have already beaten him on another\n" ..
+                       "job, tick this and go straight to the burning circle.\n",
+                route_to = "Ru'Lude Gardens",
+                onmob_target = "Maat",
+                destination_highlight = { position = "H-5", offsetX = 16, offsetY = 16 },
+                trigger_on_event_id = { 92 },
+                skip_if_any_job_level = 71, -- cap already broken, so event 92 is spent
+            },
+            {
+                text = "Step 2: Farm a Summoner's Testimony in the Temple of Uggalepih.\n \n" ..
+                       "Kill Tonberry Cutter for a Uggalepih Key to open the door into the higher level monsters. \n \n" ..
+                       "Tonberry Dismayer (Lv.61-67) drops the Testimony for Summoner.\n \n" ..
+                       "===== Getting there =====\n" ..
+                       "Fastest: Survival Guide to Temple of Uggalepih, or Teleport-Yhoat / outpost to Yhoator\n" ..
+                       "Kazham into the Jungle, then the main temple entrance at (J-12). Follow the arrows.\n \n" ..
+                       "WARNING: Lv.72+ is safe from aggro on Map 1. Mobs past the Granite Doors on Map 2 aggro\n" ..
+                       "even a Lv.99, so at Lv.66 take Map 1 carefully and bring Sneak/Invisible.\n \n" ..
+                       "TIP: One testimony is good for THREE attempts at Maat. It only vanishes on the third trade to\n" ..
+                       "the burning circle, so a single drop covers two retries.\n",
+                route_to = "Temple of Uggalepih",
+                items_needed = { "Summoner's Testimony", "Uggalepih Key" },
+                onmob_enemy = { "Tonberry Dismayer", "Tonberry Cutter" },
+                onmob_enemy_colour = "red",
+                trigger_on_item_obtain = { "Summoner's Testimony" },
+                zone_max_distance = 35,
+                visual_zones = {
+                    -- Yuhtunga Jungle, if walking up from Kazham
+                    { zone_name = "Yuhtunga Jungle", type = 'arrow', center = { x = -234.1, y = 0.4, z = 490.4 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yuhtunga Jungle", type = 'arrow', center = { x = -207.7, y = 0.3, z = 451.6 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yuhtunga Jungle", type = 'arrow', center = { x = -206.1, y = 0.4, z = 407.7 }, size = 4, direction = "sw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yuhtunga Jungle", type = 'arrow', center = { x = -221.1, y = 0.4, z = 370.7 }, size = 4, direction = "sw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yuhtunga Jungle", type = 'arrow', center = { x = -247.3, y = 0.0, z = 317.7 }, size = 4, direction = "sw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yuhtunga Jungle", type = 'arrow', center = { x = -262.0, y = 9.2, z = 268.2 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yuhtunga Jungle", type = 'arrow', center = { x = -271.6, y = 7.6, z = 219.9 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yuhtunga Jungle", type = 'arrow', center = { x = -301.9, y = 0.3, z = 201.8 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yuhtunga Jungle", type = 'arrow', center = { x = -302.6, y = 0.2, z = 163.4 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yuhtunga Jungle", type = 'arrow', center = { x = -272.6, y = 7.9, z = 140.0 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yuhtunga Jungle", type = 'arrow', center = { x = -259.5, y = 8.3, z = 81.9 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yuhtunga Jungle", type = 'arrow', center = { x = -259.5, y = 4.6, z = 61.2 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yuhtunga Jungle", type = 'arrow', center = { x = -221.6, y = 0.5, z = 73.3 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yuhtunga Jungle", type = 'arrow', center = { x = -205.8, y = 8.2, z = 98.9 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yuhtunga Jungle", type = 'arrow', center = { x = -178.2, y = 8.4, z = 123.3 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yuhtunga Jungle", type = 'arrow', center = { x = -162.7, y = 0.0, z = 194.2 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yuhtunga Jungle", type = 'arrow', center = { x = -116.6, y = 0.0, z = 192.4 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yuhtunga Jungle", type = 'arrow', center = { x = -61.5, y = 8.1, z = 164.7 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yuhtunga Jungle", type = 'arrow', center = { x = -61.1, y = 8.3, z = 118.6 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yuhtunga Jungle", type = 'arrow', center = { x = -33.4, y = 7.2, z = 99.4 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yuhtunga Jungle", type = 'arrow', center = { x = -19.5, y = 4.0, z = 95.6 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yuhtunga Jungle", type = 'arrow', center = { x = -1.9, y = 8.3, z = 60.7 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yuhtunga Jungle", type = 'arrow', center = { x = 40.6, y = 8.3, z = 18.4 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yuhtunga Jungle", type = 'arrow', center = { x = 109.2, y = 8.2, z = 21.4 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+
+                    -- Yhoator Jungle to the Temple of Uggalepih entrance
+                    { zone_name = "Yhoator Jungle", type = 'arrow', center = { x = -476.0, y = 8.4, z = 58.3 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yhoator Jungle", type = 'arrow', center = { x = -431.9, y = 8.7, z = 58.1 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yhoator Jungle", type = 'arrow', center = { x = -401.8, y = 8.3, z = 61.4 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yhoator Jungle", type = 'arrow', center = { x = -373.8, y = 3.1, z = 59.7 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yhoator Jungle", type = 'arrow', center = { x = -370.6, y = 1.3, z = 19.7 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yhoator Jungle", type = 'arrow', center = { x = -337.4, y = 4.4, z = 19.5 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yhoator Jungle", type = 'arrow', center = { x = -294.2, y = 1.3, z = 59.9 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yhoator Jungle", type = 'arrow', center = { x = -260.4, y = 4.7, z = 58.1 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yhoator Jungle", type = 'arrow', center = { x = -250.0, y = 7.5, z = 20.7 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yhoator Jungle", type = 'arrow', center = { x = -219.6, y = 4.3, z = 18.4 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yhoator Jungle", type = 'arrow', center = { x = -212.2, y = 7.1, z = -22.3 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yhoator Jungle", type = 'arrow', center = { x = -165.8, y = 8.5, z = -19.4 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yhoator Jungle", type = 'arrow', center = { x = -142.2, y = 0.4, z = 8.5 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yhoator Jungle", type = 'arrow', center = { x = -123.0, y = 0.1, z = 24.5 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yhoator Jungle", type = 'arrow', center = { x = -96.1, y = 0.0, z = 29.9 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yhoator Jungle", type = 'arrow', center = { x = -69.5, y = 1.0, z = 19.2 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yhoator Jungle", type = 'arrow', center = { x = -59.8, y = 0.4, z = -4.9 }, size = 4, direction = "sw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yhoator Jungle", type = 'arrow', center = { x = -45.9, y = 8.2, z = -20.0 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yhoator Jungle", type = 'arrow', center = { x = -12.9, y = 0.7, z = -29.2 }, size = 4, direction = "sw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yhoator Jungle", type = 'arrow', center = { x = -22.6, y = 2.0, z = -63.2 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yhoator Jungle", type = 'arrow', center = { x = -21.0, y = 8.5, z = -103.3 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yhoator Jungle", type = 'arrow', center = { x = -20.9, y = 0.4, z = -152.8 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yhoator Jungle", type = 'arrow', center = { x = -16.6, y = 6.0, z = -182.6 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yhoator Jungle", type = 'arrow', center = { x = 19.4, y = 8.3, z = -200.0 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yhoator Jungle", type = 'arrow', center = { x = 20.8, y = 8.1, z = -230.0 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yhoator Jungle", type = 'arrow', center = { x = 2.9, y = 8.3, z = -258.7 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yhoator Jungle", type = 'arrow', center = { x = -38.5, y = 0.0, z = -275.0 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yhoator Jungle", type = 'arrow', center = { x = -35.5, y = 0.3, z = -326.9 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yhoator Jungle", type = 'arrow', center = { x = -32.6, y = 0.3, z = -360.8 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yhoator Jungle", type = 'arrow', center = { x = -3.3, y = 0.6, z = -384.7 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yhoator Jungle", type = 'arrow', center = { x = 45.6, y = 0.3, z = -391.0 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yhoator Jungle", type = 'arrow', center = { x = 94.9, y = 0.6, z = -400.8 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yhoator Jungle", type = 'arrow', center = { x = 125.1, y = 0.1, z = -408.6 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yhoator Jungle", type = 'arrow', center = { x = 155.3, y = 8.2, z = -419.9 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yhoator Jungle", type = 'arrow', center = { x = 179.3, y = 7.8, z = -433.5 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yhoator Jungle", type = 'arrow', center = { x = 196.1, y = 0.0, z = -476.5 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yhoator Jungle", type = 'arrow', center = { x = 232.1, y = 0.4, z = -498.0 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yhoator Jungle", type = 'arrow', center = { x = 272.5, y = -0.0, z = -487.7 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yhoator Jungle", type = 'arrow', center = { x = 298.1, y = -0.2, z = -486.8 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yhoator Jungle", type = 'arrow', center = { x = 299.5, y = -4.0, z = -540.8 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yhoator Jungle", type = 'arrow', center = { x = 310.5, y = -4.0, z = -571.7 }, size = 4, direction = "sw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yhoator Jungle", type = 'arrow', center = { x = 300.0, y = -4.0, z = -586.4 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yhoator Jungle", type = 'arrow', center = { x = 299.5, y = -4.0, z = -614.6 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+
+                    -- Inside Temple Map 1, follow the right wall back out to the jungle at (F-5)
+                    { zone_name = "Temple of Uggalepih", type = 'arrow', center = { x = 197.9, y = 0.0, z = 20.4 }, size = 3, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Temple of Uggalepih", type = 'arrow', center = { x = 220.0, y = -0.1, z = 20.3 }, size = 3, direction = "down", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Temple of Uggalepih", type = 'arrow', center = { x = 220.0, y = 0.0, z = 1.3 }, size = 3, direction = "down", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Temple of Uggalepih", type = 'arrow', center = { x = 219.7, y = -0.0, z = -22.3 }, size = 3, direction = "left", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Temple of Uggalepih", type = 'arrow', center = { x = 180.1, y = 0.0, z = -21.9 }, size = 3, direction = "down", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Temple of Uggalepih", type = 'arrow', center = { x = 177.5, y = 0.0, z = -64.4 }, size = 3, direction = "left", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Temple of Uggalepih", type = 'arrow', center = { x = 139.7, y = -0.0, z = -63.4 }, size = 3, direction = "up", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Temple of Uggalepih", type = 'arrow', center = { x = 139.6, y = 0.0, z = -29.5 }, size = 3, direction = "up", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Temple of Uggalepih", type = 'arrow', center = { x = 139.8, y = 0.0, z = -8.7 }, size = 3, direction = "up", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Temple of Uggalepih", type = 'arrow', center = { x = 139.5, y = 0.0, z = 20.3 }, size = 3, direction = "left", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Temple of Uggalepih", type = 'arrow', center = { x = 98.6, y = -0.1, z = 20.8 }, size = 3, direction = "up", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Temple of Uggalepih", type = 'arrow', center = { x = 97.3, y = -4.8, z = 60.4 }, size = 3, direction = "left", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Temple of Uggalepih", type = 'arrow', center = { x = 76.8, y = -8.0, z = 60.1 }, size = 3, direction = "left", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Temple of Uggalepih", type = 'arrow', center = { x = 60.7, y = -7.9, z = 61.4 }, size = 3, direction = "up", floor_id = 1, colour = "yellow" },
+
+                    -- Back into the Temple (Map 2) from the jungle - do NOT take the stairs down at (F-5)
+                    { zone_name = "Yhoator Jungle", type = 'arrow', center = { x = 65.6, y = -10.0, z = -488.5 }, size = 3, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yhoator Jungle", type = 'arrow', center = { x = 31.8, y = -10.0, z = -488.5 }, size = 3, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yhoator Jungle", type = 'arrow', center = { x = 32.5, y = -10.0, z = -454.3 }, size = 3, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yhoator Jungle", type = 'arrow', center = { x = 7.7, y = -10.0, z = -453.8 }, size = 3, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yhoator Jungle", type = 'arrow', center = { x = 7.8, y = -10.0, z = -480.2 }, size = 3, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yhoator Jungle", type = 'arrow', center = { x = 7.8, y = -10.0, z = -500.6 }, size = 3, direction = "down", floor_id = 0, colour = "yellow" },
+
+                    -- Ugg key and Summon Monsters in this room
+                    { zone_name = "Temple of Uggalepih", type = 'arrow', center = { x = -60.7, y = -8.2, z = 79.7 }, size = 3, direction = "down", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Temple of Uggalepih", type = 'arrow', center = { x = -61.3, y = -8.1, z = 60.3 }, size = 3, direction = "left", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Temple of Uggalepih", type = 'arrow', center = { x = -100.4, y = -4.0, z = 60.0 }, size = 3, direction = "down", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Temple of Uggalepih", type = 'arrow', center = { x = -99.7, y = 0.0, z = 41.7 }, size = 3, direction = "down", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Temple of Uggalepih", type = 'rect', center = { x = -100.0, y = -1.9, z = 40.0 }, width = 6.50, height = 3.75, floor_id = 2, colour = "cyan", vertical_axis = 'ns' },
+                    { zone_name = "Temple of Uggalepih", type = 'arrow', center = { x = -100.2, y = 0.0, z = 31.6 }, size = 3, direction = "down", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Temple of Uggalepih", type = 'arrow', center = { x = -100.6, y = -0.1, z = 20.4 }, size = 3, direction = "left", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Temple of Uggalepih", type = 'arrow', center = { x = -130.1, y = 0.0, z = 20.3 }, size = 3, direction = "left", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Temple of Uggalepih", type = 'arrow', center = { x = -149.8, y = 0.0, z = 20.3 }, size = 3, direction = "left", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Temple of Uggalepih", type = 'arrow', center = { x = -180.2, y = -0.1, z = 19.4 }, size = 3, direction = "down", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Temple of Uggalepih", type = 'arrow', center = { x = -181.3, y = -0.1, z = -19.6 }, size = 3, direction = "left", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Temple of Uggalepih", type = 'arrow', center = { x = -205.0, y = -0.0, z = -20.0 }, size = 3, direction = "left", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Temple of Uggalepih", type = 'rect', center = { x = -208.0, y = -1.9, z = -20.0 }, width = 3.75, height = 4.00, floor_id = 2, colour = "cyan", vertical_axis = 'z' },
+
+                    -- 2nd door in E-8
+                    { zone_name = "Temple of Uggalepih", type = 'arrow', center = { x = -210.2, y = -0.2, z = -18.2 }, size = 3, direction = "nw", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Temple of Uggalepih", type = 'arrow', center = { x = -220.0, y = -0.2, z = -10.9 }, size = 3, direction = "up", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Temple of Uggalepih", type = 'rect', center = { x = -220.0, y = -1.9, z = -8.0 }, width = 3.50, height = 3.75, floor_id = 2, colour = "cyan", vertical_axis = 'ns' },
+                },
+                images = {
+                    {
+                        width = 512,
+                        height = 512,
+                        state = 2,
+                        zone_name = "Yhoator Jungle",
+                        highlights = {
+                            { position = "H-11", offsetX = 16, offsetY = 16 },
+                        },
+                    },
+                    {
+                        width = 512,
+                        height = 512,
+                        state = 2,
+                        zone_name = "Temple of Uggalepih",
+                        floor_id = 1,
+                        highlights = {
+                            { position = "E-7", offsetX = 16, offsetY = 16 },
+                        },
+                    },
+                    {
+                        width = 512,
+                        height = 512,
+                        state = 2,
+                        zone_name = "Temple of Uggalepih",
+                        floor_id = 2,
+                        highlights = {
+                            { position = "F-5", offsetX = 16, offsetY = 16 },
+                        },
+                    },
+                },
+            },
+            {
+                text = "Step 3: Trade the Summoner's Testimony to Maat in Ru'Lude Gardens (H-5).\n \n" ..
+                       "You cannot enter the battlefield the first time without doing this - he has to challenge\n" ..
+                       "you before the burning circle will let you in.\n \n" ..
+                       "- He then offers to warp you straight to Balga's Dais. Say YES, it saves the walk.\n" ..
+                       "- Do your prep BEFORE you accept: once you confirm, you are in and the clock is running.\n \n" ..
+                       "NOTE: Only needed for your FIRST Maat fight. After your first win he stops offering the\n" ..
+                       "warp entirely and you go straight to the burning circle - tick this and move on.\n",
+                route_to = "Ru'Lude Gardens",
+                onmob_target = "Maat",
+                destination_highlight = { position = "H-5", offsetX = 16, offsetY = 16 },
+                trigger_on_event_id = { 64 },
+                skip_if_any_job_level = 71, -- cap already broken, so Maat no longer warps you
+            },
+            {
+                text = "Step 4: Beat Maat in Balga's Dais as SUMMONER.\n \n" ..
+                       "Same burning circle as White Mage and Monk. Head into Giddeus and follow the arrows to the\n" ..
+                       "Burning Circle at (F-12), then pick the \"Shattering Stars\" arena.\n \n" ..
+                       "TIP: Home Point to Giddeus #1 (G-12) puts you right outside Balga's Dais.\n \n" ..
+                       "===== Before you go in =====\n" ..
+                       "CRITICAL: Your SUB JOB is disabled inside. Take /BLM for the Warp out, or a Warp Ring.\n" ..
+                       "CRITICAL: The 10 minute clock starts when you ZONE IN, not when you engage - summoning and\n" ..
+                       "buffing inside eats your timer.\n" ..
+                       "CRITICAL: Bring plenty of MP. With no sub job you have no Convert and no Chainspell, so\n" ..
+                       "Ethers/Yagudo Drinks are the difference between a win and running dry.\n \n" ..
+                       "===== The fight =====\n" ..
+                       "- Maat fights as SUMMONER with your job's abilities including Astral Flow, but he always\n" ..
+                       "  swings Hand-to-Hand and uses H2H weapon skills.\n" ..
+                       "- Uncapped. He is NOT aggressive, so you get the first move - get your avatar out first.\n" ..
+                       "- He usually concedes before he actually dies, so do not panic at his HP bar.\n" ..
+                       "- If you have never beaten Maat on ANY job you lose NO experience on a loss. After your first win anywhere, later losses DO cost experience.\n" ..
+                       "- If you have Rhapsody in Umber, you can call Trusts once you are inside.\n \n",
+                zone_max_distance = 35,
+                onmob_target = "balga-dais-burning-circle",
+                kill_requirement = {
+                    count = 1,
+                    enemies = {"Maat"},
+                    display_only = true,
+                    reset_on_zone_entry = true,
+                },
+                onmob_enemy = "Maat",
+                onmob_enemy_size = 1,
+                visual_zones = {
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -100.7, y = -0.3, z = 404.4 }, size = 4, direction = "down", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -101.4, y = -0.2, z = 382.8 }, size = 4, direction = "left", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -140.1, y = 0.4, z = 376.9 }, size = 4, direction = "down", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -136.4, y = 3.9, z = 341.4 }, size = 4, direction = "sw", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -159.8, y = 4.0, z = 319.3 }, size = 4, direction = "sw", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -182.6, y = 4.0, z = 298.7 }, size = 4, direction = "down", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -180.8, y = -0.1, z = 274.4 }, size = 4, direction = "down", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -172.4, y = 0.0, z = 259.0 }, size = 4, direction = "right", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -140.2, y = -0.5, z = 256.1 }, size = 4, direction = "down", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -139.9, y = -4.0, z = 200.3 }, size = 4, direction = "down", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -138.6, y = -0.2, z = 154.5 }, size = 4, direction = "down", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -137.4, y = -0.8, z = 100.7 }, size = 4, direction = "right", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -100.0, y = -0.7, z = 94.4 }, size = 4, direction = "down", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -99.6, y = -1.2, z = 71.6 }, size = 4, direction = "sw", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -108.8, y = -2.7, z = 60.2 }, size = 4, direction = "left", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -138.3, y = -0.9, z = 51.4 }, size = 4, direction = "down", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -140.7, y = -1.2, z = -1.9 }, size = 4, direction = "down", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -138.4, y = -1.2, z = -44.0 }, size = 4, direction = "down", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -133.4, y = 1.1, z = -65.2 }, size = 4, direction = "se", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -112.6, y = 1.0, z = -80.1 }, size = 4, direction = "down", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -112.3, y = 0.9, z = -105.7 }, size = 4, direction = "se", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -86.0, y = 1.0, z = -134.6 }, size = 4, direction = "down", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -77.5, y = 1.0, z = -160.9 }, size = 4, direction = "se", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -57.6, y = -0.2, z = -186.9 }, size = 4, direction = "down", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -66.8, y = -2.8, z = -220.1 }, size = 4, direction = "left", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -108.4, y = 0.6, z = -222.8 }, size = 4, direction = "sw", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -121.9, y = 1.0, z = -241.0 }, size = 4, direction = "se", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -99.1, y = -0.9, z = -258.0 }, size = 4, direction = "se", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -98.2, y = -3.1, z = -278.0 }, size = 4, direction = "down", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -113.6, y = -3.4, z = -300.6 }, size = 4, direction = "left", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -130.7, y = -2.5, z = -299.5 }, size = 4, direction = "left", floor_id = 1, colour = "cyan" },
+                },
+                images = {
+                      {
+                          width    = 512,
+                          height   = 512,
+                          state    = 4,
+                          zone_name = "Giddeus",
+                          floor_id = 1,
+                          highlights = {
+                              { position = "F-12", offsetX = 16, offsetY = 16 },
+                          },
+                      },
+                      {
+                          width    = 512,
+                          height   = 512,
+                          state    = 4,
+                          zone_name = "Balga's Dais",
+                          floor_id = 0,
+                      },
+                },
+                trigger_on_event_id = { 32001 },
+            },
+            {
+                text = "Step 5: Return to Maat in Ru'Lude Gardens (H-5).\n \n" ..
+                       "On your FIRST win this conversation is required, for subsequent job fights skip this step manually.\n \n" ..
+                       "TIP: If you have not done The Road to Aht Urhgan, a surviving testimony can be traded to\n" ..
+                       "Faursel in Lower Jeuno for the Boarding Permit.\n",
+                route_to = "Ru'Lude Gardens",
+                onmob_target = "Maat",
+                destination_highlight = { position = "H-5", offsetX = 16, offsetY = 16 },
+                trigger_on_event_id = { 93 },
+                skip_if_any_job_level = 71, -- cap already broken, so event 93 is spent
+            },
+        },
+        reward = {
+            text = "Title: Star Breaker (first clear) and Maat Masher, Level Cap raised to 75!\n \n",
+        },
+    },
+
+    ["Genkai 5: Shattering Stars (Paladin)"] = {
+        progress_group = "Genkai 5: Shattering Stars",
+        job_id = 7, -- xi.job.PLD - marks this entry when you are on Paladin
+        prerequisites = {
+            {category = "Limit Breaks", subfile = "Genkai", name = "Genkai 4: Riding on the Clouds"},
+            -- Crimson Orb (KI 136) opens the Wall of Banishing, which is the only way
+            -- into the NM room. One per party, so a solo farmer needs their own.
+            {category = "Quests", subfile = "Davoi", name = "Wall of Banishing"},
+        },
+        requirements = {
+            level = 66,
+        },
+        steps = {
+            {
+                text = "Step 1: Speak to Maat in Ru'Lude Gardens (H-5) to start the quest.\n \n" ..
+                       "NOTE: Only needed for your FIRST Maat fight. If you have already beaten him on another\n" ..
+                       "job, tick this and go straight to the burning circle.\n",
+                route_to = "Ru'Lude Gardens",
+                onmob_target = "Maat",
+                destination_highlight = { position = "H-5", offsetX = 16, offsetY = 16 },
+                trigger_on_event_id = { 92 },
+                skip_if_any_job_level = 71, -- cap already broken, so event 92 is spent
+            },
+            {
+                text = "Step 2: Farm a Paladin's Testimony in the Monastic Cavern.\n \n" ..
+                       "Targets: Orcish Protector / Orcish Overlord (NM) - Look for the RED highlights.\n \n" ..
+                       "CRITICAL: The Wall of Banishing at (J-9) needs a Key Item: Crimson Orb to open. That comes\n" ..
+                       "from the Wall of Banishing quest and it is ONE PER PARTY - solo, you need your own.\n \n" ..
+                       "WARNING:  Orcs are SIGHT, Orcish Overlord has TRUE SIGHT and can see through Invisible.\n" ..
+                       "TIP: One testimony is good for THREE attempts at Maat. It only vanishes on the third trade to\n" ..
+                       "the burning circle, so a single drop covers two retries.\n",
+                items_needed = { "Paladin's Testimony" },
+                keyitems_needed = { 136 }, -- Crimson Orb - opens the Wall of Banishing
+                onmob_target = "davoi-wall-of-banishing-j9",
+                onmob_enemy = { "Orcish Overlord", "Orcish Protector" },
+                onmob_enemy_colour = "red",
+                trigger_on_item_obtain = { "Paladin's Testimony" },
+                zone_max_distance = 35,
+                visual_zones = {
+                    -- Survival Guide
+                    { zone_name = "Davoi", type = 'square', center = { x = 223.0, y = -0.2, z = -10.0 }, size = 1, floor_id = 0, colour = "green" },
+                    -- South-east toward the Monastic Cavern entrance (H-11)
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 215.7, y = -0.4, z = -12.6 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 218.5, y = 3.3, z = -67.1 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 237.6, y = 4.0, z = -93.1 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 220.0, y = 3.7, z = -131.4 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 240.0, y = 0.0, z = -179.2 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 279.4, y = 4.0, z = -192.3 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 277.4, y = 4.0, z = -242.7 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 275.0, y = 4.0, z = -288.3 }, size = 4, direction = "sw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 235.0, y = -0.2, z = -299.0 }, size = 4, direction = "sw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 216.7, y = -1.6, z = -306.1 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 205.0, y = -0.0, z = -259.8 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 162.7, y = 0.0, z = -259.2 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 111.1, y = -0.4, z = -265.6 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 76.0, y = -0.2, z = -259.0 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 50.4, y = -2.0, z = -266.4 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 67.6, y = -1.8, z = -297.1 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 57.0, y = 0.7, z = -341.1 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+
+                    -- Inside Monastic Cavern
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 27.4, y = -13.6, z = -376.5 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = -15.1, y = -4.6, z = -381.5 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = -22.2, y = -0.3, z = -340.5 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 13.3, y = -2.2, z = -334.4 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 16.5, y = -1.6, z = -305.3 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 45.7, y = -0.2, z = -278.0 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 61.2, y = -0.2, z = -244.4 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 53.4, y = -0.1, z = -218.0 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 16.5, y = -0.5, z = -217.5 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = -20.4, y = -0.4, z = -214.2 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = -20.4, y = -0.3, z = -167.2 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = -20.3, y = -0.3, z = -137.2 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 22.4, y = -0.4, z = -141.9 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 34.2, y = -6.9, z = -181.1 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 74.2, y = -15.0, z = -179.9 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+
+                      -- Extra from prereq quest arrows if needed
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 177.1, y = -2.7, z = -117.3 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 179.8, y = 0.0, z = -161.8 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    -- ...then north to Banshing Wall
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 89.2, y = 0.6, z = -152.4 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 79.8, y = -2.5, z = -151.9 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 81.3, y = -4.0, z = -140.1 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 129.7, y = 0.4, z = -142.0 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 141.4, y = -0.1, z = -179.4 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 179.5, y = -0.1, z = -179.1 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 180.3, y = 1.0, z = -207.4 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+
+                    -- Through the wall
+                    { zone_name = "Davoi", type = 'arrow', center = { x = 177.1, y = 3.6, z = -235.9 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+
+                    -- To the Orcish Crest
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 206.2, y = -14.7, z = -260.8 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 220.4, y = -9.9, z = -249.6 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 220.3, y = -0.1, z = -198.7 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 220.6, y = -0.4, z = -174.5 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Monastic Cavern", type = 'arrow', center = { x = 218.0, y = -0.4, z = -143.2 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                },
+                images = {
+                    {
+                        width = 512,
+                        height = 512,
+                        state = 2,
+                        zone_name = "Davoi",
+                        floor_id = 0,
+                        highlights = {
+                            { position = "H-11", offsetX = 16, offsetY = 16, label = "1" },
+                            { position = "J-9", offsetX = 16, offsetY = 16, label = "W" },
+                        },
+                    },
+                    {
+                        width = 512,
+                        height = 512,
+                        state = 2,
+                        zone_name = "Monastic Cavern",
+                        floor_id = 0,
+                        highlights = {
+                            { position = "I-8", offsetX = 16, offsetY = 16, label = "1" },
+                            { position = "J-7", offsetX = 16, offsetY = 16, label = "T" },
+                        },
+                    },
+                },
+            },
+            {
+                text = "Step 3: Trade the Paladin's Testimony to Maat in Ru'Lude Gardens (H-5).\n \n" ..
+                       "You cannot enter the battlefield the first time without doing this - he has to challenge\n" ..
+                       "you before the burning circle will let you in.\n \n" ..
+                       "- He then offers to warp you straight to Qu'Bia Arena. Say YES, it saves a long trek.\n" ..
+                       "- Do your prep BEFORE you accept: once you confirm, you are in and the clock is running.\n \n" ..
+                       "NOTE: Only needed for your FIRST Maat fight. After your first win he stops offering the\n" ..
+                       "warp entirely and you go straight to the burning circle - tick this and move on.\n",
+                route_to = "Ru'Lude Gardens",
+                onmob_target = "Maat",
+                destination_highlight = { position = "H-5", offsetX = 16, offsetY = 16 },
+                trigger_on_event_id = { 64 },
+                skip_if_any_job_level = 71, -- cap already broken, so Maat no longer warps you
+            },
+            {
+                text = "Step 4: Beat Maat in Qu'Bia Arena as PALADIN.\n \n" ..
+                       "Same burning circle as Dark Knight. The entrance is at (K-8) in Fei'Yin - follow the\n" ..
+                       "arrows, then trade the testimony at the Burning Circle and pick \"Shattering Stars\".\n \n" ..
+                       "TIP: Home Point #1 inside Fei'Yin drops you right at the Qu'Bia Arena entrance.\n" ..
+                       "TIP: Domenic in Lower Jeuno (J-7) warps you to Qu'Bia Arena if you have done\n" ..
+                       "Beyond Infinity - you then just walk out.\n" ..
+                       "Otherwise: Beaucedine Glacier (J-4) into Fei'Yin, then across to (K-8).\n \n" ..
+                       "===== Before you go in =====\n" ..
+                       "CRITICAL: Your SUB JOB is disabled inside. Take /BLM for the Warp out, or a Warp Ring.\n" ..
+                       "CRITICAL: The 10 minute clock starts when you ZONE IN, not when you engage - resting and\n" ..
+                       "buffing inside eats your timer. Bring food, meds and an Icarus Wing.\n \n" ..
+                       "===== The fight =====\n" ..
+                       "- Maat fights as PALADIN with your job's abilities including INVINCIBLE, but he always\n" ..
+                       "  swings Hand-to-Hand and uses H2H weapon skills.\n" ..
+                       "- Invincible makes him immune to physical damage while it is up - do not waste your own\n" ..
+                       "  1-hour or a weapon skill into it. Wait it out, then resume.\n" ..
+                       "- Uncapped. He is NOT aggressive, so you get the first move.\n" ..
+                       "- He usually concedes before he actually dies, so do not panic at his HP bar.\n" ..
+                       "- If you have never beaten Maat on ANY job you lose NO experience on a loss. After your first win anywhere, later losses DO cost experience.\n" ..
+                       "- If you have Rhapsody in Umber, you can call Trusts once you are inside.\n \n",
+                route_to = "Fei'Yin 1",
+                destination_highlight = { position = "K-8", offsetX = 16, offsetY = 16 },
+                zone_max_distance = 35,
+                onmob_target = "qu-bia-arena-burning-circle",
+                kill_requirement = {
+                    count = 1,
+                    enemies = {"Maat"},
+                    display_only = true,
+                    reset_on_zone_entry = true,
+                },
+                onmob_enemy = "Maat",
+                onmob_enemy_size = 1,
+                visual_zones = {
+                     -- Rang pass arrows
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -206.7, y = -39.9, z = -197.0 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -165.0, y = -40.0, z = -204.5 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -118.9, y = -39.8, z = -219.1 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    -- Route to Fei'Yin in Beaucedine Glacier from Xarca good to help players navigate complicated map.
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -136.4, y = -79.8, z = 220.3 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -119.9, y = -79.5, z = 173.5 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -101.2, y = -80.0, z = 133.0 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -96.4, y = -76.2, z = 102.4 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -32.0, y = -63.2, z = 101.1 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 0.5, y = -59.1, z = 98.9 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 2.6, y = -59.0, z = 60.4 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 3.0, y = -59.6, z = 12.0 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 5.7, y = -59.7, z = -27.1 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 2.7, y = -59.1, z = -58.4 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -5.6, y = -59.9, z = -81.7 }, size = 4, direction = "sw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -29.7, y = -59.7, z = -105.7 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+
+                    --Survival guide
+                    { zone_name = "Beaucedine Glacier", type = 'square', center = { x = -28.0, y = -59.8, z = -125.0 }, size = 1, floor_id = 0, colour = "green" },
+
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -63.1, y = -58.2, z = -95.7 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -63.6, y = -47.5, z = -142.3 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -58.7, y = -39.6, z = -189.8 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -27.6, y = -39.7, z = -205.2 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 10.6, y = -40.1, z = -193.4 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 23.3, y = -40.1, z = -151.9 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 54.1, y = -40.9, z = -128.8 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 85.5, y = -40.0, z = -101.0 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 120.5, y = -40.0, z = -87.2 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 141.8, y = -40.4, z = -50.1 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 133.9, y = -40.5, z = -4.9 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 93.1, y = -39.5, z = 0.7 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 61.2, y = -39.2, z = 5.3 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 64.2, y = -36.0, z = 20.7 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 126.2, y = -23.1, z = 20.1 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 153.0, y = -19.3, z = 20.2 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 175.3, y = -19.9, z = 17.5 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 170.4, y = -20.4, z = -30.7 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 167.1, y = -19.8, z = -83.4 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 158.6, y = -19.9, z = -114.9 }, size = 4, direction = "sw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 128.2, y = -19.7, z = -142.5 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 80.9, y = -19.6, z = -148.7 }, size = 4, direction = "sw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 59.2, y = -17.4, z = -182.7 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 121.1, y = -3.7, z = -180.8 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 186.5, y = 0.4, z = -193.7 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+
+                    --Intersection
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 229.4, y = 0.3, z = -198.3 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 269.5, y = 0.3, z = -200.8 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 317.1, y = 0.0, z = -196.8 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 323.4, y = 0.8, z = -136.6 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 313.5, y = 0.2, z = -88.5 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 300.7, y = 0.6, z = -27.6 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 299.3, y = 0.1, z = 21.2 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 292.0, y = 0.4, z = 57.7 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 237.4, y = 0.2, z = 88.7 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 194.3, y = 0.1, z = 115.2 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 181.1, y = 0.1, z = 144.2 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 195.4, y = 0.0, z = 180.4 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 237.2, y = 0.0, z = 196.2 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 282.7, y = 0.9, z = 217.7 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 335.7, y = -0.2, z = 226.0 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 357.0, y = 0.0, z = 277.8 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 382.8, y = 1.9, z = 296.3 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 380.4, y = 16.4, z = 361.3 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 379.2, y = 21.0, z = 403.6 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 370.2, y = 20.1, z = 429.0 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 357.5, y = 20.0, z = 475.5 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 324.6, y = 20.5, z = 506.7 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 296.7, y = 20.7, z = 524.6 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 280.7, y = 20.0, z = 535.0 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    -- Fei'Yin across to the Qu'Bia Arena entrance at (K-8)
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = -176.1, y = -24.0, z = -171.4 }, size = 4, direction = "ne", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = -152.5, y = -24.0, z = -148.2 }, size = 4, direction = "ne", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = -133.5, y = -24.0, z = -140.4 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = -100.2, y = -19.0, z = -133.3 }, size = 4, direction = "up", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = -97.7, y = -16.0, z = -96.0 }, size = 4, direction = "ne", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = -74.6, y = -16.0, z = -69.5 }, size = 4, direction = "ne", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = -60.4, y = -16.0, z = -61.0 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = -20.7, y = -16.0, z = -61.7 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = 32.3, y = -16.0, z = -54.0 }, size = 4, direction = "up", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = 27.8, y = -16.0, z = -21.6 }, size = 4, direction = "left", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = -20.3, y = -16.0, z = -16.8 }, size = 4, direction = "up", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = -16.7, y = -16.0, z = 22.6 }, size = 4, direction = "ne", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = 13.8, y = -16.0, z = 49.1 }, size = 4, direction = "ne", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = 24.9, y = -16.0, z = 58.9 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = 63.1, y = -16.6, z = 59.1 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = 99.6, y = -24.0, z = 56.4 }, size = 4, direction = "se", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = 124.8, y = -24.0, z = 28.4 }, size = 4, direction = "se", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = 162.6, y = -23.7, z = 7.4 }, size = 4, direction = "ne", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = 182.3, y = -24.0, z = 19.8 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = 209.5, y = -24.0, z = 23.7 }, size = 4, direction = "ne", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = 221.8, y = -24.0, z = 37.2 }, size = 4, direction = "up", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = 218.2, y = -24.0, z = 60.0 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'rect', center = { x = 231.5, y = -29.6, z = 60.0 }, width = 4.75, height = 10.75, floor_id = 1, colour = "cyan", vertical_axis = 'z' },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = 237.3, y = -24.3, z = 59.5 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                },
+                trigger_on_event_id = { 32001 },
+            },
+            {
+                text = "Step 5: Return to Maat in Ru'Lude Gardens (H-5).\n \n" ..
+                       "On your FIRST win this conversation is required, for subsequent job fights skip this step manually.\n \n" ..
+                       "TIP: If you have not done The Road to Aht Urhgan, a surviving testimony can be traded to\n" ..
+                       "Faursel in Lower Jeuno for the Boarding Permit.\n",
+                route_to = "Ru'Lude Gardens",
+                onmob_target = "Maat",
+                destination_highlight = { position = "H-5", offsetX = 16, offsetY = 16 },
+                trigger_on_event_id = { 93 },
+                skip_if_any_job_level = 71, -- cap already broken, so event 93 is spent
+            },
+        },
+        reward = {
+            text = "Title: Star Breaker (first clear) and Maat Masher, Level Cap raised to 75!\n \n",
+        },
+    },
+
+    ["Genkai 5: Shattering Stars (Samurai)"] = {
+        progress_group = "Genkai 5: Shattering Stars",
+        job_id = 12, -- xi.job.SAM - marks this entry when you are on Samurai
+        prerequisites = {
+            {category = "Limit Breaks", subfile = "Genkai", name = "Genkai 4: Riding on the Clouds"},
+        },
+        requirements = {
+            level = 66,
+        },
+        steps = {
+            {
+                text = "Step 1: Speak to Maat in Ru'Lude Gardens (H-5) to start the quest.\n \n" ..
+                       "NOTE: Only needed for your FIRST Maat fight. If you have already beaten him on another\n" ..
+                       "job, tick this and go straight to the burning circle.\n",
+                route_to = "Ru'Lude Gardens",
+                onmob_target = "Maat",
+                destination_highlight = { position = "H-5", offsetX = 16, offsetY = 16 },
+                trigger_on_event_id = { 92 },
+                skip_if_any_job_level = 71, -- cap already broken, so event 92 is spent
+            },
+            {
+                text = "Step 2: Farm a Samurai's Testimony in Castle Zvahl Baileys.\n \n" ..
+                       "Targets: Gore Demon (~33%) and Blood Demon (~16%) - Look for the RED highlights.\n \n" ..
+                       "Enter from Xarcabard at (D-8). The GREEN square is the Survival Guide. Follow the arrows -\n" ..
+                       "they run floor 1, floor 2 and the floor 15 section.\n \n" ..
+                       "WARNING: This is a Lv.70+ zone and you are here at 66. Demons aggro and link, and there\n" ..
+                       "are Bombs that self-destruct. Bring Sneak/Invisible and pull carefully.\n \n" ..
+                       "TIP: One testimony is good for THREE attempts at Maat. It only vanishes on the third trade to\n" ..
+                       "the burning circle, so a single drop covers two retries.\n",
+                 images = {
+                    {
+                        width = 512,
+                        height = 512,
+                        state = 2,
+                        zone_name = "Castle Zvahl Baileys",
+                        floor_id = 1,
+                        highlights = {
+                            { position = "F-8", offsetX = 16, offsetY = 16 },
+                        },
+                    },
+                    {
+                        width = 512,
+                        height = 512,
+                        state = 2,
+                        zone_name = "Castle Zvahl Baileys",
+                        floor_id = 2,
+                        highlights = {
+                            { position = "F-8", offsetX = 16, offsetY = 16 },
+                        },
+                    },
+                    {
+                        width = 512,
+                        height = 512,
+                        state = 2,
+                        zone_name = "Castle Zvahl Baileys",
+                        floor_id = 15,
+                        highlights = {
+                            { position = "H-6", offsetX = 16, offsetY = 16 },
+                        },
+                    },
+                    {
+                        width = 512,
+                        height = 512,
+                        state = 2,
+                        zone_name = "Castle Zvahl Keep",
+                        floor_id = 1,
+                        highlights = {
+                            { position = "H-6", offsetX = 16, offsetY = 16 },
+                        },
+                    },
+                    {
+                        width = 512,
+                        height = 512,
+                        state = 2,
+                        zone_name = "Castle Zvahl Keep",
+                        floor_id = 2,
+                        highlights = {
+                            { position = "E-8", offsetX = 16, offsetY = 16 },
+                        },
+                    },
+                    {
+                        width = 512,
+                        height = 512,
+                        state = 2,
+                        zone_name = "Castle Zvahl Keep",
+                        floor_id = 3,
+                    },
+                    {
+                        width = 512,
+                        height = 512,
+                        state = 2,
+                        zone_name = "Castle Zvahl Keep",
+                        floor_id = 4,
+                        highlights = {
+                            { position = "G-7", offsetX = 16, offsetY = 16 },
+                        },
+                    },
+                },
+                items_needed = { "Samurai's Testimony" },
+                onmob_enemy = { "Gore Demon", "Blood Demon" },
+                onmob_enemy_colour = "red",
+                trigger_on_item_obtain = { "Samurai's Testimony" },
+                zone_max_distance = 35,
+                visual_zones = {
+                     --Route from Range to Xarca
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -59.0, y = -39.4, z = -193.0 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -63.9, y = -47.7, z = -142.4 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -51.4, y = -58.6, z = -102.2 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -20.4, y = -60.0, z = -104.3 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 5.5, y = -59.1, z = -59.8 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 12.0, y = -60.0, z = -28.6 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 9.4, y = -59.6, z = 13.7 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 7.2, y = -59.6, z = 53.9 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 5.6, y = -60.0, z = 79.8 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -7.5, y = -59.4, z = 101.2 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -47.9, y = -64.6, z = 100.8 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -77.5, y = -71.9, z = 105.1 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -104.7, y = -78.9, z = 109.8 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -118.4, y = -79.5, z = 147.1 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -130.1, y = -79.7, z = 179.0 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -138.2, y = -79.6, z = 211.8 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+
+                    --Xarca to Castle
+                    { zone_name = "Xarcabard", type = 'arrow', center = { x = 448.9, y = 0.4, z = -183.9 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Xarcabard", type = 'arrow', center = { x = 401.1, y = 0.3, z = -189.2 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Xarcabard", type = 'arrow', center = { x = 357.7, y = 8.2, z = -191.2 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Xarcabard", type = 'arrow', center = { x = 318.4, y = 6.8, z = -191.2 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Xarcabard", type = 'arrow', center = { x = 265.0, y = -7.2, z = -184.6 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Xarcabard", type = 'arrow', center = { x = 238.3, y = -16.1, z = -192.2 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Xarcabard", type = 'arrow', center = { x = 195.6, y = -23.0, z = -189.5 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Xarcabard", type = 'arrow', center = { x = 141.1, y = -23.1, z = -163.0 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Xarcabard", type = 'arrow', center = { x = 98.1, y = -23.8, z = -139.5 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Xarcabard", type = 'arrow', center = { x = 44.5, y = -23.8, z = -110.8 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Xarcabard", type = 'arrow', center = { x = 15.5, y = -23.3, z = -84.7 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Xarcabard", type = 'arrow', center = { x = -0.8, y = -24.1, z = -73.1 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Xarcabard", type = 'arrow', center = { x = -31.3, y = -23.9, z = -73.4 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Xarcabard", type = 'arrow', center = { x = -66.5, y = -24.1, z = -63.6 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Xarcabard", type = 'arrow', center = { x = -105.8, y = -24.3, z = -37.0 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Xarcabard", type = 'arrow', center = { x = -129.2, y = -19.3, z = -14.4 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Xarcabard", type = 'arrow', center = { x = -159.4, y = -15.2, z = 23.0 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Xarcabard", type = 'arrow', center = { x = -161.0, y = -10.8, z = 66.0 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Xarcabard", type = 'arrow', center = { x = -176.7, y = -2.5, z = 100.4 }, size = 4, direction = "sw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Xarcabard", type = 'arrow', center = { x = -189.6, y = -3.4, z = 71.2 }, size = 4, direction = "sw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Xarcabard", type = 'arrow', center = { x = -204.5, y = -3.9, z = 49.4 }, size = 4, direction = "sw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Xarcabard", type = 'arrow', center = { x = -218.4, y = -8.6, z = 26.1 }, size = 4, direction = "sw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Xarcabard", type = 'arrow', center = { x = -244.9, y = -12.3, z = -2.6 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Xarcabard", type = 'arrow', center = { x = -257.9, y = -16.5, z = 13.1 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Xarcabard", type = 'arrow', center = { x = -282.6, y = -20.0, z = 35.6 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Xarcabard", type = 'arrow', center = { x = -303.0, y = -25.0, z = 56.1 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Xarcabard", type = 'arrow', center = { x = -318.6, y = -27.0, z = 60.2 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Xarcabard", type = 'arrow', center = { x = -322.8, y = -28.0, z = 36.2 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Xarcabard", type = 'arrow', center = { x = -331.6, y = -29.7, z = 10.1 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Xarcabard", type = 'arrow', center = { x = -364.6, y = -35.8, z = 20.6 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Xarcabard", type = 'arrow', center = { x = -390.5, y = -41.7, z = 20.0 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Xarcabard", type = 'arrow', center = { x = -418.9, y = -44.0, z = 19.6 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+
+                    --Survival Guide
+                    { zone_name = "Castle Zvahl Baileys", type = 'square', center = { x = 372.0, y = -12.0, z = -25.0 }, size = 1, floor_id = 1, colour = "green" },
+                    -- Floor 1
+                    { zone_name = "Castle Zvahl Baileys", type = 'arrow', center = { x = 179.9, y = -24.1, z = 19.5 }, size = 4, direction = 'up', floor_id = 1 },
+                    { zone_name = "Castle Zvahl Baileys", type = 'arrow', center = { x = 87.9, y = -20.1, z = 100.6 }, size = 4, direction = 'down', floor_id = 1 },
+                    { zone_name = "Castle Zvahl Baileys", type = 'arrow', center = { x = 99.8, y = -20.1, z = 72.7 }, size = 4, direction = 'left', floor_id = 1 },
+                    -- Floor 2
+                    { zone_name = "Castle Zvahl Baileys", type = 'arrow', center = { x = 31.2, y = -20, z = 59.7 }, size = 4, direction = 'up', floor_id = 2 },
+                    { zone_name = "Castle Zvahl Baileys", type = 'arrow', center = { x = 20.8, y = -20, z = 150.2 }, size = 4, direction = 'down', floor_id = 2 },
+
+                    { zone_name = "Castle Zvahl Baileys", type = 'arrow', center = { x = 19.5, y = -24.0, z = 132.2 }, size = 4, direction = "down", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Zvahl Baileys", type = 'arrow', center = { x = 16.2, y = -24.1, z = 102.3 }, size = 4, direction = "left", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Zvahl Baileys", type = 'arrow', center = { x = -27.4, y = -24.2, z = 100.9 }, size = 4, direction = "left", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Zvahl Baileys", type = 'arrow', center = { x = -71.2, y = -24.0, z = 99.7 }, size = 4, direction = "left", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Zvahl Baileys", type = 'arrow', center = { x = -106.6, y = -24.0, z = 100.6 }, size = 4, direction = "left", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Zvahl Baileys", type = 'arrow', center = { x = -137.9, y = -24.2, z = 100.1 }, size = 4, direction = "up", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Zvahl Baileys", type = 'arrow', center = { x = -134.2, y = -24.0, z = 134.3 }, size = 4, direction = "se", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Zvahl Baileys", type = 'line', start = { x = -130.3, y = -24.0, z = 130.8 }, stop = { x = -129.1, y = -8.0, z = 130.2 }, floor_id = 2, colour = "yellow" },
+
+                    -- To Blood Demons for Samurai Testimony
+                    { zone_name = "Castle Zvahl Baileys", type = 'arrow', center = { x = -129.5, y = -8.0, z = 130.5 }, size = 4, direction = "nw", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Castle Zvahl Baileys", type = 'arrow', center = { x = -140.1, y = -8.0, z = 140.0 }, size = 4, direction = "left", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Castle Zvahl Baileys", type = 'arrow', center = { x = -173.4, y = -8.0, z = 140.5 }, size = 4, direction = "left", floor_id = 3, colour = "yellow" },
+
+                },
+            },
+            {
+                text = "Step 3: Trade the Samurai's Testimony to Maat in Ru'Lude Gardens (H-5).\n \n" ..
+                       "You cannot enter the battlefield the first time without doing this - he has to challenge\n" ..
+                       "you before the burning circle will let you in.\n \n" ..
+                       "- He then offers to warp you straight to the Chamber of Oracles. Say YES - this is by far\n" ..
+                       "  the longest walk of the five battlefields, so take the free ride.\n" ..
+                       "- Do your prep BEFORE you accept: once you confirm, you are in and the clock is running.\n \n" ..
+                       "NOTE: Only needed for your FIRST Maat fight. After your first win he stops offering the\n" ..
+                       "warp entirely and you go straight to the burning circle - tick this and move on.\n",
+                route_to = "Ru'Lude Gardens",
+                onmob_target = "Maat",
+                destination_highlight = { position = "H-5", offsetX = 16, offsetY = 16 },
+                trigger_on_event_id = { 64 },
+                skip_if_any_job_level = 71, -- cap already broken, so Maat no longer warps you
+            },
+            {
+                text = "Step 4: Beat Maat in the Chamber of Oracles as SAMURAI.\n \n" ..
+                       "Same burning circle as Dragoon.\n \n" ..
+                       "TIP: Home Point #1 of Quicksand Caves warps you directly to the Chamber of Oracles\n" ..
+                       "entrance - if you have it, skip the whole walk below.\n \n" ..
+                       "===== Getting there on foot =====\n" ..
+                       "Head to (C-11) of Western Altepa Desert. There is a small tunnel at (D-11) - enter it and\n" ..
+                       "drop down the ramp at (D-12) into Quicksand Caves. Then:\n \n" ..
+                       "[1] Travel to (I-9) and step on the circular pad to open the door.\n" ..
+                       "    Requires a weight value of 3 OR the Key Item: Loadstone.\n" ..
+                       "    Weight values: Galka = 3, Hume/Mithra/Elvaan = 2, Tarutaru = 1.\n" ..
+                       "[2] Head west to the pad at (H-7) to open the next door.\n" ..
+                       "[3] Enter the next room and drop down the hole at (F-7).\n" ..
+                       "[4] Hug the left wall with Sneak to reach the Chamber of Oracles zone at (D-4)\n" ..
+                       "    - grab the Home Point while you are there so you never walk this again.\n \n" ..
+                       "WARNING: Sneak the whole way - Antica and Sabotenders aggro in the caves.\n \n" ..
+                       "===== Before you go in =====\n" ..
+                       "CRITICAL: Your SUB JOB is disabled inside. Take /BLM for the Warp out, or a Warp Ring.\n" ..
+                       "CRITICAL: The 10 minute clock starts when you ZONE IN, not when you engage - resting and\n" ..
+                       "buffing inside eats your timer. Bring food, meds and an Icarus Wing.\n \n" ..
+                       "===== The fight =====\n" ..
+                       "- Maat fights as SAMURAI with your job's abilities including Meikyo Shisui, but he always\n" ..
+                       "  swings Hand-to-Hand and uses H2H weapon skills.\n" ..
+                       "- Uncapped. He is NOT aggressive, so you get the first move.\n" ..
+                       "- He usually concedes before he actually dies, so do not panic at his HP bar.\n" ..
+                       "- If you have never beaten Maat on ANY job you lose NO experience on a loss. After your first win anywhere, later losses DO cost experience.\n" ..
+                       "- If you have Rhapsody in Umber, you can call Trusts once you are inside.\n \n",
+                keyitems_needed = { 2051 },
+                onmob_target = "chamber-of-oracles-shimmering-circle",
+                zone_max_distance = 35,
+                kill_requirement = {
+                    count = 1,
+                    enemies = {"Maat"},
+                    display_only = true,
+                    reset_on_zone_entry = true,
+                },
+                onmob_enemy = "Maat",
+                onmob_enemy_size = 1,
+                visual_zones = {
+                    -- Western Altepa Desert down into Quicksand Caves
+                    { zone_name = "Western Altepa Desert", type = 'arrow', center = { x = -833.6, y = -8.8, z = -605.8 }, size = 4, direction = 'se', floor_id = 0, colour = "yellow" },
+                    { zone_name = "Western Altepa Desert", type = 'arrow', center = { x = -802, y = -19.1, z = -698.6 }, size = 4, direction = 'up', floor_id = 0, colour = "yellow" },
+                    { zone_name = "Western Altepa Desert", type = 'arrow', center = { x = -779.9, y = -16.6, z = -616.3 }, size = 4, direction = 'down', floor_id = 0, colour = "yellow" },
+                    { zone_name = "Western Altepa Desert", type = 'arrow', center = { x = -774, y = -8.4, z = -702.5 }, size = 4, direction = 'right', floor_id = 0, colour = "yellow" },
+
+                    -- Quicksand Caves
+                    { zone_name = "Quicksand Caves", type = 'square', center = { x = -780.0, y = 0.0, z = -459.5 }, size = 6, floor_id = 4, colour = "cyan" },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -780.1, y = -0.4, z = -453.5 }, size = 4, direction = "up", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -779.9, y = 0.0, z = -441.5 }, size = 4, direction = "up", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -781.5, y = 0.0, z = -420.0 }, size = 4, direction = "left", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -819.1, y = 0.0, z = -417.8 }, size = 4, direction = "up", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'square', center = { x = -819.8, y = 0.0, z = -379.6 }, size = 6, floor_id = 4, colour = "cyan" },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -826.0, y = 0.0, z = -379.8 }, size = 4, direction = "left", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -838.2, y = 0.0, z = -379.8 }, size = 4, direction = "left", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'rect', center = { x = -850.0, y = -2.3, z = -380.0 }, width = 4.00, height = 4.75, floor_id = 4, colour = "cyan", vertical_axis = 'z' },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -856.5, y = 0.0, z = -380.5 }, size = 4, direction = "left", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -886.4, y = 0.0, z = -381.3 }, size = 4, direction = "left", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'line', start = { x = -890.0, y = 0.0, z = -381.6 }, stop = { x = -895.6, y = 19.5, z = -382.6 }, floor_id = 4, colour = "yellow" },
+
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -898.7, y = 21.1, z = -386.9 }, size = 4, direction = "down", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -906.4, y = 17.2, z = -419.7 }, size = 4, direction = "left", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -940.3, y = 17.0, z = -405.1 }, size = 4, direction = "up", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -940.4, y = 17.2, z = -365.8 }, size = 4, direction = "up", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -938.8, y = 17.2, z = -327.5 }, size = 4, direction = "up", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -950.8, y = 16.9, z = -301.3 }, size = 4, direction = "left", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -980.2, y = 17.0, z = -289.0 }, size = 4, direction = "up", floor_id = 4, colour = "yellow" },
+                },
+                images = {
+                    {
+                        width = 512,
+                        height = 512,
+                        state = 4,
+                        zone_name = "Western Altepa Desert",
+                        floor_id = 0,
+                        highlights = {
+                            { position = "C-11", offsetX = 16, offsetY = 16},
+                        },
+                    },
+                    {
+                        width = 512,
+                        height = 512,
+                        state = 4,
+                        zone_name = "Quicksand Caves",
+                        floor_id = 4,
+                        highlights = {
+                            { position = "I-9", offsetX = 16, offsetY = 16, label = "1" },
+                            { position = "H-7", offsetX = 16, offsetY = 16, label = "2" },
+                            { position = "F-7", offsetX = 16, offsetY = 16, label = "3" },
+                            { position = "D-4", offsetX = 16, offsetY = 16, label = "4" },
+                        },
+                    },
+                },
+                trigger_on_event_id = { 32001 },
+            },
+            {
+                text = "Step 5: Return to Maat in Ru'Lude Gardens (H-5).\n \n" ..
+                       "On your FIRST win this conversation is required, for subsequent job fights skip this step manually.\n \n" ..
+                       "TIP: If you have not done The Road to Aht Urhgan, a surviving testimony can be traded to\n" ..
+                       "Faursel in Lower Jeuno for the Boarding Permit.\n",
+                route_to = "Ru'Lude Gardens",
+                onmob_target = "Maat",
+                destination_highlight = { position = "H-5", offsetX = 16, offsetY = 16 },
+                trigger_on_event_id = { 93 },
+                skip_if_any_job_level = 71, -- cap already broken, so event 93 is spent
+            },
+        },
+        reward = {
+            text = "Title: Star Breaker (first clear) and Maat Masher, Level Cap raised to 75!\n \n",
+        },
+    },
+
+    ["Genkai 5: Shattering Stars (Bard)"] = {
+        progress_group = "Genkai 5: Shattering Stars",
+        job_id = 10, -- xi.job.BRD - marks this entry when you are on Bard
+        prerequisites = {
+            {category = "Limit Breaks", subfile = "Genkai", name = "Genkai 4: Riding on the Clouds"},
+        },
+        requirements = {
+            level = 66,
+        },
+        steps = {
+            {
+                text = "Step 1: Speak to Maat in Ru'Lude Gardens (H-5) to start the quest.\n \n" ..
+                       "NOTE: Only needed for your FIRST Maat fight. If you have already beaten him on another\n" ..
+                       "job, tick this and go straight to the burning circle.\n",
+                route_to = "Ru'Lude Gardens",
+                onmob_target = "Maat",
+                destination_highlight = { position = "H-5", offsetX = 16, offsetY = 16 },
+                trigger_on_event_id = { 92 },
+                skip_if_any_job_level = 71, -- cap already broken, so event 92 is spent
+            },
+            {
+                text = "Step 2: Farm a Bard's Testimony in Castle Oztroja.\n \n" ..
+                       "Target: Yagudo Conductor (~16%) - Look for the RED highlights.\n \n" ..
+                       "Follow the YELLOW arrows for the main route!\n \n" ..
+                       "TIP: One testimony is good for THREE attempts at Maat. It only vanishes on the third trade to\n" ..
+                       "the burning circle, so a single drop covers two retries.\n",
+                items_needed = { "Bard's Testimony" },
+                onmob_target = {"castle-oztroja-handle-1-i8",
+                                "castle-oztroja-handle-2-i8",
+                                "castle-oztroja-handle-1-g8",
+                                "castle-oztroja-handle-2-g8",
+                                "castle-oztroja-handle-3-g8",
+                                "castle-oztroja-handle-4-g8"},
+                onmob_enemy = { "Yagudo Conductor" },
+                onmob_enemy_colour = "red",
+                trigger_on_item_obtain = { "Bard's Testimony" },
+                zone_max_distance = 35,
+                visual_zones = {
+                     -- Survival Guide
+                    { zone_name = "Castle Oztroja", type = 'square', center = { x = -221.0, y = 0.3, z = -13.0 }, size = 1, floor_id = 1, colour = "green" },
+                    --map 1
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -216.0, y = 0.3, z = -18.2 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -178.6, y = 0.3, z = -12.7 }, size = 4, direction = "up", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -178.7, y = 0.3, z = 24.6 }, size = 4, direction = "up", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -175.1, y = 0.3, z = 56.8 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -139.7, y = 0.3, z = 58.7 }, size = 4, direction = "down", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -141.6, y = 0.1, z = 16.2 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -95.5, y = 0.2, z = 18.6 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -56.6, y = 0.3, z = 19.8 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -20.9, y = 0.3, z = 11.8 }, size = 4, direction = "down", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -18.5, y = 0.3, z = -17.6 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+
+
+                    -- map 2
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = 27.6, y = 0.3, z = 19.5 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = 100.6, y = -12.0, z = 19.3 }, size = 4, direction = "down", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = 99.6, y = -15.8, z = -20.3 }, size = 4, direction = "left", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = 19.3, y = -15.8, z = -18.7 }, size = 4, direction = "down", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = 18.0, y = -15.8, z = -52.2 }, size = 4, direction = "sw", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = 8.3, y = -15.8, z = -61.0 }, size = 4, direction = "left", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -19.8, y = -15.8, z = -60.3 }, size = 4, direction = "down", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -18.9, y = -15.8, z = -99.2 }, size = 4, direction = "left", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -51.7, y = -15.8, z = -99.1 }, size = 4, direction = "sw", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -60.4, y = -15.8, z = -110.6 }, size = 4, direction = "down", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -59.7, y = -15.7, z = -139.0 }, size = 4, direction = "left", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -100.6, y = -15.7, z = -136.8 }, size = 4, direction = "up", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -99.3, y = -15.7, z = -99.4 }, size = 4, direction = "left", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -132.8, y = -15.8, z = -99.3 }, size = 4, direction = "nw", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -141.0, y = -15.8, z = -87.7 }, size = 4, direction = "up", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -139.0, y = -16.0, z = -68.2 }, size = 4, direction = "right", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -92.5, y = -16.0, z = -65.7 }, size = 4, direction = "ne", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -81.1, y = -15.8, z = -60.0 }, size = 4, direction = "right", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -60.8, y = -15.8, z = -54.7 }, size = 4, direction = "up", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -60.3, y = -15.9, z = -29.5 }, size = 4, direction = "left", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -86.0, y = -16.0, z = -27.0 }, size = 4, direction = "nw", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -95.6, y = -16.0, z = -19.7 }, size = 4, direction = "left", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -145.4, y = -16.0, z = -19.8 }, size = 4, direction = "left", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -182.7, y = -15.7, z = -20.1 }, size = 4, direction = "left", floor_id = 2, colour = "yellow" },
+
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -193.8, y = -15.8, z = -19.2 }, size = 4, direction = "left", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -237.9, y = -15.8, z = -18.9 }, size = 4, direction = "left", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -259.3, y = -15.8, z = -24.1 }, size = 4, direction = "down", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -260.7, y = -20.0, z = -60.7 }, size = 4, direction = "right", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -217.8, y = -28.8, z = -60.5 }, size = 4, direction = "right", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -193.3, y = -33.0, z = -60.4 }, size = 4, direction = "right", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -161.2, y = -39.8, z = -60.0 }, size = 4, direction = "right", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -135.6, y = -39.8, z = -58.2 }, size = 4, direction = "up", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -133.8, y = -39.7, z = -22.7 }, size = 4, direction = "right", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -99.7, y = -39.8, z = -22.5 }, size = 4, direction = "down", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -100.0, y = -39.7, z = -67.0 }, size = 4, direction = "down", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -97.3, y = -39.7, z = -98.6 }, size = 4, direction = "right", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -61.5, y = -39.7, z = -99.3 }, size = 4, direction = "down", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -60.1, y = -39.7, z = -138.9 }, size = 4, direction = "right", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -23.5, y = -39.8, z = -143.4 }, size = 4, direction = "down", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -22.0, y = -39.8, z = -179.3 }, size = 4, direction = "left", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -60.8, y = -44.0, z = -179.1 }, size = 4, direction = "down", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -59.8, y = -52.0, z = -220.5 }, size = 4, direction = "left", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -85.1, y = -57.0, z = -219.0 }, size = 4, direction = "left", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -100.3, y = -60.0, z = -218.4 }, size = 4, direction = "up", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -100.1, y = -71.8, z = -159.3 }, size = 4, direction = "up", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -98.8, y = -71.7, z = -116.8 }, size = 4, direction = "up", floor_id = 4, colour = "yellow" },
+                },
+                images = {
+                    {
+                        width = 512,
+                        height = 512,
+                        state = 2,
+                        zone_name = "Castle Oztroja",
+                        floor_id = 1,
+                        highlights = {
+
+                            { position = "J-8", offsetX = 16, offsetY = 16},
+                        },
+                    },
+                    {
+                        width = 512,
+                        height = 512,
+                        state = 2,
+                        zone_name = "Castle Oztroja",
+                        floor_id = 2,
+                        highlights = {
+                             { position = "F-9", offsetX = 16, offsetY = 16 },
+                        },
+                    },
+                    {
+                        width = 512,
+                        height = 512,
+                        state = 2,
+                        zone_name = "Castle Oztroja",
+                        floor_id = 3,
+                        highlights = {
+                            { position = "H-11", offsetX = 16, offsetY = 16 },
+                        },
+                    },
+                    {
+                        width = 512,
+                        height = 512,
+                        state = 2,
+                        zone_name = "Castle Oztroja",
+                        floor_id = 4,
+                        highlights = {
+                            { position = "H-7", offsetX = 16, offsetY = 16 },
+                        },
+                    },
+                    {
+                        width = 512,
+                        height = 512,
+                        state = 2,
+                        zone_name = "Castle Oztroja",
+                        floor_id = 5,
+                        highlights = {
+                            { position = "H-8", offsetX = 16, offsetY = 16 },
+                        },
+                    },
+                    {
+                        width = 512,
+                        height = 512,
+                        state = 2,
+                        zone_name = "Castle Oztroja",
+                        floor_id = 6,
+                        highlights = {
+                            { position = "I-8", offsetX = 16, offsetY = 16 },
+                        },
+                    },
+                    {
+                        width = 512,
+                        height = 512,
+                        state = 2,
+                        zone_name = "Castle Oztroja",
+                        floor_id = 15,
+                        highlights = {
+                            { position = "G-5", offsetX = 16, offsetY = 16 },
+                        },
+                    },
+                },
+            },
+            {
+                text = "Step 3: Trade the Bard's Testimony to Maat in Ru'Lude Gardens (H-5).\n \n" ..
+                       "You cannot enter the battlefield the first time without doing this - he has to challenge\n" ..
+                       "you before the burning circle will let you in.\n \n" ..
+                       "- He then offers to warp you straight to Qu'Bia Arena. Say YES, it saves a long trek.\n" ..
+                       "- Do your prep BEFORE you accept: once you confirm, you are in and the clock is running.\n \n" ..
+                       "NOTE: Only needed for your FIRST Maat fight. After your first win he stops offering the\n" ..
+                       "warp entirely and you go straight to the burning circle - tick this and move on.\n",
+                route_to = "Ru'Lude Gardens",
+                onmob_target = "Maat",
+                destination_highlight = { position = "H-5", offsetX = 16, offsetY = 16 },
+                trigger_on_event_id = { 64 },
+                skip_if_any_job_level = 71, -- cap already broken, so Maat no longer warps you
+            },
+            {
+                text = "Step 4: Beat Maat in Qu'Bia Arena as BARD.\n \n" ..
+                       "The entrance is at (K-8) in Fei'Yin.\n" ..
+                       "Follow the arrows, then trade the testimony at the Burning Circle and pick \"Shattering Stars\".\n \n" ..
+                       "TIP: Home Point #1 inside Fei'Yin drops you right at the Qu'Bia Arena entrance.\n" ..
+                       "Otherwise: Beaucedine Glacier (J-4) into Fei'Yin, then across to (K-8).\n \n" ..
+                       "===== Before you go in =====\n" ..
+                       "CRITICAL: Your SUB JOB is disabled inside. Take /BLM for the Warp out, or a Warp Ring.\n" ..
+                       "CRITICAL: The 10 minute clock starts when you ZONE IN, not when you engage. \n" ..
+                       "===== The fight =====\n" ..
+                       "- Maat fights as BARD with your job's abilities including Soul Voice, but he always\n" ..
+                       "  swings Hand-to-Hand and uses H2H weapon skills.\n" ..
+                       "- Uncapped. He is NOT aggressive, so you get the first move.\n" ..
+                       "- Soul voice + double Armys Paeon is a known tactic to wittle Maat down!\n" ..
+                       "- If you have never beaten Maat on ANY job you lose NO experience on a loss. After your first win anywhere, later losses DO cost experience.\n" ..
+                       "- If you have Rhapsody in Umber, you can call Trusts once you are inside.\n \n",
+                route_to = "Fei'Yin 1",
+                destination_highlight = { position = "K-8", offsetX = 16, offsetY = 16 },
+                zone_max_distance = 35,
+                onmob_target = "qu-bia-arena-burning-circle",
+                kill_requirement = {
+                    count = 1,
+                    enemies = {"Maat"},
+                    display_only = true,
+                    reset_on_zone_entry = true,
+                },
+                onmob_enemy = "Maat",
+                onmob_enemy_size = 1,
+                visual_zones = {
+                     -- Rang pass arrows
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -206.7, y = -39.9, z = -197.0 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -165.0, y = -40.0, z = -204.5 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -118.9, y = -39.8, z = -219.1 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    -- Route to Fei'Yin in Beaucedine Glacier from Xarca good to help players navigate complicated map.
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -136.4, y = -79.8, z = 220.3 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -119.9, y = -79.5, z = 173.5 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -101.2, y = -80.0, z = 133.0 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -96.4, y = -76.2, z = 102.4 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -32.0, y = -63.2, z = 101.1 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 0.5, y = -59.1, z = 98.9 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 2.6, y = -59.0, z = 60.4 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 3.0, y = -59.6, z = 12.0 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 5.7, y = -59.7, z = -27.1 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 2.7, y = -59.1, z = -58.4 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -5.6, y = -59.9, z = -81.7 }, size = 4, direction = "sw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -29.7, y = -59.7, z = -105.7 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+
+                    --Survival guide
+                    { zone_name = "Beaucedine Glacier", type = 'square', center = { x = -28.0, y = -59.8, z = -125.0 }, size = 1, floor_id = 0, colour = "green" },
+
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -63.1, y = -58.2, z = -95.7 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -63.6, y = -47.5, z = -142.3 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -58.7, y = -39.6, z = -189.8 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -27.6, y = -39.7, z = -205.2 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 10.6, y = -40.1, z = -193.4 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 23.3, y = -40.1, z = -151.9 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 54.1, y = -40.9, z = -128.8 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 85.5, y = -40.0, z = -101.0 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 120.5, y = -40.0, z = -87.2 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 141.8, y = -40.4, z = -50.1 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 133.9, y = -40.5, z = -4.9 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 93.1, y = -39.5, z = 0.7 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 61.2, y = -39.2, z = 5.3 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 64.2, y = -36.0, z = 20.7 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 126.2, y = -23.1, z = 20.1 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 153.0, y = -19.3, z = 20.2 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 175.3, y = -19.9, z = 17.5 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 170.4, y = -20.4, z = -30.7 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 167.1, y = -19.8, z = -83.4 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 158.6, y = -19.9, z = -114.9 }, size = 4, direction = "sw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 128.2, y = -19.7, z = -142.5 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 80.9, y = -19.6, z = -148.7 }, size = 4, direction = "sw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 59.2, y = -17.4, z = -182.7 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 121.1, y = -3.7, z = -180.8 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 186.5, y = 0.4, z = -193.7 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+
+                    --Intersection
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 229.4, y = 0.3, z = -198.3 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 269.5, y = 0.3, z = -200.8 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 317.1, y = 0.0, z = -196.8 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 323.4, y = 0.8, z = -136.6 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 313.5, y = 0.2, z = -88.5 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 300.7, y = 0.6, z = -27.6 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 299.3, y = 0.1, z = 21.2 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 292.0, y = 0.4, z = 57.7 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 237.4, y = 0.2, z = 88.7 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 194.3, y = 0.1, z = 115.2 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 181.1, y = 0.1, z = 144.2 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 195.4, y = 0.0, z = 180.4 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 237.2, y = 0.0, z = 196.2 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 282.7, y = 0.9, z = 217.7 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 335.7, y = -0.2, z = 226.0 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 357.0, y = 0.0, z = 277.8 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 382.8, y = 1.9, z = 296.3 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 380.4, y = 16.4, z = 361.3 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 379.2, y = 21.0, z = 403.6 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 370.2, y = 20.1, z = 429.0 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 357.5, y = 20.0, z = 475.5 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 324.6, y = 20.5, z = 506.7 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 296.7, y = 20.7, z = 524.6 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = 280.7, y = 20.0, z = 535.0 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    -- Fei'Yin across to the Qu'Bia Arena entrance at (K-8)
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = -176.1, y = -24.0, z = -171.4 }, size = 4, direction = "ne", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = -152.5, y = -24.0, z = -148.2 }, size = 4, direction = "ne", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = -133.5, y = -24.0, z = -140.4 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = -100.2, y = -19.0, z = -133.3 }, size = 4, direction = "up", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = -97.7, y = -16.0, z = -96.0 }, size = 4, direction = "ne", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = -74.6, y = -16.0, z = -69.5 }, size = 4, direction = "ne", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = -60.4, y = -16.0, z = -61.0 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = -20.7, y = -16.0, z = -61.7 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = 32.3, y = -16.0, z = -54.0 }, size = 4, direction = "up", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = 27.8, y = -16.0, z = -21.6 }, size = 4, direction = "left", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = -20.3, y = -16.0, z = -16.8 }, size = 4, direction = "up", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = -16.7, y = -16.0, z = 22.6 }, size = 4, direction = "ne", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = 13.8, y = -16.0, z = 49.1 }, size = 4, direction = "ne", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = 24.9, y = -16.0, z = 58.9 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = 63.1, y = -16.6, z = 59.1 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = 99.6, y = -24.0, z = 56.4 }, size = 4, direction = "se", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = 124.8, y = -24.0, z = 28.4 }, size = 4, direction = "se", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = 162.6, y = -23.7, z = 7.4 }, size = 4, direction = "ne", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = 182.3, y = -24.0, z = 19.8 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = 209.5, y = -24.0, z = 23.7 }, size = 4, direction = "ne", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = 221.8, y = -24.0, z = 37.2 }, size = 4, direction = "up", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = 218.2, y = -24.0, z = 60.0 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Fei'Yin", type = 'rect', center = { x = 231.5, y = -29.6, z = 60.0 }, width = 4.75, height = 10.75, floor_id = 1, colour = "cyan", vertical_axis = 'z' },
+                    { zone_name = "Fei'Yin", type = 'arrow', center = { x = 237.3, y = -24.3, z = 59.5 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                },
+                trigger_on_event_id = { 32001 },
+            },
+            {
+                text = "Step 5: Return to Maat in Ru'Lude Gardens (H-5).\n \n" ..
+                       "On your FIRST win this conversation is required, for subsequent job fights skip this step manually.\n \n" ..
+                       "TIP: If you have not done The Road to Aht Urhgan, a surviving testimony can be traded to\n" ..
+                       "Faursel in Lower Jeuno for the Boarding Permit.\n",
+                route_to = "Ru'Lude Gardens",
+                onmob_target = "Maat",
+                destination_highlight = { position = "H-5", offsetX = 16, offsetY = 16 },
+                trigger_on_event_id = { 93 },
+                skip_if_any_job_level = 71, -- cap already broken, so event 93 is spent
+            },
+        },
+        reward = {
+            text = "Title: Star Breaker (first clear) and Maat Masher, Level Cap raised to 75!\n \n",
+        },
+    },
+
+    ["Genkai 5: Shattering Stars (Black Mage)"] = {
+        progress_group = "Genkai 5: Shattering Stars",
+        job_id = 4, -- xi.job.BLM - marks this entry when you are on Black Mage
+        prerequisites = {
+            {category = "Limit Breaks", subfile = "Genkai", name = "Genkai 4: Riding on the Clouds"},
+        },
+        requirements = {
+            level = 66,
+        },
+        steps = {
+            {
+                text = "Step 1: Speak to Maat in Ru'Lude Gardens (H-5) to start the quest.\n \n" ..
+                       "NOTE: Only needed for your FIRST Maat fight. If you have already beaten him on another\n" ..
+                       "job, tick this and go straight to the burning circle.\n",
+                route_to = "Ru'Lude Gardens",
+                onmob_target = "Maat",
+                destination_highlight = { position = "H-5", offsetX = 16, offsetY = 16 },
+                trigger_on_event_id = { 92 },
+                skip_if_any_job_level = 71, -- cap already broken, so event 92 is spent
+            },
+            {
+                text = "Step 2: Farm a Black Mage's Testimony in Castle Oztroja.\n \n" ..
+                       "Target: Yagudo Prelate - Look for the RED highlights.\n \n" ..
+                       "Enter from Meriphataud Mountains at (L-8). The GREEN square is the Survival Guide.\n" ..
+                       "Follow the arrows across floor 1.\n \n" ..
+                       "NOTE: You do NOT need the passwords for this. The Prelates patrol the open part of\n" ..
+                       "floor 1, before the password doors - stay on this side and you never touch that puzzle.\n \n" ..
+                       "WARNING: Yagudo casters aggro to MAGIC. As Black Mage that is a problem - every cast is\n" ..
+                       "a dinner bell. Pull with a single low-tier nuke and expect company.\n \n" ..
+                       "TIP: Bard and Ninja testimonies drop from Yagudo in this same area, so if you plan to do\n" ..
+                       "those jobs too, one trip can cover all three.\n \n" ..
+                       "TIP: One testimony is good for THREE attempts at Maat. It only vanishes on the third trade to\n" ..
+                       "the burning circle, so a single drop covers two retries.\n",
+                items_needed = { "Black Mage's Testimony" },
+                onmob_target = {"castle-oztroja-handle-1-i8",
+                            "castle-oztroja-handle-2-i8",
+                            "castle-oztroja-handle-1-g8",
+                            "castle-oztroja-handle-2-g8",
+                            "castle-oztroja-handle-3-g8",
+                            "castle-oztroja-handle-4-g8"},
+                onmob_enemy = { "Yagudo Prelate" },
+                onmob_enemy_colour = "red",
+                trigger_on_item_obtain = { "Black Mage's Testimony" },
+                zone_max_distance = 35,
+                visual_zones = {
+                     -- Survival Guide
+                    { zone_name = "Castle Oztroja", type = 'square', center = { x = -221.0, y = 0.3, z = -13.0 }, size = 1, floor_id = 1, colour = "green" },
+                    --map 1
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -216.0, y = 0.3, z = -18.2 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -178.6, y = 0.3, z = -12.7 }, size = 4, direction = "up", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -178.7, y = 0.3, z = 24.6 }, size = 4, direction = "up", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -175.1, y = 0.3, z = 56.8 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -139.7, y = 0.3, z = 58.7 }, size = 4, direction = "down", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -141.6, y = 0.1, z = 16.2 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -95.5, y = 0.2, z = 18.6 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -56.6, y = 0.3, z = 19.8 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -20.9, y = 0.3, z = 11.8 }, size = 4, direction = "down", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -18.5, y = 0.3, z = -17.6 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+
+
+                    -- map 2
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = 27.6, y = 0.3, z = 19.5 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = 100.6, y = -12.0, z = 19.3 }, size = 4, direction = "down", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = 99.6, y = -15.8, z = -20.3 }, size = 4, direction = "left", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = 19.3, y = -15.8, z = -18.7 }, size = 4, direction = "down", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = 18.0, y = -15.8, z = -52.2 }, size = 4, direction = "sw", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = 8.3, y = -15.8, z = -61.0 }, size = 4, direction = "left", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -19.8, y = -15.8, z = -60.3 }, size = 4, direction = "down", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -18.9, y = -15.8, z = -99.2 }, size = 4, direction = "left", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -51.7, y = -15.8, z = -99.1 }, size = 4, direction = "sw", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -60.4, y = -15.8, z = -110.6 }, size = 4, direction = "down", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -59.7, y = -15.7, z = -139.0 }, size = 4, direction = "left", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -100.6, y = -15.7, z = -136.8 }, size = 4, direction = "up", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -99.3, y = -15.7, z = -99.4 }, size = 4, direction = "left", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -132.8, y = -15.8, z = -99.3 }, size = 4, direction = "nw", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -141.0, y = -15.8, z = -87.7 }, size = 4, direction = "up", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -139.0, y = -16.0, z = -68.2 }, size = 4, direction = "right", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -92.5, y = -16.0, z = -65.7 }, size = 4, direction = "ne", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -81.1, y = -15.8, z = -60.0 }, size = 4, direction = "right", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -60.8, y = -15.8, z = -54.7 }, size = 4, direction = "up", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -60.3, y = -15.9, z = -29.5 }, size = 4, direction = "left", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -86.0, y = -16.0, z = -27.0 }, size = 4, direction = "nw", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -95.6, y = -16.0, z = -19.7 }, size = 4, direction = "left", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -145.4, y = -16.0, z = -19.8 }, size = 4, direction = "left", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -182.7, y = -15.7, z = -20.1 }, size = 4, direction = "left", floor_id = 2, colour = "yellow" },
+
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -193.8, y = -15.8, z = -19.2 }, size = 4, direction = "left", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -237.9, y = -15.8, z = -18.9 }, size = 4, direction = "left", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -259.3, y = -15.8, z = -24.1 }, size = 4, direction = "down", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -260.7, y = -20.0, z = -60.7 }, size = 4, direction = "right", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -217.8, y = -28.8, z = -60.5 }, size = 4, direction = "right", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -193.3, y = -33.0, z = -60.4 }, size = 4, direction = "right", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -161.2, y = -39.8, z = -60.0 }, size = 4, direction = "right", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -135.6, y = -39.8, z = -58.2 }, size = 4, direction = "up", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -133.8, y = -39.7, z = -22.7 }, size = 4, direction = "right", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -99.7, y = -39.8, z = -22.5 }, size = 4, direction = "down", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -100.0, y = -39.7, z = -67.0 }, size = 4, direction = "down", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -97.3, y = -39.7, z = -98.6 }, size = 4, direction = "right", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -61.5, y = -39.7, z = -99.3 }, size = 4, direction = "down", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -60.1, y = -39.7, z = -138.9 }, size = 4, direction = "right", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -23.5, y = -39.8, z = -143.4 }, size = 4, direction = "down", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -22.0, y = -39.8, z = -179.3 }, size = 4, direction = "left", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -60.8, y = -44.0, z = -179.1 }, size = 4, direction = "down", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -59.8, y = -52.0, z = -220.5 }, size = 4, direction = "left", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -85.1, y = -57.0, z = -219.0 }, size = 4, direction = "left", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -100.3, y = -60.0, z = -218.4 }, size = 4, direction = "up", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -100.1, y = -71.8, z = -159.3 }, size = 4, direction = "up", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -98.8, y = -71.7, z = -116.8 }, size = 4, direction = "up", floor_id = 4, colour = "yellow" },
+                },
+                images = {
+                    {
+                        width = 512,
+                        height = 512,
+                        state = 2,
+                        zone_name = "Castle Oztroja",
+                        floor_id = 1,
+                        highlights = {
+
+                            { position = "J-8", offsetX = 16, offsetY = 16},
+                        },
+                    },
+                    {
+                        width = 512,
+                        height = 512,
+                        state = 2,
+                        zone_name = "Castle Oztroja",
+                        floor_id = 2,
+                        highlights = {
+                             { position = "F-9", offsetX = 16, offsetY = 16 },
+                        },
+                    },
+                    {
+                        width = 512,
+                        height = 512,
+                        state = 2,
+                        zone_name = "Castle Oztroja",
+                        floor_id = 3,
+                        highlights = {
+                            { position = "H-11", offsetX = 16, offsetY = 16 },
+                        },
+                    },
+                    {
+                        width = 512,
+                        height = 512,
+                        state = 2,
+                        zone_name = "Castle Oztroja",
+                        floor_id = 4,
+                        highlights = {
+                            { position = "H-7", offsetX = 16, offsetY = 16 },
+                        },
+                    },
+                    {
+                        width = 512,
+                        height = 512,
+                        state = 2,
+                        zone_name = "Castle Oztroja",
+                        floor_id = 5,
+                        highlights = {
+                            { position = "H-8", offsetX = 16, offsetY = 16 },
+                        },
+                    },
+                    {
+                        width = 512,
+                        height = 512,
+                        state = 2,
+                        zone_name = "Castle Oztroja",
+                        floor_id = 6,
+                        highlights = {
+                            { position = "I-8", offsetX = 16, offsetY = 16 },
+                        },
+                    },
+                    {
+                        width = 512,
+                        height = 512,
+                        state = 2,
+                        zone_name = "Castle Oztroja",
+                        floor_id = 15,
+                        highlights = {
+                            { position = "G-5", offsetX = 16, offsetY = 16 },
+                        },
+                    },
+                },
+            },
+            {
+                text = "Step 3: Trade the Black Mage's Testimony to Maat in Ru'Lude Gardens (H-5).\n \n" ..
+                       "You cannot enter the battlefield the first time without doing this - he has to challenge\n" ..
+                       "you before the burning circle will let you in.\n \n" ..
+                       "- He then offers to warp you straight to Horlais Peak. Say YES, it saves the walk.\n" ..
+                       "- Do your prep BEFORE you accept: once you confirm, you are in and the clock is running.\n \n" ..
+                       "NOTE: Only needed for your FIRST Maat fight. After your first win he stops offering the\n" ..
+                       "warp entirely and you go straight to the burning circle - tick this and move on.\n",
+                route_to = "Ru'Lude Gardens",
+                onmob_target = "Maat",
+                destination_highlight = { position = "H-5", offsetX = 16, offsetY = 16 },
+                trigger_on_event_id = { 64 },
+                skip_if_any_job_level = 71, -- cap already broken, so Maat no longer warps you
+            },
+            {
+                text = "Step 4: Beat Maat in Horlais Peak as BLACK MAGE.\n \n" ..
+                       "Trade the Testimony to the Burning Circle and pick the \"Shattering Stars\" arena - or Home Point to\n" ..
+                       "Yughott Grotto #1.\n \n" ..
+                       "===== Before you go in =====\n" ..
+                       "CRITICAL: Your SUB JOB is disabled inside - no /WHM, so no Stoneskin and no cures beyond\n" ..
+                       "your own items. Bring Warp on your main or a Warp Ring to get out.\n" ..
+                       "CRITICAL: The 10 minute clock starts when you ZONE IN, not when you engage - buffing and\n" ..
+                       "resting to full MP inside eats your timer. Come in topped up.\n \n" ..
+                       "===== The fight =====\n" ..
+                       "- Maat fights as BLACK MAGE with your job's abilities including Manafont, but he always\n" ..
+                       "  swings Hand-to-Hand and uses H2H weapon skills.\n" ..
+                       "- Uncapped. He is NOT aggressive, so you get the first move - open at max casting range.\n" ..
+                       "- He usually concedes before he actually dies, so do not panic at his HP bar.\n" ..
+                       "- If you have never beaten Maat on ANY job you lose NO experience on a loss. After your first win anywhere, later losses DO cost experience.\n" ..
+                       "- If you have Rhapsody in Umber, you can call Trusts once you are inside.\n \n",
+                zone_max_distance = 35,
+                onmob_target = "horlais-peak-burning-circle",
+                kill_requirement = {
+                    count = 1,
+                    enemies = {"Maat"},
+                    display_only = true,
+                    reset_on_zone_entry = true,
+                },
+                onmob_enemy = "Maat",
+                onmob_enemy_size = 1,
+                visual_zones = {
+                        --Ghelsba Outpost
+                        { zone_name = "Ghelsba Outpost", type = 'arrow', center = { x = 28.1, y = 0.1, z = 62.2 }, size = 4, direction = "sw", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Ghelsba Outpost", type = 'arrow', center = { x = -4.4, y = 0.0, z = 26.6 }, size = 4, direction = "se", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Ghelsba Outpost", type = 'arrow', center = { x = 19.9, y = 0.1, z = -4.8 }, size = 4, direction = "se", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Ghelsba Outpost", type = 'arrow', center = { x = 45.9, y = 0.0, z = -58.5 }, size = 4, direction = "left", floor_id = 1, colour = "yellow" },
+
+                        -- Yughott Grotto 1 to K-4
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = -225.1, y = -0.2, z = -91.6 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = -191.8, y = -1.0, z = -87.9 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = -141.4, y = -0.2, z = -60.4 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = -103.5, y = -0.0, z = -56.4 }, size = 4, direction = "ne", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = -92.0, y = -0.6, z = -38.2 }, size = 4, direction = "up", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = -78.9, y = 0.0, z = -9.7 }, size = 4, direction = "se", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = -21.5, y = -0.2, z = -25.1 }, size = 4, direction = "ne", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 18.8, y = -0.2, z = 2.0 }, size = 4, direction = "ne", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 56.4, y = -0.2, z = 32.4 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 137.1, y = -12.9, z = 61.9 }, size = 4, direction = "up", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 139.8, y = -12.4, z = 113.1 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 203.8, y = -12.0, z = 121.4 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 236.9, y = -12.2, z = 125.9 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 292.9, y = -23.7, z = 171.2 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 317.5, y = -24.2, z = 180.5 }, size = 4, direction = "up", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 329.4, y = -24.4, z = 215.5 }, size = 4, direction = "up", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 335.4, y = -24.1, z = 239.0 }, size = 4, direction = "up", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 322.3, y = -24.1, z = 251.7 }, size = 4, direction = "left", floor_id = 1, colour = "yellow" },
+
+                        -- Fort Ghelsba
+                        { zone_name = "Fort Ghelsba", type = 'arrow', center = { x = 207.9, y = -45.8, z = 100.5 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Fort Ghelsba", type = 'arrow', center = { x = 151.4, y = -44.0, z = 116.0 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Fort Ghelsba", type = 'arrow', center = { x = 93.8, y = -52.0, z = 116.8 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Fort Ghelsba", type = 'arrow', center = { x = 96.9, y = -59.8, z = 66.4 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Fort Ghelsba", type = 'arrow', center = { x = 101.0, y = -60.0, z = 1.5 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Fort Ghelsba", type = 'arrow', center = { x = 109.9, y = -63.6, z = -51.9 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Fort Ghelsba", type = 'arrow', center = { x = 146.6, y = -68.5, z = -62.1 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Fort Ghelsba", type = 'arrow', center = { x = 184.1, y = -75.7, z = -49.2 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Fort Ghelsba", type = 'arrow', center = { x = 177.5, y = -83.9, z = -3.6 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Fort Ghelsba", type = 'arrow', center = { x = 166.4, y = -84.6, z = 20.1 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Fort Ghelsba", type = 'arrow', center = { x = 176.7, y = -86.4, z = 20.6 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Fort Ghelsba", type = 'arrow', center = { x = 185.2, y = -86.4, z = 24.3 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Fort Ghelsba", type = 'arrow', center = { x = 198.8, y = -86.2, z = 19.8 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+
+                        --Yughott Grotto 2
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 283.4, y = -39.7, z = 148.5 }, size = 4, direction = "right", floor_id = 2, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 320.8, y = -40.3, z = 135.1 }, size = 4, direction = "sw", floor_id = 2, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 315.1, y = -40.1, z = 105.0 }, size = 4, direction = "ne", floor_id = 2, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 330.6, y = -42.1, z = 109.8 }, size = 4, direction = "right", floor_id = 2, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 374.5, y = -40.3, z = 105.9 }, size = 4, direction = "right", floor_id = 2, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 400.5, y = -40.2, z = 118.6 }, size = 4, direction = "up", floor_id = 2, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 405.5, y = -40.1, z = 148.4 }, size = 4, direction = "right", floor_id = 2, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 436.7, y = -40.1, z = 169.2 }, size = 4, direction = "right", floor_id = 2, colour = "yellow" },
+
+                        --Home point
+                        { zone_name = "Yughott Grotto", type = 'square', center = { x = 434.0, y = -40.0, z = 171.0 }, size = 1, floor_id = 2, colour = "green" },
+                },
+                images = {
+                      {
+                          width    = 512,
+                          height   = 512,
+                          state    = 4,
+                          zone_name = "Ghelsba Outpost",
+                          floor_id = 1,
+                          highlights = {
+                              { position = "H-11", offsetX = 16, offsetY = 16 },
+                          },
+                      },
+                      {
+                          width    = 512,
+                          height   = 512,
+                          state    = 4,
+                          zone_name = "Yughott Grotto",
+                          floor_id = 1,
+                          highlights = {
+                              { position = "K-5", offsetX = 16, offsetY = 16 },
+                          },
+                      },
+                      {
+                          width    = 512,
+                          height   = 512,
+                          state    = 4,
+                          zone_name = "Fort Ghelsba",
+                          highlights = {
+                              { position = "J-8", offsetX = 16, offsetY = 16 },
+                          },
+                      },
+                      {
+                          width    = 512,
+                          height   = 512,
+                          state    = 4,
+                          zone_name = "Yughott Grotto",
+                          floor_id = 2,
+                          highlights = {
+                              { position = "J-6", offsetX = 16, offsetY = 16 },
+                          },
+                      },
+                      {
+                          width    = 512,
+                          height   = 512,
+                          state    = 4,
+                          zone_name = "Horlais Peak",
+                          floor_id = 0,
+                      },
+                },
+                trigger_on_event_id = { 32001 },
+            },
+            {
+                text = "Step 5: Return to Maat in Ru'Lude Gardens (H-5).\n \n" ..
+                       "On your FIRST win this conversation is required, for subsequent job fights skip this step manually.\n \n" ..
+                       "TIP: If you have not done The Road to Aht Urhgan, a surviving testimony can be traded to\n" ..
+                       "Faursel in Lower Jeuno for the Boarding Permit.\n",
+                route_to = "Ru'Lude Gardens",
+                onmob_target = "Maat",
+                destination_highlight = { position = "H-5", offsetX = 16, offsetY = 16 },
+                trigger_on_event_id = { 93 },
+                skip_if_any_job_level = 71, -- cap already broken, so event 93 is spent
+            },
+        },
+        reward = {
+            text = "Title: Star Breaker (first clear) and Maat Masher, Level Cap raised to 75!\n \n",
+        },
+    },
+
+    ["Genkai 5: Shattering Stars (Ninja)"] = {
+        progress_group = "Genkai 5: Shattering Stars",
+        job_id = 13, -- xi.job.NIN - marks this entry when you are on Ninja
+        prerequisites = {
+            {category = "Limit Breaks", subfile = "Genkai", name = "Genkai 4: Riding on the Clouds"},
+        },
+        requirements = {
+            level = 66,
+        },
+        steps = {
+            {
+                text = "Step 1: Speak to Maat in Ru'Lude Gardens (H-5) to start the quest.\n \n" ..
+                       "NOTE: Only needed for your FIRST Maat fight. If you have already beaten him on another\n" ..
+                       "job, tick this and go straight to the burning circle.\n",
+                route_to = "Ru'Lude Gardens",
+                onmob_target = "Maat",
+                destination_highlight = { position = "H-5", offsetX = 16, offsetY = 16 },
+                trigger_on_event_id = { 92 },
+                skip_if_any_job_level = 71, -- cap already broken, so event 92 is spent
+            },
+            {
+                text = "Step 2: Farm a Ninja's Testimony in Castle Oztroja.\n \n" ..
+                       "Target: Yagudo Assassin (~16%) - Look for the RED highlights.\n \n" ..
+                       "Enter from Meriphataud Mountains at (L-8). The GREEN square is the Survival Guide.\n" ..
+                       "Follow the arrows - this route runs deeper than the Bard/Black Mage one, through\n" ..
+                       "floors 1, 2, 3 and 4.\n \n" ..
+                       "CRITICAL: Invisible for this ENTIRE section (Sneak for bats/leeches). As Ninja you have\n" ..
+                       "Tonko, so this is the easiest job in the game to run Oztroja on.\n \n" ..
+                       "CRITICAL: This route passes the lever doors and the trap-door room, so you need the three\n" ..
+                       "passwords from the brass statues - see Genkai 3 step 4 for the full walkthrough and the\n" ..
+                       "password list. Passwords reset every game day at 00:00.\n \n" ..
+                       "WARNING: True-sight NMs here (Tzee Xicu the Manifest, Yagudo Avatar / High Priest /\n" ..
+                       "Templar) see through Invisible - stay out of their sight lines.\n \n" ..
+                       "===== Other drop sources =====\n" ..
+                       "  Tonberry Decapitator (~18%, the best rate) - Den of Rancor\n" ..
+                       "  Tonberry Stabber (~15%) - Temple of Uggalepih\n" ..
+                       "  Tonberry Chopper (~14%) - Yhoator Jungle. NO password doors and an open zone, so this\n" ..
+                       "    is the easy option if you would rather not run Oztroja at all.\n" ..
+                       "  Tonberry Slasher (~8%) - Den of Rancor\n \n" ..
+                       "TIP: One testimony is good for THREE attempts at Maat. It only vanishes on the third trade to\n" ..
+                       "the burning circle, so a single drop covers two retries.\n",
+                route_to = "Castle Oztroja",
+                items_needed = { "Ninja's Testimony" },
+                onmob_enemy = { "Yagudo Assassin" },
+                onmob_enemy_colour = "red",
+                trigger_on_item_obtain = { "Ninja's Testimony" },
+                onmob_target = {"castle-oztroja-brass-statue-1-h9",
+                                "castle-oztroja-handle-1-i8",
+                                "castle-oztroja-handle-2-i8",
+                                "castle-oztroja-brass-statue-15-h9",
+                                "castle-oztroja-brass-statue-2-i8",
+                                "castle-oztroja-handle-1-g8",
+                                "castle-oztroja-handle-2-g8",
+                                "castle-oztroja-handle-3-g8",
+                                "castle-oztroja-handle-4-g8",
+                                "castle-oztroja-torch-stand-4-h7",
+                                "castle-oztroja-brass-statue-4-h7"},
+                zone_max_distance = 35,
+                visual_zones = {
+                     -- Survival Guide
+                    { zone_name = "Castle Oztroja", type = 'square', center = { x = -221.0, y = 0.3, z = -13.0 }, size = 1, floor_id = 1, colour = "green" },
+                    --map 1
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -216.0, y = 0.3, z = -18.2 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -178.6, y = 0.3, z = -12.7 }, size = 4, direction = "up", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -178.7, y = 0.3, z = 24.6 }, size = 4, direction = "up", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -175.1, y = 0.3, z = 56.8 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -139.7, y = 0.3, z = 58.7 }, size = 4, direction = "down", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -141.6, y = 0.1, z = 16.2 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -95.5, y = 0.2, z = 18.6 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -56.6, y = 0.3, z = 19.8 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -20.9, y = 0.3, z = 11.8 }, size = 4, direction = "down", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -18.5, y = 0.3, z = -17.6 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+
+                    -- map 2
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = 27.6, y = 0.3, z = 19.5 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = 100.6, y = -12.0, z = 19.3 }, size = 4, direction = "down", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = 99.6, y = -15.8, z = -20.3 }, size = 4, direction = "left", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = 19.3, y = -15.8, z = -18.7 }, size = 4, direction = "down", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = 18.0, y = -15.8, z = -52.2 }, size = 4, direction = "sw", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = 8.3, y = -15.8, z = -61.0 }, size = 4, direction = "left", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -19.8, y = -15.8, z = -60.3 }, size = 4, direction = "down", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -18.9, y = -15.8, z = -99.2 }, size = 4, direction = "left", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -51.7, y = -15.8, z = -99.1 }, size = 4, direction = "sw", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -60.4, y = -15.8, z = -110.6 }, size = 4, direction = "down", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -59.7, y = -15.7, z = -139.0 }, size = 4, direction = "left", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -100.6, y = -15.7, z = -136.8 }, size = 4, direction = "up", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -99.3, y = -15.7, z = -99.4 }, size = 4, direction = "left", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -132.8, y = -15.8, z = -99.3 }, size = 4, direction = "nw", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -141.0, y = -15.8, z = -87.7 }, size = 4, direction = "up", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -139.0, y = -16.0, z = -68.2 }, size = 4, direction = "right", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -92.5, y = -16.0, z = -65.7 }, size = 4, direction = "ne", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -81.1, y = -15.8, z = -60.0 }, size = 4, direction = "right", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -60.8, y = -15.8, z = -54.7 }, size = 4, direction = "up", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -60.3, y = -15.9, z = -29.5 }, size = 4, direction = "left", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -86.0, y = -16.0, z = -27.0 }, size = 4, direction = "nw", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -95.6, y = -16.0, z = -19.7 }, size = 4, direction = "left", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -145.4, y = -16.0, z = -19.8 }, size = 4, direction = "left", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -182.7, y = -15.7, z = -20.1 }, size = 4, direction = "left", floor_id = 2, colour = "yellow" },
+
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -193.8, y = -15.8, z = -19.2 }, size = 4, direction = "left", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -237.9, y = -15.8, z = -18.9 }, size = 4, direction = "left", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -259.3, y = -15.8, z = -24.1 }, size = 4, direction = "down", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -260.7, y = -20.0, z = -60.7 }, size = 4, direction = "right", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -217.8, y = -28.8, z = -60.5 }, size = 4, direction = "right", floor_id = 2, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -193.3, y = -33.0, z = -60.4 }, size = 4, direction = "right", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -161.2, y = -39.8, z = -60.0 }, size = 4, direction = "right", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -135.6, y = -39.8, z = -58.2 }, size = 4, direction = "up", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -133.8, y = -39.7, z = -22.7 }, size = 4, direction = "right", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -99.7, y = -39.8, z = -22.5 }, size = 4, direction = "down", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -100.0, y = -39.7, z = -67.0 }, size = 4, direction = "down", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -97.3, y = -39.7, z = -98.6 }, size = 4, direction = "right", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -61.5, y = -39.7, z = -99.3 }, size = 4, direction = "down", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -60.1, y = -39.7, z = -138.9 }, size = 4, direction = "right", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -23.5, y = -39.8, z = -143.4 }, size = 4, direction = "down", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -22.0, y = -39.8, z = -179.3 }, size = 4, direction = "left", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -60.8, y = -44.0, z = -179.1 }, size = 4, direction = "down", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -59.8, y = -52.0, z = -220.5 }, size = 4, direction = "left", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -85.1, y = -57.0, z = -219.0 }, size = 4, direction = "left", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -100.3, y = -60.0, z = -218.4 }, size = 4, direction = "up", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -100.1, y = -71.8, z = -159.3 }, size = 4, direction = "up", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -98.8, y = -71.7, z = -116.8 }, size = 4, direction = "up", floor_id = 4, colour = "yellow" },
+                },
+                images = {
+                    {
+                        width = 512,
+                        height = 512,
+                        state = 2,
+                        zone_name = "Castle Oztroja",
+                        floor_id = 1,
+                        highlights = {
+                            { position = "J-8", offsetX = 16, offsetY = 16},
+                        },
+                    },
+                    {
+                        width = 512,
+                        height = 512,
+                        state = 2,
+                        zone_name = "Castle Oztroja",
+                        floor_id = 2,
+                        highlights = {
+                             { position = "F-9", offsetX = 16, offsetY = 16 },
+                        },
+                    },
+                    {
+                        width = 512,
+                        height = 512,
+                        state = 2,
+                        zone_name = "Castle Oztroja",
+                        floor_id = 3,
+                        highlights = {
+                            { position = "H-11", offsetX = 16, offsetY = 16 },
+                        },
+                    },
+                    {
+                        width = 512,
+                        height = 512,
+                        state = 2,
+                        zone_name = "Castle Oztroja",
+                        floor_id = 4,
+                        highlights = {
+                            { position = "H-7", offsetX = 16, offsetY = 16 },
+                        },
+                    },
+                    {
+                        width = 512,
+                        height = 512,
+                        state = 2,
+                        zone_name = "Castle Oztroja",
+                        floor_id = 5,
+                        highlights = {
+                            { position = "H-8", offsetX = 16, offsetY = 16 },
+                        },
+                    },
+                    {
+                        width = 512,
+                        height = 512,
+                        state = 2,
+                        zone_name = "Castle Oztroja",
+                        floor_id = 6,
+                        highlights = {
+                            { position = "I-8", offsetX = 16, offsetY = 16 },
+                        },
+                    },
+                    {
+                        width = 512,
+                        height = 512,
+                        state = 2,
+                        zone_name = "Castle Oztroja",
+                        floor_id = 15,
+                        highlights = {
+                            { position = "G-5", offsetX = 16, offsetY = 16 },
+                        },
+                    },
+                },
+            },
+            {
+                text = "Step 3: Trade the Ninja's Testimony to Maat in Ru'Lude Gardens (H-5).\n \n" ..
+                       "You cannot enter the battlefield the first time without doing this - he has to challenge\n" ..
+                       "you before the burning circle will let you in.\n \n" ..
+                       "- He then offers to warp you straight to the Chamber of Oracles. Say YES - this is by far\n" ..
+                       "  the longest walk of the five battlefields, so take the free ride.\n" ..
+                       "- Do your prep BEFORE you accept: once you confirm, you are in and the clock is running.\n \n" ..
+                       "NOTE: Only needed for your FIRST Maat fight. After your first win he stops offering the\n" ..
+                       "warp entirely and you go straight to the burning circle - tick this and move on.\n",
+                route_to = "Ru'Lude Gardens",
+                onmob_target = "Maat",
+                destination_highlight = { position = "H-5", offsetX = 16, offsetY = 16 },
+                trigger_on_event_id = { 64 },
+                skip_if_any_job_level = 71, -- cap already broken, so Maat no longer warps you
+            },
+            {
+                text = "Step 4: Beat Maat in the Chamber of Oracles as NINJA.\n \n" ..
+                       "Same burning circle as Dragoon and Samurai.\n \n" ..
+                       "TIP: Home Point #1 of Quicksand Caves warps you directly to the Chamber of Oracles\n" ..
+                       "WARNING: Sneak the whole way - Antica and Sabotenders aggro in the caves. Tonko works fine.\n \n" ..
+                       "===== Before you go in =====\n" ..
+                       "CRITICAL: Your SUB JOB is disabled inside. Take /BLM for the Warp out, or a Warp Ring.\n" ..
+                       "CRITICAL: The 10 minute clock starts when you ZONE IN, not when you engage - casting your\n" ..
+                       "shadows and buffs inside eats your timer.\n \n" ..
+                       "===== The fight =====\n" ..
+                       "- Maat fights as NINJA with your job's abilities including Mijin Gakure, but he always\n" ..
+                       "  swings Hand-to-Hand and uses H2H weapon skills.\n" ..
+                       "- Uncapped. He is NOT aggressive, so you get the first move - shadows up before you pull.\n" ..
+                       "- He usually concedes before he actually dies, so do not panic at his HP bar.\n" ..
+                       "- If you have never beaten Maat on ANY job you lose NO experience on a loss. After your first win anywhere, later losses DO cost experience.\n" ..
+                       "- If you have Rhapsody in Umber, you can call Trusts once you are inside.\n \n",
+                keyitems_needed = { 2051 },
+                zone_max_distance = 35,
+                kill_requirement = {
+                    count = 1,
+                    enemies = {"Maat"},
+                    display_only = true,
+                    reset_on_zone_entry = true,
+                },
+                onmob_target = "chamber-of-oracles-shimmering-circle",
+                onmob_enemy = "Maat",
+                onmob_enemy_size = 1,
+                visual_zones = {
+                    -- Western Altepa Desert down into Quicksand Caves
+                    { zone_name = "Western Altepa Desert", type = 'arrow', center = { x = -833.6, y = -8.8, z = -605.8 }, size = 4, direction = 'se', floor_id = 0, colour = "yellow" },
+                    { zone_name = "Western Altepa Desert", type = 'arrow', center = { x = -802, y = -19.1, z = -698.6 }, size = 4, direction = 'up', floor_id = 0, colour = "yellow" },
+                    { zone_name = "Western Altepa Desert", type = 'arrow', center = { x = -779.9, y = -16.6, z = -616.3 }, size = 4, direction = 'down', floor_id = 0, colour = "yellow" },
+                    { zone_name = "Western Altepa Desert", type = 'arrow', center = { x = -774, y = -8.4, z = -702.5 }, size = 4, direction = 'right', floor_id = 0, colour = "yellow" },
+
+                    -- Quicksand Caves
+                    { zone_name = "Quicksand Caves", type = 'square', center = { x = -780.0, y = 0.0, z = -459.5 }, size = 6, floor_id = 4, colour = "cyan" },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -780.1, y = -0.4, z = -453.5 }, size = 4, direction = "up", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -779.9, y = 0.0, z = -441.5 }, size = 4, direction = "up", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -781.5, y = 0.0, z = -420.0 }, size = 4, direction = "left", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -819.1, y = 0.0, z = -417.8 }, size = 4, direction = "up", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'square', center = { x = -819.8, y = 0.0, z = -379.6 }, size = 6, floor_id = 4, colour = "cyan" },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -826.0, y = 0.0, z = -379.8 }, size = 4, direction = "left", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -838.2, y = 0.0, z = -379.8 }, size = 4, direction = "left", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'rect', center = { x = -850.0, y = -2.3, z = -380.0 }, width = 4.00, height = 4.75, floor_id = 4, colour = "cyan", vertical_axis = 'z' },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -856.5, y = 0.0, z = -380.5 }, size = 4, direction = "left", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -886.4, y = 0.0, z = -381.3 }, size = 4, direction = "left", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'line', start = { x = -890.0, y = 0.0, z = -381.6 }, stop = { x = -895.6, y = 19.5, z = -382.6 }, floor_id = 4, colour = "yellow" },
+
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -898.7, y = 21.1, z = -386.9 }, size = 4, direction = "down", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -906.4, y = 17.2, z = -419.7 }, size = 4, direction = "left", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -940.3, y = 17.0, z = -405.1 }, size = 4, direction = "up", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -940.4, y = 17.2, z = -365.8 }, size = 4, direction = "up", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -938.8, y = 17.2, z = -327.5 }, size = 4, direction = "up", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -950.8, y = 16.9, z = -301.3 }, size = 4, direction = "left", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -980.2, y = 17.0, z = -289.0 }, size = 4, direction = "up", floor_id = 4, colour = "yellow" },
+                },
+                images = {
+                    {
+                        width = 512,
+                        height = 512,
+                        state = 4,
+                        zone_name = "Western Altepa Desert",
+                        floor_id = 0,
+                        highlights = {
+                            { position = "C-11", offsetX = 16, offsetY = 16},
+                        },
+                    },
+                    {
+                        width = 512,
+                        height = 512,
+                        state = 4,
+                        zone_name = "Quicksand Caves",
+                        floor_id = 4,
+                        highlights = {
+                            { position = "I-9", offsetX = 16, offsetY = 16, label = "1" },
+                            { position = "H-7", offsetX = 16, offsetY = 16, label = "2" },
+                            { position = "F-7", offsetX = 16, offsetY = 16, label = "3" },
+                            { position = "D-4", offsetX = 16, offsetY = 16, label = "4" },
+                        },
+                    },
+                },
+                trigger_on_event_id = { 32001 },
+            },
+            {
+                text = "Step 5: Return to Maat in Ru'Lude Gardens (H-5).\n \n" ..
+                       "On your FIRST win this conversation is required, for subsequent job fights skip this step manually.\n \n" ..
+                       "TIP: If you have not done The Road to Aht Urhgan, a surviving testimony can be traded to\n" ..
+                       "Faursel in Lower Jeuno for the Boarding Permit.\n",
+                route_to = "Ru'Lude Gardens",
+                onmob_target = "Maat",
+                destination_highlight = { position = "H-5", offsetX = 16, offsetY = 16 },
+                trigger_on_event_id = { 93 },
+                skip_if_any_job_level = 71, -- cap already broken, so event 93 is spent
+            },
+        },
+        reward = {
+            text = "Title: Star Breaker (first clear) and Maat Masher, Level Cap raised to 75!\n \n",
+        },
+    },
+    ["Genkai 5b: Beyond the Sun (Maat's Cap)"] = {
+        prerequisites = {
+            {category = "Limit Breaks", subfile = "Genkai", name = "Genkai 5: Shattering Stars (Warrior)"},
+            {category = "Limit Breaks", subfile = "Genkai", name = "Genkai 5: Shattering Stars (Monk)"},
+            {category = "Limit Breaks", subfile = "Genkai", name = "Genkai 5: Shattering Stars (White Mage)"},
+            {category = "Limit Breaks", subfile = "Genkai", name = "Genkai 5: Shattering Stars (Black Mage)"},
+            {category = "Limit Breaks", subfile = "Genkai", name = "Genkai 5: Shattering Stars (Red Mage)"},
+            {category = "Limit Breaks", subfile = "Genkai", name = "Genkai 5: Shattering Stars (Thief)"},
+            {category = "Limit Breaks", subfile = "Genkai", name = "Genkai 5: Shattering Stars (Paladin)"},
+            {category = "Limit Breaks", subfile = "Genkai", name = "Genkai 5: Shattering Stars (Dark Knight)"},
+            {category = "Limit Breaks", subfile = "Genkai", name = "Genkai 5: Shattering Stars (Beastmaster)"},
+            {category = "Limit Breaks", subfile = "Genkai", name = "Genkai 5: Shattering Stars (Bard)"},
+            {category = "Limit Breaks", subfile = "Genkai", name = "Genkai 5: Shattering Stars (Ranger)"},
+            {category = "Limit Breaks", subfile = "Genkai", name = "Genkai 5: Shattering Stars (Samurai)"},
+            {category = "Limit Breaks", subfile = "Genkai", name = "Genkai 5: Shattering Stars (Ninja)"},
+            {category = "Limit Breaks", subfile = "Genkai", name = "Genkai 5: Shattering Stars (Dragoon)"},
+            {category = "Limit Breaks", subfile = "Genkai", name = "Genkai 5: Shattering Stars (Summoner)"},
+        },
+        steps = {
+            {
+                text = "Step 1: Speak to Maat in Ru'Lude Gardens (H-5) once you have beaten him on ALL 15 jobs.\n \n",
+                route_to = "Ru'Lude Gardens",
+                onmob_target = "Maat",
+                destination_highlight = { position = "H-5", offsetX = 16, offsetY = 16 },
+                trigger_on_event_id = { 74 },
+            },
+        },
+        reward = {
+            text = "Maat's Cap, and the title Ultimate Champion of the World.\n \n" ..
+                   "- The reward for defeating Maat on all 15 original/Zilart jobs.\n \n",
         },
     },
 }

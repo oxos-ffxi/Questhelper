@@ -2757,17 +2757,6 @@ return {
                     { zone_name = "Lower Jeuno", type = 'rect', center = { x = 34.4, y = 2.4, z = -36.4 }, width = 2.50, height = 3.00, floor_id = 0, colour = "cyan", vertical_axis = 'ne', rotation = 15 },
                 },
             },
-            -- DAVOI - OPTISTONE
-            --
-            -- From here on, steps carry NO trigger_on_keyitem_obtain skip. That is
-            -- deliberate: the magicite (KI 14/15/16) are taken back when the mission
-            -- completes, so a repeat runner never holds them and this stretch must be
-            -- walked every time. The skips on steps 5-16 work only because the Yagudo
-            -- Torch / Crest of Davoi / Coruscant Rosary / Black Matinee Necklace are
-            -- kept for good - they are the entry passes to the strongholds.
-            -- Rule: skip on key items that SURVIVE completion, never on ones consumed
-            -- by it. (KI 14/15/16 do appear on steps 20/24/28, but as ordinary "just
-            -- picked it up" triggers within a run, not as skips.)
             {
                 text = "Step 17: Travel to Davoi! \n \n" ..
                        "Fastest route: Unity Warp to Jugner Forest, go to (G-12). OR Outpost to Norvallen > Davoi. \n \n",
@@ -3212,6 +3201,9 @@ return {
                 route_to = "Fei'Yin 1",
                 zone_max_distance = 40,
                 visual_zones = {
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -206.7, y = -39.9, z = -197.0 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -165.0, y = -40.0, z = -204.5 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -118.9, y = -39.8, z = -219.1 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
                     { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -206.7, y = -39.9, z = -197.0 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
                     { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -165.0, y = -40.0, z = -204.5 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
                     { zone_name = "Beaucedine Glacier", type = 'arrow', center = { x = -118.9, y = -39.8, z = -219.1 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },

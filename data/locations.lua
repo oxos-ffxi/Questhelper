@@ -2227,6 +2227,14 @@ return {
         max_distance = 10,
         draw_in_combat = false,
     },
+    --Chamber of Oracles
+    ["chamber-of-oracles-shimmering-circle"] = {
+        target_pos = { x = -220.1, y = -1.9, z = 23.0 },
+        visual_mode = "arc",
+        zone = "Chamber of Oracles",
+        floor_id = 0,
+        max_distance = 35
+    },
     --Kuftal Tunnel
     ["kuftal1-8-2-???"] = {
         target_pos = { x = -29.1, y = -22.1, z = -183.8},

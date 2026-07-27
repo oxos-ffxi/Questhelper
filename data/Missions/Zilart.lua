@@ -896,6 +896,28 @@ return {
                        "[4] Hug the left wall with Sneak to reach the Chamber of Oracles zone at (D-4) and grab the home point!.\n \n",
                 zone_name = "Quicksand Caves",
                 zone_trigger = "Chamber of Oracles",
+                visual_zones = {
+                    { zone_name = "Quicksand Caves", type = 'square', center = { x = -780.0, y = 0.0, z = -459.5 }, size = 6, floor_id = 4, colour = "cyan" },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -780.1, y = -0.4, z = -453.5 }, size = 4, direction = "up", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -779.9, y = 0.0, z = -441.5 }, size = 4, direction = "up", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -781.5, y = 0.0, z = -420.0 }, size = 4, direction = "left", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -819.1, y = 0.0, z = -417.8 }, size = 4, direction = "up", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'square', center = { x = -819.8, y = 0.0, z = -379.6 }, size = 6, floor_id = 4, colour = "cyan" },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -826.0, y = 0.0, z = -379.8 }, size = 4, direction = "left", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -838.2, y = 0.0, z = -379.8 }, size = 4, direction = "left", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'rect', center = { x = -850.0, y = -2.3, z = -380.0 }, width = 4.00, height = 4.75, floor_id = 4, colour = "cyan", vertical_axis = 'z' },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -856.5, y = 0.0, z = -380.5 }, size = 4, direction = "left", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -886.4, y = 0.0, z = -381.3 }, size = 4, direction = "left", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'line', start = { x = -890.0, y = 0.0, z = -381.6 }, stop = { x = -895.6, y = 19.5, z = -382.6 }, floor_id = 4, colour = "yellow" },
+
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -898.7, y = 21.1, z = -386.9 }, size = 4, direction = "down", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -906.4, y = 17.2, z = -419.7 }, size = 4, direction = "left", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -940.3, y = 17.0, z = -405.1 }, size = 4, direction = "up", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -940.4, y = 17.2, z = -365.8 }, size = 4, direction = "up", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -938.8, y = 17.2, z = -327.5 }, size = 4, direction = "up", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -950.8, y = 16.9, z = -301.3 }, size = 4, direction = "left", floor_id = 4, colour = "yellow" },
+                    { zone_name = "Quicksand Caves", type = 'arrow', center = { x = -980.2, y = 17.0, z = -289.0 }, size = 4, direction = "up", floor_id = 4, colour = "yellow" },
+                },
                 images = {
                     {
                         width = 512,

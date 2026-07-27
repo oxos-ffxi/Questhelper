@@ -210,8 +210,16 @@ end
 
 -- Cached because getHighestJobLevel is hit per-step, per-mission, per-frame by the
 -- step-skip check (see quest_state.isStepSkipped) - 22 GetJobLevel calls x 45 Genkai 5
--- steps every frame is not free. Job levels change on level up, so a couple of seconds
--- of staleness is invisible. Same os.clock TTL pattern as modules/inventory_cache.lua.
+-- steps every frame is not free. Same os.clock TTL pattern as inventory_cache.lua.
+--
+-- STICKY ON PURPOSE. For a few frames after a zone or an addon reload the player
+-- object is not populated yet and the read comes back empty. A failed read means
+-- "unknown", NOT "no job past 70" - and job levels never decrease, so a value we have
+-- already seen stays true. Letting a failure blank the value made steps carrying
+-- skip_if_any_job_level flip back to incomplete on every zone, which sent
+-- getCurrentStep to step 1 and flashed step 1's map before it settled.
+-- So: never overwrite a known value with nothing, and never cache a failed read
+-- (otherwise the TTL holds the bad answer for a further 2 seconds).
 local highestJobLevel = { value = nil, time = nil }
 local HIGHEST_JOB_LEVEL_TTL = 2.0
 
@@ -221,9 +229,9 @@ local HIGHEST_JOB_LEVEL_TTL = 2.0
 -- equivalent) is beaten, so "some job is 71+" proves the cap is already raised even
 -- when the job you are currently on is only 66.
 --
--- GetJobLevel is not used anywhere else in this addon, so it is called defensively:
--- any failure returns nil, and every caller must treat nil as "unknown" rather than
--- "cap not broken". Returns: level (number), or nil if unavailable.
+-- GetJobLevel is not used anywhere else in this addon, so it is called defensively.
+-- Returns: level (number), or nil only if no successful read has EVER happened this
+-- session. Callers must treat nil as "unknown" rather than "cap not broken".
 function player.getHighestJobLevel()
     local now = os.clock()
     if highestJobLevel.time and (now - highestJobLevel.time) < HIGHEST_JOB_LEVEL_TTL then
@@ -240,8 +248,12 @@ function player.getHighestJobLevel()
         end
     end
 
-    highestJobLevel.value = (highest > 0) and highest or nil
-    highestJobLevel.time = now
+    if highest > 0 then
+        highestJobLevel.value = highest
+        highestJobLevel.time = now
+    end
+    -- Read failed: keep the previous value and leave `time` alone so the next call
+    -- retries immediately instead of serving the failure for the rest of the TTL.
 
     return highestJobLevel.value
 end
