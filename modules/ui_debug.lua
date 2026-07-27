@@ -8,6 +8,8 @@
 local ui_debug = {}
 
 local imgui = require('imgui')
+-- Safe: modules.player only pulls in ffi, so it cannot require its way back here.
+local player_module = require('modules.player')
 
 local ImGuiCond_FirstUseEver = 2
 
@@ -499,110 +501,8 @@ local function render_zone_beams(quest_state_mod)
     end
 end
 
--- ── Step jump (Validate tab) ─────────────────────────────────────────────────
--- Drill down category > subfile > mission > step and force the tracker onto it.
--- "Current step" is not stored anywhere - quest_state.getCurrentStep derives it as
--- the first step whose state is false. So jumping to step N means marking 1..N-1
--- complete and N onward incomplete. Selecting the mission itself has to happen in
--- questhelper.lua, which owns currentTopCategory/Subfile/mission, so we leave the
--- request in ui_debug.pending_jump for it to pick up on the next frame.
-local jump = { cat = nil, sub = nil, mission = nil }
-
-local function sorted_keys(t)
-    local out = {}
-    for k in pairs(t or {}) do table.insert(out, k) end
-    table.sort(out)
-    return out
-end
-
-local function render_jump_tab(quest_state_mod)
-    if not val.quest_data then
-        imgui.TextColored({ 1.0, 0.4, 0.4, 1.0 }, "Quest data not loaded - reload the addon.")
-        return
-    end
-    if not quest_state_mod then
-        imgui.TextColored({ 1.0, 0.4, 0.4, 1.0 }, "Quest state not available.")
-        return
-    end
-
-    imgui.TextColored({ 0.6, 0.6, 0.6, 1.0 },
-        "Navigation only - selects a mission and scrolls the panel to a step so you can read it.")
-    imgui.TextColored({ 0.6, 0.6, 0.6, 1.0 },
-        "Changes NO progress and saves nothing. Beams and arrows keep following real progress,")
-    imgui.TextColored({ 0.6, 0.6, 0.6, 1.0 },
-        "so tick the steps yourself if you want a later step to become active.")
-    imgui.Separator()
-
-    -- breadcrumb + back
-    if jump.cat then
-        if imgui.SmallButton("< back##jb") then
-            if jump.mission then jump.mission = nil
-            elseif jump.sub then jump.sub = nil
-            else jump.cat = nil end
-        end
-        imgui.SameLine()
-        imgui.Text(string.format("%s%s%s",
-            jump.cat,
-            jump.sub and (" > " .. jump.sub) or "",
-            jump.mission and (" > " .. jump.mission) or ""))
-        imgui.Separator()
-    end
-
-    if not jump.cat then
-        imgui.Text("Category:")
-        for _, c in ipairs(sorted_keys(val.quest_data)) do
-            if imgui.SmallButton(c .. "##jc") then jump.cat = c end
-            imgui.SameLine()
-        end
-        imgui.Text("")
-        return
-    end
-
-    if not jump.sub then
-        imgui.Text("Subfile:")
-        for _, s in ipairs(sorted_keys(val.quest_data[jump.cat])) do
-            if imgui.SmallButton(s .. "##js") then jump.sub = s end
-            imgui.SameLine()
-        end
-        imgui.Text("")
-        return
-    end
-
-    if not jump.mission then
-        imgui.Text("Mission:")
-        for _, m in ipairs(sorted_keys(val.quest_data[jump.cat][jump.sub])) do
-            if imgui.SmallButton(m .. "##jm") then jump.mission = m end
-        end
-        return
-    end
-
-    local mdata = val.quest_data[jump.cat][jump.sub][jump.mission]
-    local steps = mdata and mdata.steps or {}
-    if #steps == 0 then
-        imgui.Text("This mission has no steps.")
-        return
-    end
-
-    local cur = quest_state_mod.getCurrentStep(jump.cat, jump.sub, jump.mission, val.quest_data)
-    imgui.Text(string.format("%d steps - real progress is on step %d", #steps, cur))
-    imgui.Text("Go to step:")
-
-    for i = 1, #steps do
-        if imgui.SmallButton(tostring(i) .. "##jstep") then
-            -- Navigation only. Nothing is written to quest_state, nothing is saved.
-            -- This selects the mission and scrolls the panel to the step so it can be
-            -- read; beams/arrows still follow real progress until you complete steps
-            -- normally.
-            ui_debug.pending_jump = {
-                cat = jump.cat, sub = jump.sub, mission = jump.mission, step = i,
-            }
-            ui_debug.addLine(string.format("[QH] viewing %s step %d (progress unchanged)",
-                jump.mission, i))
-        end
-        if i % 12 ~= 0 then imgui.SameLine() end
-    end
-    imgui.Text("")
-end
+-- ui_debug.pending_jump: set by the Beam Targets "go" button above, consumed in questhelper.lua.
+-- It asks questhelper to select that mission next frame, since it owns currentTopCategory/Subfile/mission.
 
 -- ── Line builder (Position tab) ───────────────────────────────────────────────
 local lin = {
@@ -1005,6 +905,57 @@ local function render_findings(list, empty_msg, hints)
     end
 end
 
+-- Live job levels. Verifies the two assumptions behind skip_if_any_job_level:
+-- that GetJobLevel is indexed by the same job ids as GetMainJob (1 = WAR), and that
+-- it reads the STORED job level rather than a level-synced one. Lv.0 = job not
+-- unlocked, Lv.1 = unlocked but unlevelled.
+local function render_jobs_tab()
+    imgui.TextColored({ 0.6, 0.6, 0.6, 1.0 },
+        "Nothing passes 70 until the level cap is broken, so a job at 71+ means the")
+    imgui.TextColored({ 0.6, 0.6, 0.6, 1.0 },
+        "Maat conversations are spent - steps with skip_if_any_job_level read as done.")
+    imgui.Separator()
+
+    local levels = player_module.getAllJobLevels()
+    if not levels then
+        imgui.TextColored({ 1.0, 0.4, 0.4, 1.0 }, "GetJobLevel unavailable.")
+        imgui.Text("skip_if_any_job_level will never skip a step (safe fallback).")
+        return
+    end
+
+    local currentJob = player_module.getMainJob()
+    local highest    = player_module.getHighestJobLevel()
+
+    if highest and highest >= 71 then
+        imgui.TextColored({ 0.4, 1.0, 0.4, 1.0 },
+            string.format("Highest job level: %d - cap is broken, those steps read as done.", highest))
+    else
+        imgui.TextColored({ 1.0, 0.75, 0.4, 1.0 },
+            string.format("Highest job level: %s - no job past 70, those steps show as normal.",
+                tostring(highest or "unknown")))
+    end
+    imgui.Text(string.format("Main job: %s (live level %s - may be synced)",
+        player_module.getMainJobName() or "unknown",
+        tostring(player_module.getMainJobLevel() or "unknown")))
+
+    imgui.Separator()
+    imgui.BeginChild("QHVJobsList", { 0, 0 }, false, 0)
+    for job = 1, 22 do
+        local level = levels[job] or 0
+        local line  = string.format("[%2d] %-13s Lv.%-3d", job, player_module.JOB_NAMES[job] or "?", level)
+        if job == currentJob then
+            imgui.TextColored({ 0.4, 0.7, 1.0, 1.0 }, line .. "  <== current main job")
+        elseif level >= 71 then
+            imgui.TextColored({ 0.4, 1.0, 0.4, 1.0 }, line)
+        elseif level == 0 then
+            imgui.TextColored({ 0.5, 0.5, 0.5, 1.0 }, line .. "  (not unlocked)")
+        else
+            imgui.Text(line)
+        end
+    end
+    imgui.EndChild()
+end
+
 local function render_validate_tab(quest_state_mod)
     if imgui.Button("Run Validation") then run_validate() end
     imgui.SameLine()
@@ -1102,10 +1053,10 @@ local function render_validate_tab(quest_state_mod)
             imgui.EndTabItem()
         end
 
-        -- 6: jump straight to a mission step
-        if imgui.BeginTabItem("Jump##vj") then
-            imgui.BeginChild("QHVJump", { 0, 0 }, false, 0)
-            render_jump_tab(quest_state_mod)
+        -- 6: live job levels behind skip_if_any_job_level
+        if imgui.BeginTabItem("Jobs##vjl") then
+            imgui.BeginChild("QHVJobs", { 0, 0 }, false, 0)
+            render_jobs_tab()
             imgui.EndChild()
             imgui.EndTabItem()
         end

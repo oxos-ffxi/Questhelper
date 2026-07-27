@@ -148,6 +148,104 @@ function player.hasBuff(buffId)
     return false
 end
 
+-- Job IDs as the client reports them, which is also the server's xi.job order
+-- (see the Shattering Stars server Lua: getMainJob() <= 15 gates the 15 original /
+-- Zilart jobs). Data files pin a job with `job_id`; the UI matches it against
+-- getMainJob() to mark the entry that applies to you right now.
+player.JOB_NAMES = {
+    [1]  = "Warrior",     [2]  = "Monk",         [3]  = "White Mage",
+    [4]  = "Black Mage",  [5]  = "Red Mage",     [6]  = "Thief",
+    [7]  = "Paladin",     [8]  = "Dark Knight",  [9]  = "Beastmaster",
+    [10] = "Bard",        [11] = "Ranger",       [12] = "Samurai",
+    [13] = "Ninja",       [14] = "Dragoon",      [15] = "Summoner",
+    [16] = "Blue Mage",   [17] = "Corsair",      [18] = "Puppetmaster",
+    [19] = "Dancer",      [20] = "Scholar",      [21] = "Geomancer",
+    [22] = "Rune Fencer",
+}
+
+-- Gets the player's current main job ID (1 = WAR ... 22 = RUN)
+-- Returns: job id (number), or nil if unavailable
+function player.getMainJob()
+    local mem = AshitaCore:GetMemoryManager()
+    if not mem then return nil end
+
+    local playerObj = mem:GetPlayer()
+    if not playerObj then return nil end
+
+    local job = playerObj:GetMainJob()
+    -- 0 is what the client reports before the player data is populated (zoning,
+    -- addon load), not a real job.
+    if not job or job == 0 then return nil end
+
+    return job
+end
+
+-- Gets the player's current main job as a display name
+-- Returns: name (string), or nil if unavailable / unknown id
+function player.getMainJobName()
+    local job = player.getMainJob()
+    return job and player.JOB_NAMES[job] or nil
+end
+
+-- Reads every job level into an array indexed by job id. Returns nil if unavailable.
+-- Exposed for /qh_joblevels; normal code wants getHighestJobLevel below.
+function player.getAllJobLevels()
+    local mem = AshitaCore:GetMemoryManager()
+    if not mem then return nil end
+
+    local playerObj = mem:GetPlayer()
+    if not playerObj then return nil end
+
+    local levels = {}
+    local ok = pcall(function()
+        for job = 1, 22 do
+            levels[job] = playerObj:GetJobLevel(job)
+        end
+    end)
+
+    if not ok then return nil end
+
+    return levels
+end
+
+-- Cached because getHighestJobLevel is hit per-step, per-mission, per-frame by the
+-- step-skip check (see quest_state.isStepSkipped) - 22 GetJobLevel calls x 45 Genkai 5
+-- steps every frame is not free. Job levels change on level up, so a couple of seconds
+-- of staleness is invisible. Same os.clock TTL pattern as modules/inventory_cache.lua.
+local highestJobLevel = { value = nil, time = nil }
+local HIGHEST_JOB_LEVEL_TTL = 2.0
+
+-- Gets the highest level across ALL of this character's jobs.
+--
+-- Used to detect a broken level cap: nothing can pass 70 until Maat (or a ToAU+
+-- equivalent) is beaten, so "some job is 71+" proves the cap is already raised even
+-- when the job you are currently on is only 66.
+--
+-- GetJobLevel is not used anywhere else in this addon, so it is called defensively:
+-- any failure returns nil, and every caller must treat nil as "unknown" rather than
+-- "cap not broken". Returns: level (number), or nil if unavailable.
+function player.getHighestJobLevel()
+    local now = os.clock()
+    if highestJobLevel.time and (now - highestJobLevel.time) < HIGHEST_JOB_LEVEL_TTL then
+        return highestJobLevel.value
+    end
+
+    local levels = player.getAllJobLevels()
+    local highest = 0
+    if levels then
+        for _, level in pairs(levels) do
+            if level and level > highest then
+                highest = level
+            end
+        end
+    end
+
+    highestJobLevel.value = (highest > 0) and highest or nil
+    highestJobLevel.time = now
+
+    return highestJobLevel.value
+end
+
 -- Gets the player's current main job level
 -- Returns: level (number), or nil if unavailable
 function player.getMainJobLevel()

@@ -1,8 +1,7 @@
--- =============================================================================
+﻿-- =============================================================================
 -- Limit Break (Genkai) quest line
 -- =============================================================================
--- SCAFFOLD ONLY - steps below are placeholders. Author them another day from the
--- wiki + server Lua, following data/ref/step_authoring_guide.md.
+-- Authored from the wiki + server Lua, following data/ref/step_authoring_guide.md.
 --
 -- Plan (project memory: genkai-plan):
 --   * Genkai 1-4 are SHARED across all jobs (level caps 50->55->60->65->70).
@@ -1609,15 +1608,6 @@ return {
             },
             {
                 text = "Step 5: Otherlands - trade a Kindred's Seal for the Somber Stone.\n \n" ..
-                       "Maat's Selbina/Mhaura clue points at ONE of these eight:\n" ..
-                       "  Mathilde - Selbina (H-9)\n" ..
-                       "  Vobo - Selbina (I-7)\n" ..
-                       "  Melyon - Selbina (I-9)\n" ..
-                       "  Gabwaleid - Selbina (H-9)\n" ..
-                       "  Celestina - Mhaura (G-8)\n" ..
-                       "  Ekokoko - Mhaura (F-9)\n" ..
-                       "  Bihoro-Guhoro - Mhaura (G-9)\n" ..
-                       "  Jikka-Abukka - Mhaura (H-9)\n \n" ..
                        "TIP: Selbina and Mhaura are linked by the ferry, so this leg is one trip either way.\n",
                 dynamic_target = { table = "Genkai 4: Riding on the Clouds", slot = "otherlands" },
                 keyitems_needed = { 468 },
@@ -1640,11 +1630,345 @@ return {
         },
     },
 
-    -- Genkai 5 = Maat fight (cap 70 -> 75). PER JOB - split into one entry per job
-    -- (e.g. "Genkai 5: Maat (Warrior)", "... (Monk)", ...). Placeholder for now.
-    ["Genkai 5: Maat / Cap 70 -> 75 (per-job - TODO split)"] = {
+    ["Genkai 5: Shattering Stars (Warrior)"] = {
+        progress_group = "Genkai 5: Shattering Stars",
+        job_id = 1, -- xi.job.WAR - marks this entry when you are on Warrior
+        prerequisites = {
+            {category = "Limit Breaks", subfile = "Genkai", name = "Genkai 4: Riding on the Clouds"},
+        },
+        requirements = {
+            level = 66,
+        },
         steps = {
-            { text = "TODO: split into one entry per job (15 original jobs first). No auto job detection." },
+            {
+                text = "Step 1: Speak to Maat in Ru'Lude Gardens (H-5) to start the quest.\n \n" ..
+                       "NOTE: Only needed for your FIRST Maat fight. If you have already beaten him on another\n" ..
+                       "job, tick this and go straight to the burning circle.\n",
+                route_to = "Ru'Lude Gardens",
+                onmob_target = "Maat",
+                destination_highlight = { position = "H-5", offsetX = 16, offsetY = 16 },
+                trigger_on_event_id = { 92 },
+                skip_if_any_job_level = 71, -- cap already broken, so event 92 is spent
+            },
+            {
+                text = "Step 2: Farm a Warrior's Testimony.\n \n" ..
+                       "Primary target: Goblin Mercenary (Lv.65-68) in Cape Teriggan around (G-8) - Use Outpost Warp if you have it - Look for the RED highlighted Goblins!\n \n" ..
+                       "TIP: One testimony is good for THREE attempts at Maat. It only vanishes on the third trade to\n" ..
+                       "the burning circle, so a single drop covers two retries.\n",
+                route_to = "Cape Teriggan",
+                destination_highlight = { position = "G-8", offsetX = 16, offsetY = 16 },
+                items_needed = { "Warrior's Testimony" },
+                onmob_enemy = { "Goblin Mercenary" },
+                onmob_enemy_colour = "red",
+                trigger_on_item_obtain = { "Warrior's Testimony" },
+            },
+            {
+                text = "Step 3: Trade the Warrior's Testimony to Maat in Ru'Lude Gardens (H-5).\n \n" ..
+                       "You cannot enter the battlefield the first time without doing this - he has to challenge\n" ..
+                       "you before the burning circle will let you in.\n \n" ..
+                       "- He then offers to warp you straight to Horlais Peak. Say YES, it saves the walk.\n" ..
+                       "- Do your prep BEFORE you accept: once you confirm, you are in and the clock is running.\n \n" ..
+                       "NOTE: Only needed for your FIRST Maat fight. After your first win he stops offering the\n" ..
+                       "warp entirely and you go straight to the burning circle - tick this and move on.\n",
+                route_to = "Ru'Lude Gardens",
+                onmob_target = "Maat",
+                destination_highlight = { position = "H-5", offsetX = 16, offsetY = 16 },
+                trigger_on_event_id = { 64 },
+                skip_if_any_job_level = 71, -- cap already broken, so Maat no longer warps you
+            },
+            {
+                text = "Step 4: Beat Maat in Horlais Peak as WARRIOR.\n \n" ..
+                       "If you did not take Maat's warp, trade the testimony at the Burning Circle and pick the\n" ..
+                       "\"Shattering Stars\" arena - or Home Point to Yughott Grotto #1.\n \n" ..
+                       "===== Before you go in =====\n" ..
+                       "CRITICAL: Your SUB JOB is disabled inside. Take /BLM for the Warp out, or a Warp Ring.\n" ..
+                       "CRITICAL: The 10 minute clock starts when you ZONE IN, not when you engage - resting and\n" ..
+                       "buffing inside eats your timer. Bring food, meds, an Icarus Wing, and an Opo-opo Necklace\n" ..
+                       "with Sleeping Potions to build TP is a commonly used tactic to zerg down Maat quickly.\n \n" ..
+                       "===== The fight =====\n" ..
+                       "- Maat fights as WARRIOR with your job's abilities including Mighty Strikes, but he always\n" ..
+                       "  swings Hand-to-Hand and uses H2H weapon skills.\n" ..
+                       "- Uncapped. He is NOT aggressive, so you get the first move.\n" ..
+                       "- He usually concedes before he actually dies, so do not panic at his HP bar.\n" ..
+                       "- If you have never beaten Maat on ANY job you lose NO experience on a loss. After your first win anywhere, later losses DO cost experience.\n" ..
+                       "- If you have Rhapsody in Umber, you can call Trusts once you are inside.\n \n",
+                --zone_trigger = "Horlais Peak",
+                zone_max_distance = 35,
+                onmob_target = "horlais-peak-burning-circle",
+                kill_requirement = {
+                    count = 1,
+                    enemies = {"Maat"},
+                    display_only = true,
+                    reset_on_zone_entry = true,
+                },
+                onmob_enemy = "Maat",
+                onmob_enemy_size = 1,
+                visual_zones = {
+                        --Ghelsba Outpost
+                        { zone_name = "Ghelsba Outpost", type = 'arrow', center = { x = 28.1, y = 0.1, z = 62.2 }, size = 4, direction = "sw", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Ghelsba Outpost", type = 'arrow', center = { x = -4.4, y = 0.0, z = 26.6 }, size = 4, direction = "se", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Ghelsba Outpost", type = 'arrow', center = { x = 19.9, y = 0.1, z = -4.8 }, size = 4, direction = "se", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Ghelsba Outpost", type = 'arrow', center = { x = 45.9, y = 0.0, z = -58.5 }, size = 4, direction = "left", floor_id = 1, colour = "yellow" },
+
+                        -- Yughott Grotto 1 to K-4
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = -225.1, y = -0.2, z = -91.6 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = -191.8, y = -1.0, z = -87.9 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = -141.4, y = -0.2, z = -60.4 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = -103.5, y = -0.0, z = -56.4 }, size = 4, direction = "ne", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = -92.0, y = -0.6, z = -38.2 }, size = 4, direction = "up", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = -78.9, y = 0.0, z = -9.7 }, size = 4, direction = "se", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = -21.5, y = -0.2, z = -25.1 }, size = 4, direction = "ne", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 18.8, y = -0.2, z = 2.0 }, size = 4, direction = "ne", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 56.4, y = -0.2, z = 32.4 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 137.1, y = -12.9, z = 61.9 }, size = 4, direction = "up", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 139.8, y = -12.4, z = 113.1 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 203.8, y = -12.0, z = 121.4 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 236.9, y = -12.2, z = 125.9 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 292.9, y = -23.7, z = 171.2 }, size = 4, direction = "right", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 317.5, y = -24.2, z = 180.5 }, size = 4, direction = "up", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 329.4, y = -24.4, z = 215.5 }, size = 4, direction = "up", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 335.4, y = -24.1, z = 239.0 }, size = 4, direction = "up", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 322.3, y = -24.1, z = 251.7 }, size = 4, direction = "left", floor_id = 1, colour = "yellow" },
+
+                        -- Fort Ghelsba
+                        { zone_name = "Fort Ghelsba", type = 'arrow', center = { x = 207.9, y = -45.8, z = 100.5 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Fort Ghelsba", type = 'arrow', center = { x = 151.4, y = -44.0, z = 116.0 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Fort Ghelsba", type = 'arrow', center = { x = 93.8, y = -52.0, z = 116.8 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Fort Ghelsba", type = 'arrow', center = { x = 96.9, y = -59.8, z = 66.4 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Fort Ghelsba", type = 'arrow', center = { x = 101.0, y = -60.0, z = 1.5 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Fort Ghelsba", type = 'arrow', center = { x = 109.9, y = -63.6, z = -51.9 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Fort Ghelsba", type = 'arrow', center = { x = 146.6, y = -68.5, z = -62.1 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Fort Ghelsba", type = 'arrow', center = { x = 184.1, y = -75.7, z = -49.2 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Fort Ghelsba", type = 'arrow', center = { x = 177.5, y = -83.9, z = -3.6 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Fort Ghelsba", type = 'arrow', center = { x = 166.4, y = -84.6, z = 20.1 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Fort Ghelsba", type = 'arrow', center = { x = 176.7, y = -86.4, z = 20.6 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Fort Ghelsba", type = 'arrow', center = { x = 185.2, y = -86.4, z = 24.3 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Fort Ghelsba", type = 'arrow', center = { x = 198.8, y = -86.2, z = 19.8 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+
+                        --Yughott Grotto 2
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 283.4, y = -39.7, z = 148.5 }, size = 4, direction = "right", floor_id = 2, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 320.8, y = -40.3, z = 135.1 }, size = 4, direction = "sw", floor_id = 2, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 315.1, y = -40.1, z = 105.0 }, size = 4, direction = "ne", floor_id = 2, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 330.6, y = -42.1, z = 109.8 }, size = 4, direction = "right", floor_id = 2, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 374.5, y = -40.3, z = 105.9 }, size = 4, direction = "right", floor_id = 2, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 400.5, y = -40.2, z = 118.6 }, size = 4, direction = "up", floor_id = 2, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 405.5, y = -40.1, z = 148.4 }, size = 4, direction = "right", floor_id = 2, colour = "yellow" },
+                        { zone_name = "Yughott Grotto", type = 'arrow', center = { x = 436.7, y = -40.1, z = 169.2 }, size = 4, direction = "right", floor_id = 2, colour = "yellow" },
+
+                        --Home point
+                        { zone_name = "Yughott Grotto", type = 'square', center = { x = 434.0, y = -40.0, z = 171.0 }, size = 1, floor_id = 2, colour = "green" },
+                },
+                images = {
+                      {
+                          width    = 512,
+                          height   = 512,
+                          state    = 4,
+                          zone_name = "Ghelsba Outpost",
+                          floor_id = 1,
+                          highlights = {
+                              { position = "H-11", offsetX = 16, offsetY = 16 },
+                          },
+                      },
+                      {
+                          width    = 512,
+                          height   = 512,
+                          state    = 4,
+                          zone_name = "Yughott Grotto",
+                          floor_id = 1,
+                          highlights = {
+                              { position = "K-5", offsetX = 16, offsetY = 16 },
+                          },
+                      },
+                      {
+                          width    = 512,
+                          height   = 512,
+                          state    = 4,
+                          zone_name = "Fort Ghelsba",
+                          highlights = {
+                              { position = "J-8", offsetX = 16, offsetY = 16 },
+                          },
+                      },
+                      {
+                          width    = 512,
+                          height   = 512,
+                          state    = 4,
+                          zone_name = "Yughott Grotto",
+                          floor_id = 2,
+                          highlights = {
+                              { position = "J-6", offsetX = 16, offsetY = 16 },
+                          },
+                      },
+                      {
+                          width    = 512,
+                          height   = 512,
+                          state    = 4,
+                          zone_name = "Horlais Peak",
+                          floor_id = 0,
+                        --   highlights = {
+                        --       { position = "J-6", offsetX = 16, offsetY = 16 },
+                        --   },
+                      },
+                },
+                trigger_on_event_id = { 32001 },
+            },
+            {
+                text = "Step 5: Return to Maat in Ru'Lude Gardens (H-5).\n \n" ..
+                       "On your FIRST win this conversation is required, for subsequent job fights skip this step manually.\n \n" ..
+                       "TIP: If you have not done The Road to Aht Urhgan, a surviving testimony can be traded to\n" ..
+                       "Faursel in Lower Jeuno for the Boarding Permit.\n",
+                route_to = "Ru'Lude Gardens",
+                onmob_target = "Maat",
+                destination_highlight = { position = "H-5", offsetX = 16, offsetY = 16 },
+                trigger_on_event_id = { 93 },
+                skip_if_any_job_level = 71, -- cap already broken, so event 93 is spent
+            },
+        },
+        reward = {
+            text = "Title: Star Breaker (first clear) and Maat Masher, Level Cap raised to 75!\n \n",
+        },
+    },
+
+    ["Genkai 5: Shattering Stars (White Mage)"] = {
+        progress_group = "Genkai 5: Shattering Stars",
+        job_id = 3, -- xi.job.WHM - marks this entry when you are on White Mage
+        prerequisites = {
+            {category = "Limit Breaks", subfile = "Genkai", name = "Genkai 4: Riding on the Clouds"},
+        },
+        requirements = {
+            level = 66,
+        },
+        steps = {
+            {
+                text = "Step 1: Speak to Maat in Ru'Lude Gardens (H-5) to start the quest.\n \n" ..
+                       "NOTE: Only needed for your FIRST Maat fight. If you have already beaten him on another\n" ..
+                       "job, tick this and go straight to the burning circle.\n",
+                route_to = "Ru'Lude Gardens",
+                onmob_target = "Maat",
+                destination_highlight = { position = "H-5", offsetX = 16, offsetY = 16 },
+                trigger_on_event_id = { 92 },
+                skip_if_any_job_level = 71, -- cap already broken, so event 92 is spent
+            },
+            {
+                text = "Step 2: Farm a White Mage's Testimony.\n \n" ..
+                       "Primary target: Goblin Alchemist (Lv.65-68) in Cape Teriggan around (G-8) - Use Outpost Warp if you have it - Look for the RED highlighted Goblins!\n \n" ..
+                       "TIP: One testimony is good for THREE attempts at Maat. It only vanishes on the third trade to\n" ..
+                       "the burning circle, so a single drop covers two retries.\n",
+                route_to = "Cape Teriggan",
+                destination_highlight = { position = "G-8", offsetX = 16, offsetY = 16 },
+                items_needed = { "White Mage's Testimony" },
+                onmob_enemy = { "Goblin Alchemist" },
+                onmob_enemy_colour = "red",
+                trigger_on_item_obtain = { "White Mage's Testimony" },
+            },
+            {
+                text = "Step 3: Trade the White Mage's Testimony to Maat in Ru'Lude Gardens (H-5).\n \n" ..
+                       "You cannot enter the battlefield the first time without doing this - he has to challenge\n" ..
+                       "you before the burning circle will let you in.\n \n" ..
+                       "- He then offers to warp you straight to Balga's Dais. Say YES, it saves the walk.\n" ..
+                       "- Do your prep BEFORE you accept: once you confirm, you are in and the clock is running.\n \n" ..
+                       "NOTE: Only needed for your FIRST Maat fight. After your first win he stops offering the\n" ..
+                       "warp entirely and you go straight to the burning circle - tick this and move on.\n",
+                route_to = "Ru'Lude Gardens",
+                onmob_target = "Maat",
+                destination_highlight = { position = "H-5", offsetX = 16, offsetY = 16 },
+                trigger_on_event_id = { 64 },
+                skip_if_any_job_level = 71, -- cap already broken, so Maat no longer warps you
+            },
+            {
+                text = "Step 4: Beat Maat in Balga's Dais as WHITE MAGE.\n \n" ..
+                       "Head into Giddeus and follow the arrows to the Burning\n" ..
+                       "Circle at (F-12), then pick the \"Shattering Stars\" arena.\n \n" ..
+                       "TIP: Home Point to Giddeus #1 (G-12) puts you right outside Balga's Dais.\n \n" ..
+                       "===== Before you go in =====\n" ..
+                       "CRITICAL: Your SUB JOB is disabled inside. Take /BLM for the Warp out, or a Warp Ring.\n" ..
+                       "CRITICAL: The 10 minute clock starts when you ZONE IN, not when you engage - resting and\n" ..
+                       "buffing inside eats your timer. Bring food, meds and medicines before you enter.\n \n" ..
+                       "===== The fight =====\n" ..
+                       "- Maat fights as WHITE MAGE with your job's abilities including Benediction, but he always\n" ..
+                       "  swings Hand-to-Hand and uses H2H weapon skills.\n" ..
+                       "- Uncapped. He is NOT aggressive, so you get the first move.\n" ..
+                       "- He usually concedes before he actually dies, so do not panic at his HP bar.\n" ..
+                       "- WHM can win by a special condition rather than damage - see the wiki job strategy page.\n" ..
+                       "- If you have never beaten Maat on ANY job you lose NO experience on a loss. After your first win anywhere, later losses DO cost experience.\n" ..
+                       "- If you have Rhapsody in Umber, you can call Trusts once you are inside.\n \n",
+                zone_max_distance = 35,
+                onmob_target = "balga-dais-burning-circle",
+                kill_requirement = {
+                    count = 1,
+                    enemies = {"Maat"},
+                    display_only = true,
+                    reset_on_zone_entry = true,
+                },
+                onmob_enemy = "Maat",
+                onmob_enemy_size = 1,
+                visual_zones = {
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -100.7, y = -0.3, z = 404.4 }, size = 4, direction = "down", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -101.4, y = -0.2, z = 382.8 }, size = 4, direction = "left", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -140.1, y = 0.4, z = 376.9 }, size = 4, direction = "down", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -136.4, y = 3.9, z = 341.4 }, size = 4, direction = "sw", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -159.8, y = 4.0, z = 319.3 }, size = 4, direction = "sw", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -182.6, y = 4.0, z = 298.7 }, size = 4, direction = "down", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -180.8, y = -0.1, z = 274.4 }, size = 4, direction = "down", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -172.4, y = 0.0, z = 259.0 }, size = 4, direction = "right", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -140.2, y = -0.5, z = 256.1 }, size = 4, direction = "down", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -139.9, y = -4.0, z = 200.3 }, size = 4, direction = "down", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -138.6, y = -0.2, z = 154.5 }, size = 4, direction = "down", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -137.4, y = -0.8, z = 100.7 }, size = 4, direction = "right", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -100.0, y = -0.7, z = 94.4 }, size = 4, direction = "down", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -99.6, y = -1.2, z = 71.6 }, size = 4, direction = "sw", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -108.8, y = -2.7, z = 60.2 }, size = 4, direction = "left", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -138.3, y = -0.9, z = 51.4 }, size = 4, direction = "down", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -140.7, y = -1.2, z = -1.9 }, size = 4, direction = "down", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -138.4, y = -1.2, z = -44.0 }, size = 4, direction = "down", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -133.4, y = 1.1, z = -65.2 }, size = 4, direction = "se", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -112.6, y = 1.0, z = -80.1 }, size = 4, direction = "down", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -112.3, y = 0.9, z = -105.7 }, size = 4, direction = "se", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -86.0, y = 1.0, z = -134.6 }, size = 4, direction = "down", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -77.5, y = 1.0, z = -160.9 }, size = 4, direction = "se", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -57.6, y = -0.2, z = -186.9 }, size = 4, direction = "down", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -66.8, y = -2.8, z = -220.1 }, size = 4, direction = "left", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -108.4, y = 0.6, z = -222.8 }, size = 4, direction = "sw", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -121.9, y = 1.0, z = -241.0 }, size = 4, direction = "se", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -99.1, y = -0.9, z = -258.0 }, size = 4, direction = "se", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -98.2, y = -3.1, z = -278.0 }, size = 4, direction = "down", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -113.6, y = -3.4, z = -300.6 }, size = 4, direction = "left", floor_id = 1, colour = "cyan" },
+                        { zone_name = "Giddeus", type = 'arrow', center = { x = -130.7, y = -2.5, z = -299.5 }, size = 4, direction = "left", floor_id = 1, colour = "cyan" },
+                },
+                images = {
+                      {
+                          width    = 512,
+                          height   = 512,
+                          state    = 4,
+                          zone_name = "Giddeus",
+                          floor_id = 1,
+                          highlights = {
+                              { position = "F-12", offsetX = 16, offsetY = 16 },
+                          },
+                      },
+                      {
+                          width    = 512,
+                          height   = 512,
+                          state    = 4,
+                          zone_name = "Balga's Dais",
+                          floor_id = 0,
+                      },
+                },
+                trigger_on_event_id = { 32001 },
+            },
+            {
+                text = "Step 5: Return to Maat in Ru'Lude Gardens (H-5).\n \n" ..
+                       "On your FIRST win this conversation is required, for subsequent job fights skip this step manually.\n \n" ..
+                       "TIP: If you have not done The Road to Aht Urhgan, a surviving testimony can be traded to\n" ..
+                       "Faursel in Lower Jeuno for the Boarding Permit.\n",
+                route_to = "Ru'Lude Gardens",
+                onmob_target = "Maat",
+                destination_highlight = { position = "H-5", offsetX = 16, offsetY = 16 },
+                trigger_on_event_id = { 93 },
+                skip_if_any_job_level = 71, -- cap already broken, so event 93 is spent
+            },
+        },
+        reward = {
+            text = "Title: Star Breaker (first clear) and Maat Masher, Level Cap raised to 75!\n \n",
         },
     },
 }

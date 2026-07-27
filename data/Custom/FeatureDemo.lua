@@ -126,7 +126,7 @@ return {
                        "This map uses AUTO-CALIBRATION from mapinfo. No manual calibration needed! \n" ..
                        "The red arrow should appear automatically.",
                 zone = "Dangruf Wadi",
-                onmob_target = {"Fontoumant","Sheridan","Sobane","Taurette","Maloquedil"},
+                onmob_target = {"Fontoumant","Sheridan","Sobane","Taurette","Maloquedil","Babenn","Gwill","Brygid","Kaede","Hilda"},
                 images = {
                     {
                         file     = "maps/dangruf_wadi.png",

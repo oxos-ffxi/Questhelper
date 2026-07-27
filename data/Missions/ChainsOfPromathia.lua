@@ -3491,7 +3491,7 @@ return {
             },
             {
                 text = "Step 21: [Ulmia] Travel to Uleguerand Range and fall through the hole at (J-9) - the north-westernmost hole drops you nearest to Bearclaw Pinnacle.\n \n" ..
-                       "Note: PLEASE READ! Kill 'Cwn Annwn' and 'Uleguerand Tiger' for Snow Lily's, it's best to grab 4 PER PERSON for upcoming missions.  MAKE SURE YOU GET 4 or have GIL ready!! \n \n",
+                       "Note: PLEASE READ! Kill 'Cwn Annwn' and 'Uleguerand Tiger' for Snow Lily's, it's best to grab 4 PER PERSON for upcoming missions.  MAKE SURE YOU GET 4 or have GIL ready!! \n \n" ..
                        "Snow Lily's can also be purchased off the Auction House under: Materials -> Alchemy \n \n" ..
                        "Examine the ??? to enter battlefield 'Flames for the Dead'.\n \n" ..
                        "Buffs wear on entry. 30 minute limit. 1000 EXP on win.\n \n" ..

@@ -62,8 +62,49 @@ local function ensure_key_path(t, ...)
     return current
 end
 
--- Gets the completion state of a specific step
-function quest_state.getStepState(topCat, subfile, mission, step)
+-- Lazy, memoised require of modules.player. Lazy because a top-level require risks a
+-- cycle (see utils.get_images_for_step); memoised because isStepSkipped runs per step
+-- per frame. `false` records a failed require so it is not retried every call.
+local player_module_memo = nil
+local function get_player_module()
+    if player_module_memo == nil then
+        local ok, mod = pcall(require, 'modules.player')
+        player_module_memo = (ok and mod) or false
+    end
+    return player_module_memo or nil
+end
+
+-- True when a step does not apply to this character and should read as done.
+--
+--   skip_if_any_job_level = 71  -- skip once ANY job has reached this level
+--
+-- The Genkai 5 use case: steps 1/3/5 are the Maat conversations, whose events only
+-- fire while the quest is QUEST_ACCEPTED. No job can pass 70 until the cap is broken,
+-- so a job at 71+ proves those events are already spent - even though the job you are
+-- fighting on may only be 66.
+--
+-- Deliberately one-directional: an unknown level (nil) never skips. The worst case is
+-- showing a step the player has to tick by hand, never hiding one they still need.
+function quest_state.isStepSkipped(step_data)
+    if type(step_data) ~= 'table' then return false end
+
+    local threshold = step_data.skip_if_any_job_level
+    if type(threshold) ~= 'number' then return false end
+
+    local player_module = get_player_module()
+    if not player_module then return false end
+
+    local highest = player_module.getHighestJobLevel()
+    return highest ~= nil and highest >= threshold
+end
+
+-- Gets the completion state of a specific step.
+-- Pass step_data (the step's table) to honour skip_if_* fields; omitting it returns
+-- the raw stored tick, which is what the manual checkbox writes.
+function quest_state.getStepState(topCat, subfile, mission, step, step_data)
+    if step_data and quest_state.isStepSkipped(step_data) then
+        return true
+    end
     local path = ensure_key_path(quest_state.settings.step_states, topCat, subfile, mission)
     return path[step] or false
 end
@@ -273,17 +314,38 @@ function quest_state.getCurrentStep(topCat, subfile, mission, quest_data)
         return 1
     end
     for i = 1, #mdata.steps do
-        if not quest_state.getStepState(topCat, subfile, mission, i) then
+        if not quest_state.getStepState(topCat, subfile, mission, i, mdata.steps[i]) then
             return i
         end
     end
     return #mdata.steps + 1
 end
 
+-- Counts how many members of a progress_group are complete.
+-- Returns done, total. Used for the "3/15" caption in the mission list.
+function quest_state.getGroupProgress(topCat, subfile, group, quest_data)
+    local fileData = quest_data[topCat] and quest_data[topCat][subfile]
+    if not fileData or not group then return 0, 0 end
+
+    local done, total = 0, 0
+    for mission_name, mission_data in pairs(fileData) do
+        if mission_data.progress_group == group then
+            total = total + 1
+            if quest_state.isMissionComplete(topCat, subfile, mission_name, quest_data) then
+                done = done + 1
+            end
+        end
+    end
+
+    return done, total
+end
+
 -- Checks if an entire subfile is complete.
--- Missions sharing a choice_group are alternate routes the player picks between,
--- so the group counts as done once any one of its members is done - requiring all
--- of them would make such a subfile impossible to complete.
+-- Both group fields settle once any one member is done, for different reasons:
+--   choice_group   - alternate routes; the player only ever does one.
+--   progress_group - one is enough to progress, but the rest stay worth doing
+--                    (Genkai 5: any one Maat win caps you at 75, all 15 = Maat's Cap).
+-- They differ only in presentation (ui_main.lua). Do not use a name as both.
 function quest_state.isSubfileComplete(topCat, subfile, quest_data)
     local fileData = quest_data[topCat] and quest_data[topCat][subfile]
     if not fileData then return false end
@@ -293,7 +355,7 @@ function quest_state.isSubfileComplete(topCat, subfile, quest_data)
 
     for mission_name, mission_data in pairs(fileData) do
         local complete = quest_state.isMissionComplete(topCat, subfile, mission_name, quest_data)
-        local group = mission_data.choice_group
+        local group = mission_data.choice_group or mission_data.progress_group
 
         if group then
             groupSeen[group] = true
@@ -320,7 +382,7 @@ function quest_state.isMissionComplete(topCat, subfile, mission, quest_data)
     if not mission_data then return false end
     local steps = mission_data.steps or {}
     for i = 1, #steps do
-        if not quest_state.getStepState(topCat, subfile, mission, i) then
+        if not quest_state.getStepState(topCat, subfile, mission, i, steps[i]) then
             return false
         end
     end
@@ -333,7 +395,7 @@ function quest_state.calculateProgress(topCat, subfile, mission, quest_data)
     local steps = mdata.steps or {}
     local completed = 0
     for i = 1, #steps do
-        if quest_state.getStepState(topCat, subfile, mission, i) then
+        if quest_state.getStepState(topCat, subfile, mission, i, steps[i]) then
             completed = completed + 1
         end
     end

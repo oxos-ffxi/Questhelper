@@ -1377,6 +1377,47 @@ ashita.events.register('command', 'command_callback', function(e)
         return true
     end
 
+    if command_base == 'qh_joblevels' then
+        print(string.format("[%s] ========== Job Levels ==========", addon.name))
+
+        -- Verifies the two assumptions behind skip_if_any_job_level (quest_state.lua):
+        --   1. GetJobLevel is indexed by the same job ids as GetMainJob (1 = WAR).
+        --   2. it returns the STORED job level, not a level-synced/restricted one.
+        -- Check the starred current job against your real level, and check that the
+        -- names line up with the levels you know you have.
+        local levels = player_module.getAllJobLevels()
+        if not levels then
+            print(string.format("[%s] ERROR: GetJobLevel unavailable - skip_if_any_job_level", addon.name))
+            print(string.format("[%s]        will never skip a step (safe fallback).", addon.name))
+            e.blocked = true
+            return true
+        end
+
+        local currentJob = player_module.getMainJob()
+        print(string.format("[%s] -----------------------------------------------", addon.name))
+        for job = 1, 22 do
+            local name = player_module.JOB_NAMES[job] or "?"
+            local marker = (job == currentJob) and " <== current main job" or ""
+            print(string.format("[%s] [%2d] %-13s Lv.%-3s%s",
+                addon.name, job, name, tostring(levels[job] or "nil"), marker))
+        end
+        print(string.format("[%s] -----------------------------------------------", addon.name))
+
+        local highest = player_module.getHighestJobLevel()
+        print(string.format("[%s] Highest job level: %s", addon.name, tostring(highest or "unknown")))
+        print(string.format("[%s] Main job level (live, may be synced): %s",
+            addon.name, tostring(player_module.getMainJobLevel() or "unknown")))
+        if highest and highest >= 71 then
+            print(string.format("[%s] Cap is broken -> Genkai 5 steps 1/3/5 read as done.", addon.name))
+        else
+            print(string.format("[%s] No job past 70 -> Genkai 5 steps 1/3/5 shown as normal.", addon.name))
+        end
+
+        print(string.format("[%s] ================================", addon.name))
+        e.blocked = true
+        return true
+    end
+
     if command_base == 'qh_findzone' then
         print(string.format("[%s] ========== Searching for Current Zone in Map Array ==========", addon.name))
 

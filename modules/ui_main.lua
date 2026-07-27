@@ -165,6 +165,22 @@ local function isRouteNotTaken(settled, subData, mname, topCat, subfile, quest_s
         and not quest_state.isMissionComplete(topCat, subfile, mname, quest_data)
 end
 
+-- A progress_group (see quest_state.isSubfileComplete) is the other kind of group:
+-- any one member is enough to progress, but the rest are still worth doing. Unlike a
+-- choice_group nothing greys out - every member stays live, and the group shows a count.
+-- Returns group name -> {done = n, total = n}.
+local function getProgressGroupCounts(topCat, subfile, subData, quest_state, quest_data)
+    local counts = {}
+    for mname, mdata in pairs(subData) do
+        local group = mdata.progress_group
+        if group and not counts[group] then
+            local done, total = quest_state.getGroupProgress(topCat, subfile, group, quest_data)
+            counts[group] = {done = done, total = total}
+        end
+    end
+    return counts
+end
+
 -- Builds the display rows for a quest/mission's prerequisites.
 --
 -- A prerequisites entry is either a single prerequisite:
@@ -797,14 +813,46 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                     local missionKeys = utils.get_sorted_keys(subData)
 
                     local groupSettled = getSettledChoiceGroups(currentTopCategory, currentSubfile, subData, quest_state, quest_data)
+                    local progressCounts = getProgressGroupCounts(currentTopCategory, currentSubfile, subData, quest_state, quest_data)
+                    -- Read once per frame, not once per entry.
+                    local currentJob = player_module.getMainJob()
+                    local currentJobName = player_module.getMainJobName()
                     local groupCaptioned = {}
                     for _, mname in ipairs(missionKeys) do
                         local group = subData[mname].choice_group
+                        local pgroup = subData[mname].progress_group
                         local complete = quest_state.isMissionComplete(currentTopCategory, currentSubfile, mname, quest_data)
+                        -- Entries that only apply on one job (the 15 Maat fights) pin it with
+                        -- job_id. Mark the one matching the player's job - but never hide or
+                        -- auto-pick, since the rest are still a valid checklist (Maat's Cap).
+                        local isPlayerJob = currentJob ~= nil and subData[mname].job_id == currentJob
                         local label = mname
                         local pushedColors = 0
 
-                        if group and not groupSettled[group] then
+                        if pgroup then
+                            -- Caption the group once with its running count, then list every
+                            -- member. No member is ever greyed out: the ones still outstanding
+                            -- are optional extras, not routes passed over.
+                            if not groupCaptioned[pgroup] then
+                                local caption = string.format('%s - %d/%d done',
+                                    pgroup, progressCounts[pgroup].done, progressCounts[pgroup].total)
+                                if currentJobName then
+                                    caption = caption .. ' - you are on ' .. currentJobName
+                                end
+                                imgui.TextColored({0.4, 0.7, 1, 1}, caption)
+                                groupCaptioned[pgroup] = true
+                            end
+                            label = '  ' .. label
+                            if complete then
+                                imgui.PushStyleColor(ImGuiCol_Button, {0, 1, 0, 0.5})
+                                pushedColors = 1
+                                label = label .. ' (Complete!)'
+                            elseif isPlayerJob then
+                                imgui.PushStyleColor(ImGuiCol_Button, {0.85, 0.65, 0.1, 0.6})
+                                pushedColors = 1
+                                label = label .. '  <-- your current job'
+                            end
+                        elseif group and not groupSettled[group] then
                             -- Undecided: caption the group once, then offer each route.
                             if not groupCaptioned[group] then
                                 imgui.TextColored({0.4, 0.7, 1, 1}, group .. ' - choose one:')
@@ -1327,7 +1375,7 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                     -- banner; `base_text` and `dyn_banner` are rendered separately so the
                     -- banner can carry its own colour.
                     local text = dyn_banner and (base_text .. '\n \n' .. dyn_banner) or base_text
-                    local st = quest_state.getStepState(currentTopCategory, currentSubfile, current_mission, i)
+                    local st = quest_state.getStepState(currentTopCategory, currentSubfile, current_mission, i, step_data)
                     local cbLabel = string.format("##step_%d", i)
                     local ref = { st }
                     if imgui.Checkbox(cbLabel, ref) then

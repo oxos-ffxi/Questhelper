@@ -36,12 +36,33 @@ return {
         floor_id = 0,
         max_distance = 35,
     },
+    ["Babenn"] = {
+        target_pos = { x = 73.5, y = -2.2, z = 34.7 },
+        visual_mode = "arc",
+        zone = "Bastok Mines",
+        floor_id = 0,
+        max_distance = 30
+    },
     -- Bastok Markets
     ["Cleades"] = {
         target_pos = { x = -362.0, y = -12.0, z = -169.0 },
         trigger_npc = "Cleades",
         visual_mode = "arc",
         zone = "Bastok Markets",
+    },
+    ["Gwill"] = {
+        target_pos = { x = -317.8, y = -17.3, z = -177.4 },
+        visual_mode = "arc",
+        zone = "Bastok Markets",
+        floor_id = 0,
+        max_distance = 30
+    },
+    ["Brygid"] = {
+        target_pos = { x = -90.2, y = -5.4, z = -108.5 },
+        visual_mode = "arc",
+        zone = "Bastok Markets",
+        floor_id = 0,
+        max_distance = 35
     },
     -- Port Bastok
     ["Argus"] = {
@@ -52,15 +73,26 @@ return {
     },
     ["Hilda"] = {
         target_pos = { x = -161.8, y = -9, z = 10.3 },
+        dynamic_pos = true,
+        y_offset = -1.6,
         trigger_npc = "Hilda",
         visual_mode = "arc",
         zone = "Port Bastok",
+        floor_id = 0,
+        max_distance = 30
     },
     ["Jabbar"] = {
         target_pos = { x = -99.7, y = -3.8, z = 26.1 },
         trigger_npc = "Jabbar",
         visual_mode = "arc",
         zone = "Port Bastok",
+    },
+    ["Kaede"] = {
+        target_pos = { x = 48.3, y = -7.8, z = 69.2 },
+        visual_mode = "arc",
+        zone = "Port Bastok",
+        floor_id = 0,
+        max_distance = 30
     },
     -- Metalworks
     ["Cid"] = {
@@ -123,6 +155,8 @@ return {
         trigger_npc = "Lucius",
         visual_mode = "arc",
         zone = "Metalworks",
+        floor_id = 0,
+        max_distance = 35
     },
      ["Ayame"] = {
         target_pos = { x = 134, y = -20.5, z = 33.3 },
@@ -157,6 +191,13 @@ return {
         zone = "Metalworks",
         floor_id = 0,
         max_distance = 20
+    },
+    ["Raibaht"] = {
+        target_pos = { x = -26.3, y = -12.3, z = -3.6 },
+        visual_mode = "arc",
+        zone = "Metalworks",
+        floor_id = 0,
+        max_distance = 30
     },
     --Zeruhn Mines
     ["Makarim"] = {
@@ -215,7 +256,7 @@ return {
     },
     --Selbina
     ["Mathilde"] = {
-        target_pos = { x = 12.6, y = -8.8, z = -7.6 },
+        target_pos = { x = 12.6, y = -8.9, z = -7.6 },
         visual_mode = "arc",
         zone = "Selbina",
         floor_id = 0,
@@ -227,6 +268,49 @@ return {
         zone = "Selbina",
         floor_id = 0,
         max_distance = 35
+    },
+    ["Vobo"] = {
+        target_pos = { x = 37.9, y = -16.0, z = 81.2 },
+        visual_mode = "arc",
+        zone = "Selbina",
+        floor_id = 0,
+        max_distance = 30
+    },
+    ["Gabwaleid"] = {
+        target_pos = { x = -17.7, y = -8.7, z = 11.2 },
+        visual_mode = "arc",
+        zone = "Selbina",
+        floor_id = 0,
+        max_distance = 30
+    },
+    --Mhaura
+    ["Celestina"] = {
+        target_pos = { x = -37.6, y = -17.7, z = 75.7 },
+        visual_mode = "arc",
+        zone = "Mhaura",
+        floor_id = 0,
+        max_distance = 30
+    },
+    ["Ekokoko"] = {
+        target_pos = { x = -77.9, y = -25.1, z = 28.0 },
+        visual_mode = "arc",
+        zone = "Mhaura",
+        floor_id = 0,
+        max_distance = 30
+    },
+    ["Bihoro-Guhoro"] = {
+        target_pos = { x = -28.5, y = -9.1, z = 40.9 },
+        visual_mode = "arc",
+        zone = "Mhaura",
+        floor_id = 0,
+        max_distance = 30
+    },
+    ["Jikka-Abukka"] = {
+        target_pos = { x = -13.5, y = -16.7, z = 58.6 },
+        visual_mode = "arc",
+        zone = "Mhaura",
+        floor_id = 0,
+        max_distance = 30
     },
     --Gusgen Mines
     ["Blind Moby"] = {
@@ -314,6 +398,20 @@ return {
         floor_id = 0,
         max_distance = 20
     },
+    ["Boizo-Naizo"] = {
+        target_pos = { x = -9.6, y = -3.6, z = -26.1 },
+        visual_mode = "arc",
+        zone = "Windurst Woods",
+        floor_id = 0,
+        max_distance = 35
+    },
+    ["Sola Jaab"] = {
+        target_pos = { x = 109.4, y = -6.5, z = -25.9 },
+        visual_mode = "arc",
+        zone = "Windurst Woods",
+        floor_id = 0,
+        max_distance = 35
+    },
     --Port Windurst
     ["Melek"] = {
         target_pos = { x = -78, y= -7, z=156},
@@ -362,6 +460,13 @@ return {
         floor_id = 0,
         max_distance = 30
     },
+    ["Shanruru"] = {
+        target_pos = { x = -1.3, y = -6.8, z = 186.7 },
+        visual_mode = "arc",
+        zone = "Port Windurst",
+        floor_id = 0,
+        max_distance = 35
+    },
     -- Windurst Waters North
     ["Kyume-Romeh"] = {
         target_pos = { x = -54.5, y = -5.3, z = 23.2 },
@@ -398,6 +503,13 @@ return {
         floor_id = 1,
         max_distance = 25
     },
+    ["Koko Lihzeh"] = {
+        target_pos = { x = 132.9, y = -6.9, z = 162.5 },
+        visual_mode = "arc",
+        zone = "Windurst Waters North",
+        floor_id = 1,
+        max_distance = 30
+    },
     -- Windurst Waters South
     ["Ohbiru-Dohbiru"] = {
         target_pos = { x = 22.7, y = -6.2, z = -195.0 },
@@ -426,6 +538,13 @@ return {
         zone = "Windurst Waters South",
         floor_id = 2,
         max_distance = 30
+    },
+    ["Naiko-Paneiko"] = {
+        target_pos = { x = -246.9, y = -6.3, z = -308.1 },
+        visual_mode = "arc",
+        zone = "Windurst Waters South",
+        floor_id = 2,
+        max_distance = 35
     },
     -- Windurst Walls
     ["Yoran-Oran"] = {
@@ -456,12 +575,21 @@ return {
         floor_id = 0,
         max_distance = 25
     },
+    ["Koru-Moru"] = {
+        target_pos = { x = -121.7, y = -6.6, z = 122.4 },
+        visual_mode = "arc",
+        zone = "Windurst Walls",
+        floor_id = 0,
+        max_distance = 35
+    },
     --Heavens Tower
     ["Kupipi"] = {
         target_pos = { x = 2, y= -1, z=32.1},
         trigger_npc = "Kupipi",
         visual_mode = "arc",
-        zone = "Heavens Tower"
+        zone = "Heavens Tower",
+        floor_id = 0,
+        max_distance = 35
     },
     ["Door: Starway-Stairway"] = {
         target_pos = { x = -13.7, y = -1.5, z = 28.9 },
