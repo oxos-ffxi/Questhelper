@@ -920,6 +920,14 @@ ashita.events.register('d3d_present', 'present_callback', function()
     currentSubfile = newSubfile
     current_mission = newMission
 
+    -- Title bar X on the main window
+    if ui_main.close_requested then
+        ui_main.close_requested = false
+        is_open = false
+        showImagesDrawer = false
+        return
+    end
+
     -- Render image drawer
     if not window_open then
         showImagesDrawer = false

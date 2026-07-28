@@ -8,6 +8,7 @@
 local ui_debug = {}
 
 local imgui = require('imgui')
+local theme = require('modules.ui_theme')
 -- Safe: modules.player only pulls in ffi, so it cannot require its way back here.
 local player_module = require('modules.player')
 
@@ -564,16 +565,10 @@ local function get_target_entity()
     return ok and result or nil
 end
 
--- Push a highlighted (active) button style.
-local function push_active_style()
-    imgui.PushStyleColor(ImGuiCol_Button,        { 0.15, 0.50, 0.85, 1.0 })
-    imgui.PushStyleColor(ImGuiCol_ButtonHovered, { 0.20, 0.60, 0.95, 1.0 })
-end
-
 local function toggle_btn(label, active)
-    if active then push_active_style() end
+    local pushed = active and theme.pushButton('accent') or 0
     local clicked = imgui.Button(label)
-    if active then imgui.PopStyleColor(2) end
+    if pushed > 0 then imgui.PopStyleColor(pushed) end
     return clicked
 end
 
@@ -1231,7 +1226,12 @@ function ui_debug.render(player_mod, floor_mappings, quest_state_mod, zone_data)
     end
 
     imgui.SetNextWindowSize({ 740, 500 }, ImGuiCond_FirstUseEver)
-    local win_open = imgui.Begin("QH Debug", nil, 0)
+
+    local theme_colors, theme_vars = theme.push()
+    -- Table ref so the title bar's X reports back; it turns Developer Mode off,
+    -- which is the flag that gates this whole window.
+    local dbg_open = { true }
+    local win_open = imgui.Begin("QH Debug", dbg_open, 0)
     if win_open then
         if imgui.BeginTabBar("QHTabs") then
             if imgui.BeginTabItem("Log") then
@@ -1258,6 +1258,13 @@ function ui_debug.render(player_mod, floor_mappings, quest_state_mod, zone_data)
         end
     end
     imgui.End()
+    theme.pop(theme_colors, theme_vars)
+
+    if not dbg_open[1] then
+        quest_state_mod.settings.ui_settings.dev_mode = false
+        require('settings').save('QuestHelper_settings', quest_state_mod.settings)
+        print("\30\106[QH]\30\01 Developer mode disabled - Debug output hidden")
+    end
 
     -- Locked shapes — always visible regardless of active tab
     if #viz.preview_shapes > 0 then

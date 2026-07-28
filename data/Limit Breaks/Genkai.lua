@@ -4921,9 +4921,6 @@ return {
             {
                 text = "Step 2: Farm a Ninja's Testimony in Castle Oztroja.\n \n" ..
                        "Target: Yagudo Assassin (~16%) - Look for the RED highlights.\n \n" ..
-                       "Enter from Meriphataud Mountains at (L-8). The GREEN square is the Survival Guide.\n" ..
-                       "Follow the arrows - this route runs deeper than the Bard/Black Mage one, through\n" ..
-                       "floors 1, 2, 3 and 4.\n \n" ..
                        "CRITICAL: Invisible for this ENTIRE section (Sneak for bats/leeches). As Ninja you have\n" ..
                        "Tonko, so this is the easiest job in the game to run Oztroja on.\n \n" ..
                        "CRITICAL: This route passes the lever doors and the trap-door room, so you need the three\n" ..
@@ -5110,13 +5107,11 @@ return {
             },
             {
                 text = "Step 4: Beat Maat in the Chamber of Oracles as NINJA.\n \n" ..
-                       "Same burning circle as Dragoon and Samurai.\n \n" ..
                        "TIP: Home Point #1 of Quicksand Caves warps you directly to the Chamber of Oracles\n" ..
                        "WARNING: Sneak the whole way - Antica and Sabotenders aggro in the caves. Tonko works fine.\n \n" ..
                        "===== Before you go in =====\n" ..
                        "CRITICAL: Your SUB JOB is disabled inside. Take /BLM for the Warp out, or a Warp Ring.\n" ..
-                       "CRITICAL: The 10 minute clock starts when you ZONE IN, not when you engage - casting your\n" ..
-                       "shadows and buffs inside eats your timer.\n \n" ..
+                       "CRITICAL: The 10 minute clock starts when you ZONE IN, not when you engage! \n \n" ..
                        "===== The fight =====\n" ..
                        "- Maat fights as NINJA with your job's abilities including Mijin Gakure, but he always\n" ..
                        "  swings Hand-to-Hand and uses H2H weapon skills.\n" ..

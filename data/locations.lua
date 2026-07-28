@@ -2227,6 +2227,14 @@ return {
         max_distance = 10,
         draw_in_combat = false,
     },
+    --Cloister of Tremors
+    ["cloister-of-tremors-tremorstone-???"] = {
+        target_pos = { x = -545.2, y = 1.9, z = -495.7 },
+        visual_mode = "arc",
+        zone = "Cloister of Tremors",
+        floor_id = 0,
+        max_distance = 12
+    },
     --Chamber of Oracles
     ["chamber-of-oracles-shimmering-circle"] = {
         target_pos = { x = -220.1, y = -1.9, z = 23.0 },

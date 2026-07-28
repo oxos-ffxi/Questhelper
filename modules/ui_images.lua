@@ -4,6 +4,7 @@ local ui_images = {}
 local imgui = require('imgui')
 local ffi = require('ffi')
 local bit = require('bit')
+local theme = require('modules.ui_theme')
 
 -- ImGui Condition Flags
 ImGuiCond_FirstUseEver = 2
@@ -54,6 +55,8 @@ function ui_images.render(lastMainX, lastMainY, lastMainW, lastMainH, currentTop
     local window_height = (base_map_size * map_scale) + height_padding
     imgui.SetNextWindowSize({window_width, window_height}, ImGuiCond_Always)
 
+    local theme_colors, theme_vars = theme.push()
+
     -- Window flags: Draggable (removed NoMove), no title bar, no resize
     local drawerFlags = bit.bor(
         ImGuiWindowFlags_NoTitleBar, ImGuiWindowFlags_NoResize,
@@ -80,8 +83,9 @@ function ui_images.render(lastMainX, lastMainY, lastMainW, lastMainH, currentTop
         -- Validate and clamp current_map_index
         local total_maps = #step_imgs
         if total_maps == 0 then
-            imgui.Text("No maps available for this step")
+            imgui.Text("No maps available for this step - Warp out!")
             imgui.End()
+            theme.pop(theme_colors, theme_vars)
             return
         end
         if current_map_index < 1 then current_map_index = 1 end
@@ -221,9 +225,9 @@ function ui_images.render(lastMainX, lastMainY, lastMainW, lastMainH, currentTop
 
         for i = btn_start, btn_end do
             if i == current_map_index then
-                imgui.PushStyleColor(ImGuiCol_Button, {0.2, 0.6, 0.2, 1.0})
+                local pushed = theme.pushButton('accent')
                 imgui.Button(tostring(i) .. "##MapBtn" .. i, {btn_w, 0})
-                imgui.PopStyleColor()
+                imgui.PopStyleColor(pushed)
             else
                 if imgui.Button(tostring(i) .. "##MapBtn" .. i, {btn_w, 0}) then
                     ui_images.current_map_indices[step_key] = i
@@ -419,6 +423,7 @@ function ui_images.render(lastMainX, lastMainY, lastMainW, lastMainH, currentTop
         end
     end
     imgui.End()
+    theme.pop(theme_colors, theme_vars)
 end
 
 return ui_images

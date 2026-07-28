@@ -2,7 +2,6 @@
 local ui_main = {}
 
 local imgui = require('imgui')
-local bit = require('bit')
 
 -- ImGui Tree Node Flags
 ImGuiTreeNodeFlags_DefaultOpen = 0x20
@@ -13,11 +12,6 @@ ImGuiCond_FirstUseEver = 2
 -- ImGui Window Flags
 ImGuiWindowFlags_AlwaysAutoResize = 0x40
 
--- ImGui Color Indices (Ashita runtime globals — defined here to satisfy linter)
-ImGuiCol_Button        = 21
-ImGuiCol_ButtonHovered = 22
-ImGuiCol_ButtonActive  = 23
-
 -- Search functionality
 local search_query = ""
 local search_results = T{}
@@ -25,6 +19,9 @@ local search_results = T{}
 -- Hardcoded progression guide
 local progression_guide = require('data.progression_guide')
 local player_module = require('modules.player')
+local theme = require('modules.ui_theme')
+local col = theme.col
+local has_group = type(imgui.BeginGroup) == 'function'
 local step_utils = require('modules.utils')  -- resolveDynamicStep (randomised-objective quests)
 
 -- Inventory checking (periodic, not every frame)
@@ -32,9 +29,21 @@ local inventory_results = {} -- Cached results
 local last_inventory_check = 0
 local INVENTORY_CHECK_INTERVAL = 5.0 -- Check every 5 seconds
 
+-- Set when the main window's X is clicked; questhelper.lua consumes it.
+ui_main.close_requested = false
+
 -- Settings window state
 local show_settings_window = false
+local settings_just_opened = false  -- force-uncollapse on the frame it opens
 local show_progression_guide = false
+
+-- Gold caption + rule that heads each block of settings.
+local function settingsSection(label)
+    imgui.Spacing()
+    imgui.TextColored(col.gold, label)
+    imgui.Separator()
+    imgui.Spacing()
+end
 
 -- Collapsed mode step navigation
 local collapsed_viewed_step = nil  -- Track which step we're viewing in collapsed mode
@@ -335,21 +344,17 @@ end
 
 -- Estimates how many rendered lines a string occupies, counting explicit newlines and
 -- soft wraps at wrap_chars. Used to size the collapsed window to its content.
+-- Blank lines count as a fraction: ui_theme renders them as a thin gap, not a full line.
 local function countWrappedLines(text, wrap_chars)
     if type(text) ~= 'string' or text == '' then return 0 end
 
-    local lines = 1
-    local current_line_length = 0
-    for i = 1, #text do
-        if text:sub(i, i) == '\n' then
-            lines = lines + 1
-            current_line_length = 0
+    local lines = 0
+    for line in (text .. '\n'):gmatch('([^\n]*)\n') do
+        local trimmed = line:match('^%s*(.-)%s*$')
+        if trimmed == '' then
+            lines = lines + 0.6  -- thin gap, but keep the estimate on the generous side
         else
-            current_line_length = current_line_length + 1
-            if current_line_length >= wrap_chars then
-                lines = lines + 1
-                current_line_length = 0
-            end
+            lines = lines + math.max(1, math.ceil(#trimmed / wrap_chars))
         end
     end
     return lines
@@ -392,11 +397,7 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
     -- Get UI scale setting early so it can be used for window sizing
     local ui_scale = ui_settings.ui_scale or 1.0
 
-    imgui.PushStyleColor(ImGuiCol_WindowBg, {0.1, 0.1, 0.1, 0.73})
-    imgui.PushStyleColor(ImGuiCol_CheckMark, {0.8, 0.8, 0.8, 1.0})
-    imgui.PushStyleColor(ImGuiCol_FrameBg, {0.3, 0.3, 0.3, 0.8})
-    imgui.PushStyleColor(ImGuiCol_FrameBgHovered, {0.5, 0.5, 0.5, 0.8})
-    imgui.PushStyleColor(ImGuiCol_FrameBgActive, {0.7, 0.7, 0.7, 1.0})
+    local theme_colors, theme_vars = theme.push()
 
     -- Dynamic window sizing based on collapsed state
     local window_height = 600  -- Default height
@@ -554,11 +555,9 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
     local show_all_steps_this_frame = ui_settings.show_all_steps
     local is_expanding = (prev_show_all_steps == false and show_all_steps_this_frame == true)
 
-    local mainFlags
     if current_mission and not ui_settings.show_all_steps then
         -- Collapsed mode: enforce dynamic size every frame so height tracks content
         imgui.SetNextWindowSize({scaled_width, scaled_height}, ImGuiCond_Always)
-        mainFlags = bit.bor(ImGuiWindowFlags_NoCollapse, ImGuiWindowFlags_NoTitleBar, ImGuiWindowFlags_NoResize)
     else
         -- Expanded mode: lock width, allow height resize
         -- On transition from collapsed, force-restore the saved expanded height
@@ -567,9 +566,18 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
         if is_expanding then
             imgui.SetNextWindowSize({scaled_width, saved_h}, ImGuiCond_Always)
         end
-        mainFlags = bit.bor(ImGuiWindowFlags_NoCollapse, ImGuiWindowFlags_NoTitleBar)
     end
-    local window_open = imgui.Begin('Quest Helper', nil, mainFlags)
+
+    -- No window flags on purpose.
+    --
+    -- p_open has to be a table for the title bar's X to report back - but passing nil
+    -- was also what stopped the flags argument being read at all. Turning them on for
+    -- the first time fought the SetNextWindowSize above and clipped the panel, so the
+    -- window keeps the sizing it has always used and stays collapsible (the title bar
+    -- arrow hides it without needing /questhelper).
+    local mainFlags = 0
+    local main_open = { true }
+    local window_open = imgui.Begin('Quest Helper', main_open, mainFlags)
 
     -- Apply font scaling for the entire window
     imgui.SetWindowFontScale(ui_scale)
@@ -591,42 +599,41 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
         end
 
         -- STICKY TOP BAR: All control buttons in one line
-        -- Images drawer toggle
-        if showImagesDrawer then
-            if imgui.Button("<##drawerToggle") then new_showImagesDrawer = false end
-            imgui.SameLine(); imgui.Text("Hide Images")
-        else
-            if imgui.Button(">##drawerToggle") then new_showImagesDrawer = true end
-            imgui.SameLine(); imgui.Text("Show Images")
+        -- Images drawer toggle - lit while the drawer is open
+        local imgPushed = theme.pushButton(showImagesDrawer and 'accent' or 'neutral')
+        if imgui.SmallButton("Maps##drawerToggle") then
+            new_showImagesDrawer = not showImagesDrawer
         end
+        imgui.PopStyleColor(imgPushed)
 
-        -- Settings button
+        -- Settings button (the gear glyph has no font coverage - it drew as "?")
         imgui.SameLine()
-        if imgui.SmallButton("\xE2\x9A\x99##Settings") then
+        local setPushed = theme.pushButton(show_settings_window and 'accent' or 'neutral')
+        if imgui.SmallButton("Settings##Settings") then
             show_settings_window = not show_settings_window
+            settings_just_opened = show_settings_window
         end
+        imgui.PopStyleColor(setPushed)
 
         -- Progression guide toggle
         imgui.SameLine()
-        if show_progression_guide then
-            imgui.PushStyleColor(ImGuiCol_Button, {0.2, 0.5, 0.2, 1.0})
-            if imgui.SmallButton("Guide##GuideToggle") then show_progression_guide = false end
-            imgui.PopStyleColor(1)
-        else
-            if imgui.SmallButton("Guide##GuideToggle") then show_progression_guide = true end
+        local guidePushed = theme.pushButton(show_progression_guide and 'accent' or 'neutral')
+        if imgui.SmallButton("Guide##GuideToggle") then
+            show_progression_guide = not show_progression_guide
         end
+        imgui.PopStyleColor(guidePushed)
 
         -- Navigation back buttons and toggles (hidden while guide is open)
         if not show_progression_guide and current_mission then
             -- Collapse/Expand Steps Toggle
             imgui.SameLine()
             if ui_settings.show_all_steps then
-                if imgui.SmallButton("[-] Collapse##CollapseToggle") then
+                if imgui.SmallButton("Collapse##CollapseToggle") then
                     ui_settings.show_all_steps = false
                     settings.save('QuestHelper_settings', quest_state.settings)
                 end
             else
-                if imgui.SmallButton("[+] Expand##CollapseToggle") then
+                if imgui.SmallButton("Expand##CollapseToggle") then
                     ui_settings.show_all_steps = true
                     settings.save('QuestHelper_settings', quest_state.settings)
                 end
@@ -634,7 +641,7 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
 
             -- Back to Missions button
             imgui.SameLine()
-            if imgui.Button("Back##BackToMissions") then
+            if imgui.SmallButton("< Back##BackToMissions") then
                 new_current_mission = nil
             end
 
@@ -673,13 +680,13 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
         elseif not show_progression_guide and currentSubfile then
             -- Back to Subfiles button (when viewing mission list)
             imgui.SameLine()
-            if imgui.Button("< Back##BackToSubfiles") then
+            if imgui.SmallButton("< Back##BackToSubfiles") then
                 new_currentSubfile = nil
             end
         elseif not show_progression_guide and currentTopCategory then
             -- Back to Categories button (when viewing subfile list)
             imgui.SameLine()
-            if imgui.Button("< Back##BackToCategories") then
+            if imgui.SmallButton("< Back##BackToCategories") then
                 new_currentTopCategory = nil
             end
         end
@@ -704,9 +711,9 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
         -- SEARCH RESULTS
         if search_query ~= "" then
             if #search_results == 0 then
-                imgui.TextColored({1,0,0,1}, "No matches found.")
+                imgui.TextColored(col.red, "No matches found.")
             else
-                imgui.TextColored({0,1,0,1}, "Search Results:")
+                imgui.TextColored(col.gold, "Search Results:")
                 for _, result in ipairs(search_results) do
                     local topCat  = result.topCategory
                     local subfile = result.subfile
@@ -714,17 +721,7 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                     local isComplete = quest_state.isMissionComplete(topCat, subfile, mission, quest_data)
                     local label = string.format("[%s] %s -> %s", topCat, subfile, mission)
 
-                    if isComplete then
-                        imgui.PushStyleColor(ImGuiCol_Button,        {0, 1, 0, 0.5})
-                        imgui.PushStyleColor(ImGuiCol_ButtonHovered, {0, 1, 0, 0.7})
-                        imgui.PushStyleColor(ImGuiCol_ButtonActive,  {0, 1, 0, 0.9})
-                        imgui.PushStyleColor(ImGuiCol_Text,          {1, 1, 1, 1})
-                    else
-                        imgui.PushStyleColor(ImGuiCol_Button,        {1, 0, 0, 0.5})
-                        imgui.PushStyleColor(ImGuiCol_ButtonHovered, {1, 0, 0, 0.7})
-                        imgui.PushStyleColor(ImGuiCol_ButtonActive,  {1, 0, 0, 0.9})
-                        imgui.PushStyleColor(ImGuiCol_Text,          {1, 1, 1, 1})
-                    end
+                    local pushed = theme.pushButton(isComplete and 'done' or 'todo')
 
                     if imgui.Button(label) then
                         new_currentTopCategory = topCat
@@ -733,7 +730,7 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                         search_query           = ""
                         search_results         = T{}
                     end
-                    imgui.PopStyleColor(4)
+                    imgui.PopStyleColor(pushed)
                 end
             end
             imgui.Separator()
@@ -741,27 +738,22 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
             -- Normal Navigation
             if show_progression_guide then
                 -- Dedicated progression guide page
-                imgui.TextColored({1, 0.65, 0, 1}, "Progression Guide")
-                imgui.TextColored({0.6, 0.6, 0.6, 1}, "Suggested mission order by level.")
+                imgui.TextColored(col.gold, "Progression Guide")
+                imgui.TextColored(col.dim, "Suggested mission order by level.")
                 imgui.Spacing()
                 for _, tier in ipairs(progression_guide) do
-                    imgui.TextColored({1, 0.65, 0, 1}, tier.label)
+                    imgui.TextColored(col.gold, tier.label)
                     imgui.Separator()
                     for _, entry in ipairs(tier.entries) do
                         local subfileData = quest_data[entry.topCategory] and quest_data[entry.topCategory][entry.subfile]
                         local done = subfileData and quest_state.isSubfileComplete(entry.topCategory, entry.subfile, quest_data)
+                        local pushed
                         if done then
-                            imgui.PushStyleColor(ImGuiCol_Button,        {0, 0.6, 0, 0.5})
-                            imgui.PushStyleColor(ImGuiCol_ButtonHovered, {0, 0.6, 0, 0.7})
-                            imgui.PushStyleColor(ImGuiCol_ButtonActive,  {0, 0.6, 0, 0.9})
+                            pushed = theme.pushButton('done')
                         elseif subfileData then
-                            imgui.PushStyleColor(ImGuiCol_Button,        {0.55, 0.1, 0.1, 0.6})
-                            imgui.PushStyleColor(ImGuiCol_ButtonHovered, {0.7,  0.1, 0.1, 0.8})
-                            imgui.PushStyleColor(ImGuiCol_ButtonActive,  {0.8,  0.1, 0.1, 1.0})
+                            pushed = theme.pushButton('neutral')
                         else
-                            imgui.PushStyleColor(ImGuiCol_Button,        {0.3, 0.3, 0.3, 0.5})
-                            imgui.PushStyleColor(ImGuiCol_ButtonHovered, {0.3, 0.3, 0.3, 0.5})
-                            imgui.PushStyleColor(ImGuiCol_ButtonActive,  {0.3, 0.3, 0.3, 0.5})
+                            pushed = theme.pushButton('muted')
                         end
                         local btnLabel = entry.label .. (entry.note and (' (' .. entry.note .. ')') or '') .. '##pg_' .. entry.topCategory .. entry.subfile .. entry.label
                         if imgui.Button(btnLabel) and subfileData then
@@ -770,7 +762,7 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                             new_current_mission    = entry.mission or nil
                             show_progression_guide = false
                         end
-                        imgui.PopStyleColor(3)
+                        imgui.PopStyleColor(pushed)
                     end
                     imgui.Spacing()
                 end
@@ -784,30 +776,29 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                 end
 
             elseif not currentSubfile then
-                imgui.Text('Category: ' .. currentTopCategory)
+                imgui.TextColored(col.dim, currentTopCategory)
                 imgui.Separator()
                 imgui.Text('Select a Subfile:')
                 if not quest_data[currentTopCategory] then
-                    imgui.TextColored({1,0,0,1}, 'No subfiles found in ' .. currentTopCategory)
+                    imgui.TextColored(col.red, 'No subfiles found in ' .. currentTopCategory)
                 else
                     local subKeys = utils.get_sorted_keys(quest_data[currentTopCategory])
                     for _, sfName in ipairs(subKeys) do
                         local complete = quest_state.isSubfileComplete(currentTopCategory, sfName, quest_data)
-                        if complete then imgui.PushStyleColor(ImGuiCol_Button, {0,1,0,0.5}) end
+                        local pushed = theme.pushButton(complete and 'done' or 'neutral')
                         local label = sfName
                         if complete then label = label .. " (Complete!)" end
                         if imgui.Button(label) then new_currentSubfile = sfName end
-                        if complete then imgui.PopStyleColor() end
+                        imgui.PopStyleColor(pushed)
                     end
                 end
 
             elseif not current_mission then
-                imgui.Text('Category: ' .. currentTopCategory)
-                imgui.Text('Subfile:  ' .. currentSubfile)
+                imgui.TextColored(col.dim, currentTopCategory .. '  >  ' .. currentSubfile)
                 imgui.Separator()
                 local subData = quest_data[currentTopCategory][currentSubfile]
                 if not subData then
-                    imgui.TextColored({1,0,0,1}, 'No missions found in ' .. currentSubfile)
+                    imgui.TextColored(col.red, 'No missions found in ' .. currentSubfile)
                 else
                     imgui.Text('Select a mission:')
                     local missionKeys = utils.get_sorted_keys(subData)
@@ -839,37 +830,31 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                                 if currentJobName then
                                     caption = caption .. ' - you are on ' .. currentJobName
                                 end
-                                imgui.TextColored({0.4, 0.7, 1, 1}, caption)
+                                theme.caption(caption)
                                 groupCaptioned[pgroup] = true
                             end
                             label = '  ' .. label
                             if complete then
-                                imgui.PushStyleColor(ImGuiCol_Button, {0, 1, 0, 0.5})
-                                pushedColors = 1
+                                pushedColors = theme.pushButton('done')
                                 label = label .. ' (Complete!)'
                             elseif isPlayerJob then
-                                imgui.PushStyleColor(ImGuiCol_Button, {0.85, 0.65, 0.1, 0.6})
-                                pushedColors = 1
+                                pushedColors = theme.pushButton('accent')
                                 label = label .. '  <-- your current job'
                             end
                         elseif group and not groupSettled[group] then
                             -- Undecided: caption the group once, then offer each route.
                             if not groupCaptioned[group] then
-                                imgui.TextColored({0.4, 0.7, 1, 1}, group .. ' - choose one:')
+                                theme.caption(group .. ' - choose one:')
                                 groupCaptioned[group] = true
                             end
-                            imgui.PushStyleColor(ImGuiCol_Button, {0, 0.35, 0.6, 0.6})
-                            pushedColors = 1
+                            pushedColors = theme.pushButton('choice')
                             label = '  ' .. label
                         elseif group and not complete then
                             -- The route not taken: greyed out, but still readable.
-                            imgui.PushStyleColor(ImGuiCol_Button, {0.25, 0.25, 0.25, 0.5})
-                            imgui.PushStyleColor(ImGuiCol_Text,   {0.5, 0.5, 0.5, 1})
-                            pushedColors = 2
+                            pushedColors = theme.pushButton('muted')
                             label = label .. ' (route not taken)'
                         elseif complete then
-                            imgui.PushStyleColor(ImGuiCol_Button, {0, 1, 0, 0.5})
-                            pushedColors = 1
+                            pushedColors = theme.pushButton('done')
                             label = label .. ' (Complete!)'
                         end
 
@@ -889,29 +874,19 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
 
                 -- Show full header and progress only when NOT collapsed
                 if ui_settings.show_all_steps then
-                    imgui.Text('Top Category: ' .. currentTopCategory)
-                    imgui.Text('Subfile: ' .. currentSubfile)
-                    imgui.Text('Mission: ' .. current_mission)
-                    imgui.Separator()
+                    imgui.TextColored(col.dim, currentTopCategory .. '  >  ' .. currentSubfile)
+                    imgui.TextColored(col.gold, current_mission)
 
                     -- Progress readout
                     local pct, done, tot = quest_state.calculateProgress(currentTopCategory, currentSubfile, current_mission, quest_data)
-                    local barCount = 0
-                    if tot > 0 then barCount = math.floor((pct / 100) * 20); if barCount > 20 then barCount = 20 end end
-                    imgui.Text('[' .. string.rep('|', barCount) .. string.rep(' ', 20 - barCount) .. '] ' .. string.format("%.2f%% (%d/%d steps)", pct, done, tot))
+                    theme.progressBar(pct, done, tot)
                     imgui.Separator()
                 else
                     -- Minimal header when collapsed: mission name + step progress
-                    imgui.Text('Mission: ' .. current_mission)
+                    imgui.TextColored(col.gold, current_mission)
 
-                    -- Show completed steps and total (matching expanded mode format)
                     local pct, done, tot = quest_state.calculateProgress(currentTopCategory, currentSubfile, current_mission, quest_data)
-
-                    -- Compact progress bar and step counter
-                    local barCount = 0
-                    if tot > 0 then barCount = math.floor((pct / 100) * 20); if barCount > 20 then barCount = 20 end end
-                    imgui.Text('[' .. string.rep('|', barCount) .. string.rep(' ', 20 - barCount) .. '] ' .. string.format("%.0f%% (%d/%d steps)", pct, done, tot))
-                    imgui.Separator()
+                    theme.progressBar(pct, done, tot)
 
                     -- Step navigation buttons in collapsed mode (before items/keyitems)
                     local current_step_index = quest_state.getCurrentStep(currentTopCategory, currentSubfile, current_mission, quest_data)
@@ -935,7 +910,7 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                             imgui.SameLine()
                         end
 
-                        imgui.Text(string.format("Step %d/%d", collapsed_viewed_step, #steps))
+                        imgui.TextColored(col.dim, string.format("Step %d/%d", collapsed_viewed_step, #steps))
                         imgui.SameLine()
 
                         -- Next button
@@ -1030,7 +1005,7 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
 
                     -- Display items needed (collapsible, open by default)
                     -- Track the expanded state for dynamic height calculation
-                    local items_header_expanded = imgui.CollapsingHeader("Items Needed:", ui_settings.items_section_expanded and ImGuiTreeNodeFlags_DefaultOpen or 0)
+                    local items_header_expanded = imgui.CollapsingHeader(string.format("Items Needed (%d)###ItemsHeader", #itemsNeeded), ui_settings.items_section_expanded and ImGuiTreeNodeFlags_DefaultOpen or 0)
 
                     -- Update state if it changed
                     if items_header_expanded ~= ui_settings.items_section_expanded then
@@ -1082,46 +1057,46 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                                 if hasEnough then
                                     if inInventory then
                                         -- GREEN - Item in Inventory (ready!)
-                                        imgui.TextColored({0, 1, 0, 1}, string.format("  [x] %s x%d (have %d)", displayName, displayQty, result.count))
+                                        imgui.TextColored(col.green, string.format("  [x] %s x%d (have %d)", displayName, displayQty, result.count))
                                     else
                                         -- YELLOW - Item in storage (need to retrieve)
-                                        imgui.TextColored({1, 1, 0, 1}, string.format("  [!] %s x%d (have %d)", displayName, displayQty, result.count))
+                                        imgui.TextColored(col.gold, string.format("  [!] %s x%d (have %d)", displayName, displayQty, result.count))
                                     end
                                 else
                                     -- ORANGE - Have some but not enough
                                     if itemData.on_the_way then
-                                        imgui.TextColored({1, 0.5, 0, 1}, string.format("  [~] %s x%d (have %d, pick up during quest)", displayName, displayQty, result.count))
+                                        imgui.TextColored(col.amber, string.format("  [~] %s x%d (have %d, pick up during quest)", displayName, displayQty, result.count))
                                     else
-                                        imgui.TextColored({1, 0.5, 0, 1}, string.format("  [~] %s x%d (have %d)", displayName, displayQty, result.count))
+                                        imgui.TextColored(col.amber, string.format("  [~] %s x%d (have %d)", displayName, displayQty, result.count))
                                     end
                                 end
 
                                 -- Display storage locations on one line
                                 if locationStr ~= "" then
-                                    local color = hasEnough and (inInventory and {0, 1, 0, 1} or {1, 1, 0, 1}) or {1, 0.5, 0, 1}
+                                    local color = hasEnough and (inInventory and col.green or col.gold) or col.amber
                                     imgui.TextColored(color, locationStr)
                                 end
                             else
                                 if itemData.optional then
                                     -- GREY - Optional, don't have it
                                     if itemData.alternatives then
-                                        imgui.TextColored({0.6, 0.6, 0.6, 1}, string.format("  [ ] %s (optional)", itemName))
+                                        imgui.TextColored(col.faint, string.format("  [ ] %s (optional)", itemName))
                                     else
-                                        imgui.TextColored({0.6, 0.6, 0.6, 1}, string.format("  [ ] %s x%d (optional)", itemName, qtyNeeded))
+                                        imgui.TextColored(col.faint, string.format("  [ ] %s x%d (optional)", itemName, qtyNeeded))
                                     end
                                 elseif itemData.on_the_way then
                                     -- YELLOW - Don't have it but can pick up during quest
                                     if itemData.alternatives then
-                                        imgui.TextColored({1, 1, 0, 1}, string.format("  [ ] %s (pick up during quest)", itemName))
+                                        imgui.TextColored(col.gold, string.format("  [ ] %s (pick up during quest)", itemName))
                                     else
-                                        imgui.TextColored({1, 1, 0, 1}, string.format("  [ ] %s x%d (pick up during quest)", itemName, qtyNeeded))
+                                        imgui.TextColored(col.gold, string.format("  [ ] %s x%d (pick up during quest)", itemName, qtyNeeded))
                                     end
                                 else
                                     -- RED - Don't have it
                                     if itemData.alternatives then
-                                        imgui.TextColored({1, 0, 0, 1}, string.format("  [ ] %s", itemName))
+                                        imgui.TextColored(col.red, string.format("  [ ] %s", itemName))
                                     else
-                                        imgui.TextColored({1, 0, 0, 1}, string.format("  [ ] %s x%d", itemName, qtyNeeded))
+                                        imgui.TextColored(col.red, string.format("  [ ] %s x%d", itemName, qtyNeeded))
                                     end
                                 end
                                 -- List the acceptable options beneath a grouped (alternatives) item
@@ -1134,7 +1109,7 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                                             table.insert(altNames, alt.item or alt[1])
                                         end
                                     end
-                                    imgui.TextColored({0.6, 0.6, 0.6, 1}, "        any of: " .. table.concat(altNames, ", "))
+                                    imgui.TextColored(col.faint, "        any of: " .. table.concat(altNames, ", "))
                                 end
                             end
                         end
@@ -1146,7 +1121,7 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                 local keyItemsNeeded = utils.getAllKeyItemsNeeded(missionData, keyitems_db)
                 if #keyItemsNeeded > 0 and keyitem_module then
                     -- Track the expanded state for dynamic height calculation
-                    local keyitems_header_expanded = imgui.CollapsingHeader("Key Items Needed:", ui_settings.keyitems_section_expanded and ImGuiTreeNodeFlags_DefaultOpen or 0)
+                    local keyitems_header_expanded = imgui.CollapsingHeader(string.format("Key Items (%d)###KeyItemsHeader", #keyItemsNeeded), ui_settings.keyitems_section_expanded and ImGuiTreeNodeFlags_DefaultOpen or 0)
 
                     -- Update state if it changed
                     if keyitems_header_expanded ~= ui_settings.keyitems_section_expanded then
@@ -1157,20 +1132,20 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                     if keyitems_header_expanded then
                         -- Check if key item tracking is initialized
                         if not keyitem_module.isInitialized() then
-                            imgui.TextColored({1, 1, 0, 1}, "  [!] Key item tracking not ready yet")
-                            imgui.TextColored({0.7, 0.7, 0.7, 1}, "  This will require a zone to update.")
+                            imgui.TextColored(col.gold, "  [!] Key item tracking not ready yet")
+                            imgui.TextColored(col.dim, "  This will require a zone to update.")
                         else
                             for _, ki in ipairs(keyItemsNeeded) do
                                 local hasKI = keyitem_module.hasKeyItem(ki.id)
                                 if hasKI then
                                     -- GREEN - Player has it
-                                    imgui.TextColored({0, 1, 0, 1}, string.format("  [x] KI: %s", ki.name))
+                                    imgui.TextColored(col.green, string.format("  [x] KI: %s", ki.name))
                                 elseif ki.optional then
                                     -- GREY - Optional, don't have it (not required to progress)
-                                    imgui.TextColored({0.6, 0.6, 0.6, 1}, string.format("  [ ] KI: %s (optional)", ki.name))
+                                    imgui.TextColored(col.faint, string.format("  [ ] KI: %s (optional)", ki.name))
                                 else
                                     -- RED - Don't have it
-                                    imgui.TextColored({1, 0, 0, 1}, string.format("  [ ] KI: %s", ki.name))
+                                    imgui.TextColored(col.red, string.format("  [ ] KI: %s", ki.name))
                                 end
                             end
                         end
@@ -1181,7 +1156,7 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                 -- Requirements Section (collapsible, open by default)
                 local requirements = getRequirementRows(missionData, quest_state)
                 if #requirements > 0 then
-                    local req_header_expanded = imgui.CollapsingHeader("Requirements:", ui_settings.requirements_section_expanded and ImGuiTreeNodeFlags_DefaultOpen or 0)
+                    local req_header_expanded = imgui.CollapsingHeader(string.format("Requirements (%d)###RequirementsHeader", #requirements), ui_settings.requirements_section_expanded and ImGuiTreeNodeFlags_DefaultOpen or 0)
 
                     if req_header_expanded ~= ui_settings.requirements_section_expanded then
                         ui_settings.requirements_section_expanded = req_header_expanded
@@ -1191,12 +1166,12 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                     if req_header_expanded then
                         for _, req in ipairs(requirements) do
                             if req.status == 'ok' then
-                                imgui.TextColored({0, 1, 0, 1}, "  [x] " .. req.text)
+                                imgui.TextColored(col.green, "  [x] " .. req.text)
                             elseif req.status == 'fail' then
-                                imgui.TextColored({1, 0.3, 0.3, 1}, "  [!] " .. req.text)
+                                imgui.TextColored(col.red, "  [!] " .. req.text)
                             else
                                 -- Can't be verified from the client - show as a reminder
-                                imgui.TextColored({1, 0.65, 0, 1}, "  [?] " .. req.text)
+                                imgui.TextColored(col.amber, "  [?] " .. req.text)
                             end
                         end
                         imgui.Separator()
@@ -1207,7 +1182,7 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                 local prerequisites = getAllPrerequisites(missionData, quest_state, quest_data)
                 if #prerequisites > 0 then
                     -- Track the expanded state for dynamic height calculation
-                    local prereq_header_expanded = imgui.CollapsingHeader("Prerequisites:", ui_settings.prerequisites_section_expanded and ImGuiTreeNodeFlags_DefaultOpen or 0)
+                    local prereq_header_expanded = imgui.CollapsingHeader(string.format("Prerequisites (%d)###PrereqHeader", #prerequisites), ui_settings.prerequisites_section_expanded and ImGuiTreeNodeFlags_DefaultOpen or 0)
 
                     -- Update state if it changed
                     if prereq_header_expanded ~= ui_settings.prerequisites_section_expanded then
@@ -1219,34 +1194,21 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                         for idx, prereq in ipairs(prerequisites) do
                             if prereq.caption then
                                 -- OR group header, e.g. "Choose one:"
-                                imgui.TextColored({0.4, 0.7, 1, 1}, prereq.caption)
+                                imgui.TextColored(col.blue, prereq.caption)
                             else
                                 local isComplete = quest_state.isMissionComplete(prereq.category, prereq.subfile, prereq.name, quest_data)
                                 local isRecommended = prereq.recommended == true
                                 local isChoice = prereq.or_choice == true
 
+                                local pushedPrereq
                                 if isComplete then
-                                    imgui.PushStyleColor(ImGuiCol_Button,        {0, 0.5, 0, 0.5})
-                                    imgui.PushStyleColor(ImGuiCol_ButtonHovered, {0, 0.7, 0, 0.7})
-                                    imgui.PushStyleColor(ImGuiCol_ButtonActive,  {0, 0.9, 0, 0.9})
-                                    imgui.PushStyleColor(ImGuiCol_Text,          {1, 1, 1, 1})
+                                    pushedPrereq = theme.pushButton('done')
                                 elseif isChoice then
-                                    -- BLUE - One of several alternatives, none done yet
-                                    imgui.PushStyleColor(ImGuiCol_Button,        {0,   0.35, 0.6, 0.6})
-                                    imgui.PushStyleColor(ImGuiCol_ButtonHovered, {0,   0.5,  0.8, 0.8})
-                                    imgui.PushStyleColor(ImGuiCol_ButtonActive,  {0,   0.65, 1.0, 1.0})
-                                    imgui.PushStyleColor(ImGuiCol_Text,          {1, 1, 1, 1})
+                                    pushedPrereq = theme.pushButton('choice')
                                 elseif isRecommended then
-                                    -- AMBER - Recommended, not completed
-                                    imgui.PushStyleColor(ImGuiCol_Button,        {0.6, 0.4,  0,   0.6})
-                                    imgui.PushStyleColor(ImGuiCol_ButtonHovered, {0.8, 0.55, 0,   0.8})
-                                    imgui.PushStyleColor(ImGuiCol_ButtonActive,  {1.0, 0.65, 0,   1.0})
-                                    imgui.PushStyleColor(ImGuiCol_Text,          {1, 1, 1, 1})
+                                    pushedPrereq = theme.pushButton('accent')
                                 else
-                                    imgui.PushStyleColor(ImGuiCol_Button,        {0.5, 0, 0, 0.5})
-                                    imgui.PushStyleColor(ImGuiCol_ButtonHovered, {0.7, 0, 0, 0.7})
-                                    imgui.PushStyleColor(ImGuiCol_ButtonActive,  {0.9, 0, 0, 0.9})
-                                    imgui.PushStyleColor(ImGuiCol_Text,          {1, 1, 1, 1})
+                                    pushedPrereq = theme.pushButton('todo')
                                 end
 
                                 -- Choice rows sit under a "Choose one:" caption, so they drop
@@ -1270,7 +1232,7 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                                     new_current_mission = prereq.name
                                 end
 
-                                imgui.PopStyleColor(4)
+                                imgui.PopStyleColor(pushedPrereq)
                             end
                         end
                         imgui.Separator()
@@ -1287,7 +1249,7 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                 route_step_data = step_utils.resolveDynamicStep(route_step_data, currentTopCategory, currentSubfile, current_mission, quest_state)
                 if route_step_data and type(route_step_data) == 'table' and route_step_data.route_to then
                     -- Track the expanded state for dynamic height calculation
-                    local route_header_expanded = imgui.CollapsingHeader("Route:", ui_settings.route_section_expanded and ImGuiTreeNodeFlags_DefaultOpen or 0)
+                    local route_header_expanded = imgui.CollapsingHeader("Route###RouteHeader", ui_settings.route_section_expanded and ImGuiTreeNodeFlags_DefaultOpen or 0)
 
                     -- Update state if it changed
                     if route_header_expanded ~= ui_settings.route_section_expanded then
@@ -1318,30 +1280,30 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
 
                                             if distance == 0 then
                                                 -- Already at destination
-                                                imgui.TextColored({0, 1, 0, 1}, "  " .. route_str)
+                                                imgui.TextColored(col.green, "  " .. route_str)
                                             elseif pathfinding.isLongRoute(path) then
                                                 -- Long route warning
-                                                imgui.TextColored({1, 1, 0, 1}, string.format("  %d zones:", distance))
+                                                imgui.TextColored(col.gold, string.format("  %d zones:", distance))
                                                 -- Display each zone on its own line with indent
                                                 for line in route_str:gmatch("[^\n]+") do
-                                                    imgui.TextColored({1, 1, 1, 1}, "  " .. line)
+                                                    imgui.TextColored(col.text, "  " .. line)
                                                 end
                                             else
                                                 -- Normal route
-                                                imgui.TextColored({0.7, 0.7, 1, 1}, string.format("  %d zones:", distance))
+                                                imgui.TextColored(col.blue, string.format("  %d zones:", distance))
                                                 -- Display each zone on its own line with indent
                                                 for line in route_str:gmatch("[^\n]+") do
-                                                    imgui.TextColored({1, 1, 1, 1}, "  " .. line)
+                                                    imgui.TextColored(col.text, "  " .. line)
                                                 end
                                             end
                                         else
                                             -- No path found
-                                            imgui.TextColored({1, 0, 0, 1}, "  No route found to " .. destination)
-                                            imgui.TextColored({0.7, 0.7, 0.7, 1}, "  (Zone graph incomplete)")
+                                            imgui.TextColored(col.red, "  No route found to " .. destination)
+                                            imgui.TextColored(col.dim, "  (Zone graph incomplete)")
                                         end
                                     else
                                         -- Current zone not in database
-                                        imgui.TextColored({1, 0.5, 0, 1}, "  Current zone not mapped")
+                                        imgui.TextColored(col.amber, "  Current zone not mapped")
                                     end
                                 end
                             end
@@ -1388,27 +1350,8 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                     local estimated_text_height = 0
 
                     if not ui_settings.show_all_steps then
-                        -- Estimate text height: Count newlines + account for line wrapping
-                        -- Each line wraps at ~55 chars (to account for scrollbar), each line is ~20px tall
-                        local lines = 1
-                        local current_line_length = 0
-                        local wrap_chars = 55  -- Use 55 to match rendering with scrollbar
-
-                        for j = 1, #text do
-                            local char = text:sub(j, j)
-                            if char == '\n' then
-                                lines = lines + 1
-                                current_line_length = 0
-                            else
-                                current_line_length = current_line_length + 1
-                                if current_line_length >= wrap_chars then
-                                    lines = lines + 1
-                                    current_line_length = 0
-                                end
-                            end
-                        end
-
-                        estimated_text_height = lines * 20
+                        -- 55 chars per line to match rendering with the scrollbar, ~20px per line
+                        estimated_text_height = countWrappedLines(text, 55) * 20
 
                         -- Use scrollable container if text height exceeds 350px
                         -- Scale the threshold with UI scale
@@ -1430,20 +1373,19 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                     -- Render the step text
                     -- Use narrower wrap width when scrollbar is present to prevent text cutoff
                     local wrap_width = use_scrollable_text and 55 or 60
-                    local wrapped = utils.wrap_text(base_text, wrap_width)
-                    if ref[1] then
-                        imgui.TextColored({0, 1, 0, 1}, wrapped)
-                    elseif i == current_step_index then
-                        imgui.TextColored({1, 0.55, 0, 1}, wrapped)
-                    else
-                        imgui.Text(wrapped)
-                    end
+                    local tint = ref[1] and 'done' or (i == current_step_index and 'active' or nil)
+
+                    -- Group so wrapped lines align under the first, not back at the margin
+                    if has_group then imgui.BeginGroup() end
+                    theme.renderStepText(base_text, wrap_width, utils.wrap_text, tint)
 
                     -- Resolved randomised target, under the step heading and in its own
-                    -- colour so it stands out against the orange active-step text.
+                    -- colour so it stands out against the active-step text.
                     if dyn_banner then
-                        imgui.TextColored({0.3, 1, 0.5, 1}, utils.wrap_text(dyn_banner, wrap_width))
+                        imgui.Spacing()
+                        imgui.TextColored(col.cyan, utils.wrap_text(dyn_banner, wrap_width))
                     end
+                    if has_group then imgui.EndGroup() end
 
                     -- End scrollable container if we started one
                     if use_scrollable_text then
@@ -1458,15 +1400,15 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
 
                         imgui.Indent(20)
                         if current_count >= required_count then
-                            imgui.TextColored({0,1,0,1}, string.format("[%d/%d] Kills Complete!", current_count, required_count))
+                            imgui.TextColored(col.green, string.format("[%d/%d] Kills Complete!", current_count, required_count))
                         else
-                            imgui.TextColored({1,1,0,1}, string.format("[%d/%d] Kills Remaining", current_count, required_count))
+                            imgui.TextColored(col.gold, string.format("[%d/%d] Kills Remaining", current_count, required_count))
                         end
 
                         -- Show enemy types if specified (one per line to prevent text overflow)
                         if kill_req.enemies and #kill_req.enemies > 0 then
                             for _, enemy_name in ipairs(kill_req.enemies) do
-                                imgui.TextColored({0.7,0.7,0.7,1}, "  - " .. enemy_name)
+                                imgui.TextColored(col.dim, "  - " .. enemy_name)
                             end
                         end
                         imgui.Unindent(20)
@@ -1477,26 +1419,29 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                         local dp = step_data.daily_passwords
                         local words = quest_state.getDailyPasswords(currentTopCategory, currentSubfile, current_mission, i) or {}
                         imgui.Indent(20)
-                        imgui.TextColored({0.6,0.8,1,1}, "Passwords (reset each Vana'diel day):")
+                        imgui.TextColored(col.blue, "Passwords (reset each Vana'diel day):")
                         if dp.slots then
                             for _, slot in ipairs(dp.slots) do
                                 local w = words[slot.slot]
                                 local lbl = slot.label or ("#" .. tostring(slot.slot))
                                 if w then
-                                    imgui.TextColored({0,1,0,1}, string.format("  %s = %s", lbl, w))
+                                    imgui.TextColored(col.green, string.format("  %s = %s", lbl, w))
                                 else
-                                    imgui.TextColored({1,1,0,1}, string.format("  %s = ____", lbl))
+                                    imgui.TextColored(col.gold, string.format("  %s = ____", lbl))
                                 end
                             end
                         end
                         imgui.Unindent(20)
                     end
 
-                    -- Red separator between steps in expanded mode
+                    -- Divider between steps in expanded mode
+                    -- (was pushing index 3 = ChildBg, so it never tinted the separator)
                     if ui_settings.show_all_steps and i < #steps then
-                        imgui.PushStyleColor(3, {0.6, 0.1, 0.1, 1.0})  -- ImGuiCol_Separator = 3
+                        imgui.Spacing()
+                        imgui.PushStyleColor(theme.C.Separator, {0.35, 0.50, 0.80, 0.55})
                         imgui.Separator()
                         imgui.PopStyleColor(1)
+                        imgui.Spacing()
                     end
                 end
 
@@ -1506,21 +1451,20 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                     local hasText  = type(reward.text) == 'string' and reward.text ~= ""
                     if hasItems or hasText then
                         imgui.Spacing()
-                        imgui.Spacing()
-                        imgui.TextColored({0.8,0.8,0,1}, "Rewards:")
+                        imgui.Separator()
+                        imgui.TextColored(col.gold, "Rewards")
                     end
                     if hasItems then
                         for idx, item_data in ipairs(reward.items) do
-                            imgui.Separator()
                             if type(item_data) == 'table' and item_data.name then
                                 if imgui.TreeNode(item_data.name .. "##rewarditem" .. idx) then
-                                    imgui.TextColored({0.8,0.8,0,1},"  Name: ");  imgui.SameLine(); imgui.TextWrapped(item_data.name)
-                                    if item_data.type then imgui.TextColored({0.8,0.8,0,1},"  Type: "); imgui.SameLine(); imgui.TextWrapped(item_data.type) end
-                                    if item_data.races then imgui.TextColored({0.8,0.8,0,1},"  Race: "); imgui.SameLine(); imgui.TextWrapped(item_data.races) end
-                                    if item_data.stats then imgui.TextColored({0.8,0.8,0,1},"  Stat: "); imgui.SameLine(); imgui.TextWrapped(table.concat(item_data.stats, ", ")) end
-                                    if item_data.level then imgui.TextColored({0.8,0.8,0,1},"  Lvl.: "); imgui.SameLine(); imgui.TextWrapped(item_data.level) end
-                                    if item_data.jobs then imgui.TextColored({0.8,0.8,0,1},"  Jobs: "); imgui.SameLine(); imgui.TextWrapped(item_data.jobs) end
-                                    if item_data.note then imgui.TextColored({0.8,0.8,0,1},"  Note: "); imgui.SameLine(); imgui.TextWrapped(item_data.note) end
+                                    imgui.TextColored(col.gold,"  Name: ");  imgui.SameLine(); imgui.TextWrapped(item_data.name)
+                                    if item_data.type then imgui.TextColored(col.gold,"  Type: "); imgui.SameLine(); imgui.TextWrapped(item_data.type) end
+                                    if item_data.races then imgui.TextColored(col.gold,"  Race: "); imgui.SameLine(); imgui.TextWrapped(item_data.races) end
+                                    if item_data.stats then imgui.TextColored(col.gold,"  Stat: "); imgui.SameLine(); imgui.TextWrapped(table.concat(item_data.stats, ", ")) end
+                                    if item_data.level then imgui.TextColored(col.gold,"  Lvl.: "); imgui.SameLine(); imgui.TextWrapped(item_data.level) end
+                                    if item_data.jobs then imgui.TextColored(col.gold,"  Jobs: "); imgui.SameLine(); imgui.TextWrapped(item_data.jobs) end
+                                    if item_data.note then imgui.TextColored(col.gold,"  Note: "); imgui.SameLine(); imgui.TextWrapped(item_data.note) end
                                     imgui.TreePop()
                                 end
                             end
@@ -1539,92 +1483,111 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
     end
 
     imgui.End()
-    imgui.PopStyleColor(5)
+
+    -- Title bar X - questhelper.lua reads this and drops is_open
+    if not main_open[1] then
+        ui_main.close_requested = true
+    end
 
     -- Settings Window
     if show_settings_window then
         -- Scale settings window to match main UI
         local settings_ui_scale = ui_settings.ui_scale or 1.0
-        imgui.SetNextWindowSize({320 * settings_ui_scale, 400 * settings_ui_scale}, ImGuiCond_Always)
-        if imgui.Begin("QuestHelper Settings", true, 0) then
+        imgui.SetNextWindowSize({380 * settings_ui_scale, 470 * settings_ui_scale}, ImGuiCond_FirstUseEver)
+
+        -- A collapsed window's Begin() returns false. That used to be read as "closed",
+        -- which left the window permanently unopenable. Collapsing is fine now, and
+        -- clicking Settings force-uncollapses so an already-stuck window recovers.
+        if settings_just_opened and type(imgui.SetNextWindowCollapsed) == 'function' then
+            imgui.SetNextWindowCollapsed(false, ImGuiCond_Always)
+        end
+        settings_just_opened = false
+
+        local settings_open = { true }
+        if imgui.Begin("QuestHelper Settings", settings_open, 0) then
             -- Apply font scaling for settings window
             imgui.SetWindowFontScale(settings_ui_scale)
-            imgui.Text("Map Display Settings")
-            imgui.Separator()
+
+            settingsSection("Maps")
 
             -- Auto-scroll toggle
             local auto_scroll_ref = { ui_settings.auto_scroll_enabled }
-            if imgui.Checkbox("Auto-scroll to current floor/zone", auto_scroll_ref) then
+            if imgui.Checkbox("Follow my floor / zone", auto_scroll_ref) then
                 ui_settings.auto_scroll_enabled = auto_scroll_ref[1]
                 settings.save('QuestHelper_settings', quest_state.settings)
             end
+            if imgui.IsItemHovered() then
+                imgui.SetTooltip("Switch the map automatically as you move between zones and floors")
+            end
 
             -- Map opacity slider
-            imgui.Text("Map Opacity:")
+            imgui.TextColored(col.dim, "Opacity")
             local opacity_ref = { ui_settings.map_opacity }
+            imgui.PushItemWidth(-1)
             if imgui.SliderFloat("##MapOpacity", opacity_ref, 0.0, 1.0, "%.2f") then
                 ui_settings.map_opacity = opacity_ref[1]
                 settings.save('QuestHelper_settings', quest_state.settings)
             end
+            imgui.PopItemWidth()
             if ui_settings.map_opacity == 0.0 then
-                imgui.TextColored({1, 0.5, 0, 1}, "Maps hidden (opacity = 0)")
+                imgui.TextColored(col.amber, "Maps hidden (opacity = 0)")
             end
 
             -- Map scale slider
-            imgui.Text("Map Size:")
+            imgui.TextColored(col.dim, "Size")
             if not ui_settings.map_scale then
                 ui_settings.map_scale = 1.0  -- Initialize default
             end
             local scale_ref = { ui_settings.map_scale }
+            imgui.PushItemWidth(-1)
             if imgui.SliderFloat("##MapScale", scale_ref, 0.25, 1.0, "%.2f") then
                 ui_settings.map_scale = scale_ref[1]
                 settings.save('QuestHelper_settings', quest_state.settings)
             end
+            imgui.PopItemWidth()
 
             -- Reset map position button
-            imgui.Text("Map Window Position:")
-            if imgui.Button("Reset Map Position") then
+            imgui.Spacing()
+            if imgui.Button("Reset Map Position", {-1, 0}) then
                 ui_settings.map_pos_x = 100
                 ui_settings.map_pos_y = 100
                 settings.save('QuestHelper_settings', quest_state.settings)
                 print("\30\106[QH]\30\01 Map position reset to (100, 100)")
             end
             if imgui.IsItemHovered() then
-                imgui.SetTooltip("Reset map window to default position (100, 100)")
+                imgui.SetTooltip("Move the map window back to (100, 100)")
             end
 
-            imgui.Separator()
-            imgui.Text("UI Display Settings")
-            imgui.Separator()
+            settingsSection("Window")
 
             -- UI scale slider
-            imgui.Text("UI Scale (Window & Font Size):")
+            imgui.TextColored(col.dim, "Scale (window & font)")
             if not ui_settings.ui_scale then
                 ui_settings.ui_scale = 1.0  -- Initialize default
             end
             local ui_scale_ref = { ui_settings.ui_scale }
+            imgui.PushItemWidth(-1)
             if imgui.SliderFloat("##UIScale", ui_scale_ref, 0.6, 1.0, "%.2f") then
                 ui_settings.ui_scale = ui_scale_ref[1]
                 settings.save('QuestHelper_settings', quest_state.settings)
             end
+            imgui.PopItemWidth()
             if imgui.IsItemHovered() then
-                imgui.SetTooltip("Scale the main window and font size for smaller screens")
+                imgui.SetTooltip("Shrink the main window and font for smaller screens")
             end
 
-            imgui.Separator()
-            imgui.Text("Step Display Settings")
-            imgui.Separator()
-
             -- Show all steps toggle
+            imgui.Spacing()
             local show_all_ref = { ui_settings.show_all_steps }
-            if imgui.Checkbox("Show all steps (vs current step only)", show_all_ref) then
+            if imgui.Checkbox("Show all steps", show_all_ref) then
                 ui_settings.show_all_steps = show_all_ref[1]
                 settings.save('QuestHelper_settings', quest_state.settings)
             end
+            if imgui.IsItemHovered() then
+                imgui.SetTooltip("Off = current step only (compact mode)")
+            end
 
-            imgui.Separator()
-            imgui.Text("Developer Settings")
-            imgui.Separator()
+            settingsSection("Developer")
 
             -- Dev mode toggle
             local dev_mode_ref = { ui_settings.dev_mode }
@@ -1638,19 +1601,26 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                 end
             end
             if imgui.IsItemHovered() then
-                imgui.SetTooltip("Shows debug messages in chat log for troubleshooting")
+                imgui.SetTooltip("Opens the QH Debug window and logs to chat")
             end
 
+            imgui.Spacing()
             imgui.Separator()
-            if imgui.Button("Close##SettingsClose") then
+            imgui.Spacing()
+            if imgui.Button("Close##SettingsClose", {-1, 0}) then
                 show_settings_window = false
             end
+        end
+        -- End() must run even when Begin() returns false, or ImGui's stack unbalances
+        imgui.End()
 
-            imgui.End()
-        else
+        if not settings_open[1] then
             show_settings_window = false
         end
     end
+
+    -- Popped last so the settings window is themed too
+    theme.pop(theme_colors, theme_vars)
 
     -- Reset collapsed viewed step if mission changed
     if new_current_mission ~= current_mission then
