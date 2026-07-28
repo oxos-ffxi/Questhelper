@@ -20,6 +20,7 @@ local search_results = T{}
 local progression_guide = require('data.progression_guide')
 local player_module = require('modules.player')
 local theme = require('modules.ui_theme')
+local quest_sync = require('modules.quest_sync')
 local col = theme.col
 local has_group = type(imgui.BeginGroup) == 'function'
 local step_utils = require('modules.utils')  -- resolveDynamicStep (randomised-objective quests)
@@ -1770,6 +1771,33 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
             end
             if imgui.IsItemHovered() then
                 imgui.SetTooltip("Small screens (Steam Deck): the map becomes a tab in this\nwindow instead of a second floating one, so you see the\nsteps or the map, never both fighting for room.")
+            end
+
+            settingsSection("Server Sync")
+
+            local sync_ref = { ui_settings.auto_sync ~= false }
+            if imgui.Checkbox("Auto-sync completed quests", sync_ref) then
+                ui_settings.auto_sync = sync_ref[1]
+                settings.save('QuestHelper_settings', quest_state.settings)
+            end
+            if imgui.IsItemHovered() then
+                imgui.SetTooltip("Tick off quests and missions")
+            end
+
+            local sync_stats = quest_sync.stats()
+            if sync_stats.has_packet then
+                imgui.TextColored(col.dim, string.format("%d missions and %d quests matched to the server log",
+                    sync_stats.mapped_missions, sync_stats.mapped_quests))
+                imgui.Spacing()
+                if imgui.Button("Sync now", {-1, 0}) then
+                    local applied = quest_sync.apply(quest_data, quest_state)
+                    print(string.format("\30\106[QH]\30\01 Sync: %d newly completed.", applied))
+                end
+                if imgui.IsItemHovered() then
+                    imgui.SetTooltip("Re-apply the last log the server sent. Zone to refresh it.")
+                end
+            else
+                imgui.TextColored(col.amber, "Waiting for the server's quest log (zone once)")
             end
 
             settingsSection("Developer")

@@ -37,6 +37,7 @@ local default_settings = T{
         requirements_section_expanded = true,  -- Requirements section (level/fame) expanded state
         route_section_expanded = true,     -- Route section expanded state
         handheld_mode = false,      -- Small screens: map becomes a tab instead of a second window
+        auto_sync = true,           -- Mark quests/missions complete from the server's 0x56 log
         dev_mode = false            -- Developer mode - enables debug output
     }
 }
@@ -110,8 +111,10 @@ function quest_state.getStepState(topCat, subfile, mission, step, step_data)
     return path[step] or false
 end
 
--- Sets the completion state of a specific step
-function quest_state.setStepState(topCat, subfile, mission, step, state, step_trigger_flags)
+-- Sets the completion state of a specific step.
+-- defer_save skips the write to disk, for callers ticking many steps at once (the
+-- server sync); they are responsible for saving once at the end.
+function quest_state.setStepState(topCat, subfile, mission, step, state, step_trigger_flags, defer_save)
     -- Clear any existing trigger flags for this specific step to ensure a clean state
     if step_trigger_flags and step_trigger_flags[topCat] and
        step_trigger_flags[topCat][subfile] and
@@ -123,7 +126,9 @@ function quest_state.setStepState(topCat, subfile, mission, step, state, step_tr
     path[step] = state
     debug_print(string.format("Saving step: %s -> %s -> %s -> Step %d = %s",
         topCat, subfile, mission, step, tostring(state)))
-    settings.save(QUESTHELPER_ALIAS, quest_state.settings)
+    if not defer_save then
+        settings.save(QUESTHELPER_ALIAS, quest_state.settings)
+    end
 end
 
 -- Gets the partial completion state for a checklist item

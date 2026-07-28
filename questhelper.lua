@@ -31,6 +31,7 @@ local map_renderer     = require('modules.map_renderer')
 local utils            = require('modules.utils')
 local inventory_cache  = require('modules.inventory_cache')
 local keyitem_module   = require('modules.keyitem')
+local quest_sync       = require('modules.quest_sync')
 -- local floor_debug      = require('debug_floor_state')  -- Commented out - file doesn't exist
 
 -- Validation
@@ -55,6 +56,7 @@ local currentTopCategory = nil
 local currentSubfile     = nil
 local current_mission    = nil
 local is_open            = false
+local sync_pending       = false  -- a 0x56 arrived; apply it on the next frame
 local showImagesDrawer   = true
 local lastMainX, lastMainY = 300, 200
 local lastMainW, lastMainH = 400, 600
@@ -885,6 +887,24 @@ ashita.events.register('d3d_present', 'present_callback', function()
     beam_drawing.drawBeamsToTargets(filteredTargets, player_module.posX, player_module.posZ_depth,
                                    player_module.posY_height, memManager, drawArcModule,
                                    questIconTexture, helpers, shouldPrintDebugNow, addon.name)
+
+    -- Apply anything the server's quest log told us. Runs whether or not the window
+    -- is open, so progress is right the moment it is opened.
+    if sync_pending and quest_data then
+        sync_pending = false
+        if quest_state.settings.ui_settings.auto_sync ~= false then
+            local applied, current = quest_sync.apply(quest_data, quest_state)
+            if applied > 0 then
+                print(string.format("\30\106[QH]\30\01 Synced %d completed quest/mission(s) from the server log.", applied))
+            end
+            -- Only ever a suggestion, and only when nothing is already open.
+            if current and not current_mission then
+                currentTopCategory = current.cat
+                currentSubfile     = current.sub
+                current_mission    = current.name
+            end
+        end
+    end
 
     -- Render UI
     if not is_open then return end
@@ -1835,6 +1855,13 @@ ashita.events.register('packet_in', 'qh_packet_in_cb', function(e)
 
     -- Key item tracking (Packet 0x55)
     keyitem_module.handlePacket(e)
+
+    -- Quest/mission log (Packet 0x56). Arrives as a burst on zone-in, so record it
+    -- here and apply once on the next frame rather than per packet.
+    if e.id == 0x56 then
+        quest_sync.handlePacket(e)
+        sync_pending = true
+    end
 
     triggers_module.handlePacketIn(e, currentTopCategory, currentSubfile, current_mission,
                                   quest_data, quest_state, step_trigger_flags, player_module.zoneId)

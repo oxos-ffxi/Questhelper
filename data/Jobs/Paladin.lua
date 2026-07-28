@@ -300,7 +300,7 @@ return {
                         zone_name = "Northern San d'Oria",
                         width = 512,
                         height = 512,
-                        state = 2,
+                        state = 3,
                         highlights = {
                             -- (I-5) or (H-9) approximate
                             { position = "J-9", offsetX = 16, offsetY = 16 },
