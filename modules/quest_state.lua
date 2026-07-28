@@ -36,6 +36,7 @@ local default_settings = T{
         prerequisites_section_expanded = true, -- Prerequisites section expanded state
         requirements_section_expanded = true,  -- Requirements section (level/fame) expanded state
         route_section_expanded = true,     -- Route section expanded state
+        handheld_mode = false,      -- Small screens: map becomes a tab instead of a second window
         dev_mode = false            -- Developer mode - enables debug output
     }
 }

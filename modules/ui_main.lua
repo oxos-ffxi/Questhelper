@@ -32,6 +32,11 @@ local INVENTORY_CHECK_INTERVAL = 5.0 -- Check every 5 seconds
 -- Set when the main window's X is clicked; questhelper.lua consumes it.
 ui_main.close_requested = false
 
+-- Handheld Mode: Steps and Map share the main window as tabs, so only one is on
+-- screen at a time. Meant for small screens (Steam Deck) where a second floating
+-- map window has nowhere to sit.
+local handheld_tab = 'steps'
+
 -- Settings window state
 local show_settings_window = false
 local settings_just_opened = false  -- force-uncollapse on the frame it opens
@@ -47,6 +52,7 @@ end
 
 -- Collapsed mode step navigation
 local collapsed_viewed_step = nil  -- Track which step we're viewing in collapsed mode
+local scroll_to_current = false    -- Request: scroll the expanded list to the current step
 
 -- Debug UI "Jump" tab: scroll the panel to a step without touching progress.
 -- Purely visual - the same pointer the Prev/Next buttons move.
@@ -54,6 +60,7 @@ function ui_main.setViewedStep(n)
     collapsed_viewed_step = n
 end
 local prev_show_all_steps   = nil  -- Detect collapse/expand transitions
+local prev_handheld_map     = nil  -- Detect Steps <-> Map tab transitions
 
 local function perform_search(quest_data)
     search_results = T{}
@@ -342,6 +349,39 @@ local function getRequirementRows(missionData, quest_state)
     return rows
 end
 
+-- The three "am I ready" checks behind the green section headers. Optional and
+-- pick-up-on-the-way entries never block: they are not what stops you leaving town.
+local function itemsSatisfied(itemsNeeded, results)
+    if not results then return false end
+    for _, itemData in ipairs(itemsNeeded) do
+        if not (itemData.optional or itemData.on_the_way) then
+            local r = results[itemData.name]
+            local need = (r and r.alternative_match and r.alternative_match.qty) or itemData.quantity
+            if not (r and r.hasItem and r.count >= need) then return false end
+        end
+    end
+    return true
+end
+
+local function keyItemsSatisfied(keyItemsNeeded, keyitem_module)
+    if not keyitem_module.isInitialized() then return false end
+    for _, ki in ipairs(keyItemsNeeded) do
+        if not ki.optional and not keyitem_module.hasKeyItem(ki.id) then return false end
+    end
+    return true
+end
+
+local function prereqsSatisfied(rows, quest_state, quest_data)
+    for _, prereq in ipairs(rows) do
+        if not prereq.caption then
+            if not quest_state.isMissionComplete(prereq.category, prereq.subfile, prereq.name, quest_data) then
+                return false
+            end
+        end
+    end
+    return true
+end
+
 -- Estimates how many rendered lines a string occupies, counting explicit newlines and
 -- soft wraps at wrap_chars. Used to size the collapsed window to its content.
 -- Blank lines count as a fraction: ui_theme renders them as a thin gap, not a full line.
@@ -388,11 +428,17 @@ local function getRewardHeight(reward)
 end
 
 -- Renders the main QuestHelper window
+-- map_fn: optional closure that draws the map inline (Handheld Mode's Map tab).
+-- questhelper.lua builds it so the map's many dependencies stay where they live.
 function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mission, showImagesDrawer,
-                       quest_data, quest_state, utils, inventory_cache, keyitem_module, keyitems_db)
+                       quest_data, quest_state, utils, inventory_cache, keyitem_module, keyitems_db, map_fn)
 
     local settings = require('settings')
     local ui_settings = quest_state.settings.ui_settings
+
+    -- Map tab active? Only meaningful while a mission is open and a map is available.
+    local handheld = ui_settings.handheld_mode and map_fn ~= nil and current_mission ~= nil
+    local handheld_map = handheld and handheld_tab == 'map'
 
     -- Get UI scale setting early so it can be used for window sizing
     local ui_scale = ui_settings.ui_scale or 1.0
@@ -401,7 +447,15 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
 
     -- Dynamic window sizing based on collapsed state
     local window_height = 600  -- Default height
-    if current_mission and not ui_settings.show_all_steps then
+    if handheld_map then
+        -- Size to the map instead of the step text, so nothing needs scrolling:
+        -- the image is fixed pixels (its own scale), everything around it - title bar,
+        -- button row, tabs, mission name, pagination row, padding - is text-sized and
+        -- follows ui_scale. window_height is multiplied by ui_scale further down, so
+        -- the map term divides it back out and the chrome term rides along.
+        local map_scale = ui_settings.map_scale or 1.0
+        window_height = ((512 * map_scale) / ui_scale) + 200
+    elseif current_mission and not ui_settings.show_all_steps then
         -- Collapsed mode: Calculate height based on current step text
         local missionData = quest_data[currentTopCategory] and quest_data[currentTopCategory][currentSubfile] and quest_data[currentTopCategory][currentSubfile][current_mission]
         if missionData and missionData.steps then
@@ -410,7 +464,7 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
 
             -- Base height for UI elements (top bar, mission name, separators, etc.)
             -- Add extra height for navigation buttons if more than 1 step
-            local base_height = 150
+            local base_height = 170  -- includes the divider above the step text
             if #steps > 1 then
                 base_height = base_height + 40  -- Add space for navigation buttons + separator
             end
@@ -555,18 +609,22 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
     local show_all_steps_this_frame = ui_settings.show_all_steps
     local is_expanding = (prev_show_all_steps == false and show_all_steps_this_frame == true)
 
-    if current_mission and not ui_settings.show_all_steps then
-        -- Collapsed mode: enforce dynamic size every frame so height tracks content
+    -- Leaving the Map tab in expanded mode: nothing else would restore the height
+    local leaving_map = (prev_handheld_map == true and handheld_map == false)
+
+    if handheld_map or (current_mission and not ui_settings.show_all_steps) then
+        -- Collapsed mode / Map tab: enforce the size every frame so it tracks content
         imgui.SetNextWindowSize({scaled_width, scaled_height}, ImGuiCond_Always)
     else
         -- Expanded mode: lock width, allow height resize
         -- On transition from collapsed, force-restore the saved expanded height
         local saved_h = (ui_settings.expanded_window_height or 600) * ui_scale
         imgui.SetNextWindowSizeConstraints({scaled_width, 200}, {scaled_width, 2000})
-        if is_expanding then
+        if is_expanding or leaving_map then
             imgui.SetNextWindowSize({scaled_width, saved_h}, ImGuiCond_Always)
         end
     end
+    prev_handheld_map = handheld_map
 
     -- No window flags on purpose.
     --
@@ -593,16 +651,22 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
         mainX, mainY = imgui.GetWindowPos()
         mainW, mainH = imgui.GetWindowSize()
 
-        -- Save expanded height so re-expanding restores the user's last set height
-        if ui_settings.show_all_steps then
+        -- Save expanded height so re-expanding restores the user's last set height.
+        -- Skipped on the Map tab, whose height is the map's, not the user's choice.
+        if ui_settings.show_all_steps and not handheld_map then
             ui_settings.expanded_window_height = mainH / ui_scale
         end
 
         -- STICKY TOP BAR: All control buttons in one line
-        -- Images drawer toggle - lit while the drawer is open
-        local imgPushed = theme.pushButton(showImagesDrawer and 'accent' or 'neutral')
+        -- Images drawer toggle - lit while the drawer is open.
+        -- In Handheld Mode there is no floating drawer, so it jumps to the Map tab.
+        local imgPushed = theme.pushButton((handheld_map or (not handheld and showImagesDrawer)) and 'accent' or 'neutral')
         if imgui.SmallButton("Maps##drawerToggle") then
-            new_showImagesDrawer = not showImagesDrawer
+            if handheld then
+                handheld_tab = (handheld_tab == 'map') and 'steps' or 'map'
+            else
+                new_showImagesDrawer = not showImagesDrawer
+            end
         end
         imgui.PopStyleColor(imgPushed)
 
@@ -696,10 +760,28 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
         -- Begin scrollable content area (everything below the top bar scrolls)
         imgui.BeginChild("##ScrollableContent", {0, 0}, false, 0)
 
+        -- HANDHELD: Steps and Map take turns in this window. Two buttons rather than
+        -- a real tab bar - ImGui's tabs bring their own accent colour and an underline
+        -- rule that cut across the panel, neither of which the theme controls cleanly.
+        if handheld then
+            local tab_w = 90 * ui_scale
+            local stepsPushed = theme.pushButton(handheld_tab == 'steps' and 'accent' or 'neutral')
+            if imgui.Button("Steps##hhSteps", {tab_w, 0}) then handheld_tab = 'steps' end
+            imgui.PopStyleColor(stepsPushed)
+            imgui.SameLine()
+            local mapPushed = theme.pushButton(handheld_tab == 'map' and 'accent' or 'neutral')
+            if imgui.Button("Map##hhMap", {tab_w, 0}) then handheld_tab = 'map' end
+            imgui.PopStyleColor(mapPushed)
+            imgui.Spacing()
+            -- The click is what the player just did, so it wins over the value
+            -- handheld_map was computed from at the top of the frame.
+            handheld_map = (handheld_tab == 'map')
+        end
+
         -- SEARCH BAR (hide when viewing mission in collapsed mode to save space)
-        local show_search = not (current_mission and not ui_settings.show_all_steps)
+        local show_search = not handheld_map and not (current_mission and not ui_settings.show_all_steps)
         if show_search then
-            imgui.Text("Search Missions/Quests (lowest-level):")
+            imgui.TextColored(col.dim, "Search")
             local input_buf = { search_query }
             if imgui.InputText("##SearchQuest", input_buf, 256) then
                 search_query = input_buf[1]
@@ -709,7 +791,11 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
         end
 
         -- SEARCH RESULTS
-        if search_query ~= "" then
+        if handheld_map then
+            -- Map tab: the mission name is the only context worth the vertical space
+            imgui.TextColored(col.gold, current_mission)
+            map_fn()
+        elseif search_query ~= "" then
             if #search_results == 0 then
                 imgui.TextColored(col.red, "No matches found.")
             else
@@ -880,6 +966,17 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                     -- Progress readout
                     local pct, done, tot = quest_state.calculateProgress(currentTopCategory, currentSubfile, current_mission, quest_data)
                     theme.progressBar(pct, done, tot)
+
+                    -- Nothing scrolls the expanded list on its own, so on a long mission
+                    -- you had to hunt for where you were. This jumps to it.
+                    local cur_idx = quest_state.getCurrentStep(currentTopCategory, currentSubfile, current_mission, quest_data)
+                    if #steps > 1 and cur_idx <= #steps then
+                        local curPushed = theme.pushButton('accent')
+                        if imgui.SmallButton(string.format("Go to step %d##ScrollCurrent", cur_idx)) then
+                            scroll_to_current = true
+                        end
+                        imgui.PopStyleColor(curPushed)
+                    end
                     imgui.Separator()
                 else
                     -- Minimal header when collapsed: mission name + step progress
@@ -918,6 +1015,18 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                             if imgui.SmallButton("Next >##CollapsedNext") then
                                 collapsed_viewed_step = collapsed_viewed_step + 1
                             end
+                        end
+
+                        -- Paged away from where you actually are? Offer the way back.
+                        -- The view deliberately never rewinds by itself, or Prev would
+                        -- snap forward again the moment you pressed it.
+                        if collapsed_viewed_step ~= current_step_index and current_step_index <= #steps then
+                            imgui.SameLine()
+                            local backPushed = theme.pushButton('accent')
+                            if imgui.SmallButton(string.format("Go to step %d##CollapsedCurrent", current_step_index)) then
+                                collapsed_viewed_step = current_step_index
+                            end
+                            imgui.PopStyleColor(backPushed)
                         end
 
                         imgui.Separator()
@@ -1005,7 +1114,12 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
 
                     -- Display items needed (collapsible, open by default)
                     -- Track the expanded state for dynamic height calculation
-                    local items_header_expanded = imgui.CollapsingHeader(string.format("Items Needed (%d)###ItemsHeader", #itemsNeeded), ui_settings.items_section_expanded and ImGuiTreeNodeFlags_DefaultOpen or 0)
+                    local items_ready = itemsSatisfied(itemsNeeded, inventory_results[current_mission])
+                    local items_hdr = theme.pushHeader(items_ready)
+                    local items_header_expanded = imgui.CollapsingHeader(
+                        string.format("Items Needed (%d)###ItemsHeader", #itemsNeeded),
+                        ui_settings.items_section_expanded and ImGuiTreeNodeFlags_DefaultOpen or 0)
+                    if items_hdr > 0 then imgui.PopStyleColor(items_hdr) end
 
                     -- Update state if it changed
                     if items_header_expanded ~= ui_settings.items_section_expanded then
@@ -1057,7 +1171,7 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                                 if hasEnough then
                                     if inInventory then
                                         -- GREEN - Item in Inventory (ready!)
-                                        imgui.TextColored(col.green, string.format("  [x] %s x%d (have %d)", displayName, displayQty, result.count))
+                                        theme.text(col.green, string.format("  [x] %s x%d (have %d)", displayName, displayQty, result.count))
                                     else
                                         -- YELLOW - Item in storage (need to retrieve)
                                         imgui.TextColored(col.gold, string.format("  [!] %s x%d (have %d)", displayName, displayQty, result.count))
@@ -1074,7 +1188,7 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                                 -- Display storage locations on one line
                                 if locationStr ~= "" then
                                     local color = hasEnough and (inInventory and col.green or col.gold) or col.amber
-                                    imgui.TextColored(color, locationStr)
+                                    theme.text(color, locationStr)
                                 end
                             else
                                 if itemData.optional then
@@ -1109,7 +1223,7 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                                             table.insert(altNames, alt.item or alt[1])
                                         end
                                     end
-                                    imgui.TextColored(col.faint, "        any of: " .. table.concat(altNames, ", "))
+                                    theme.text(col.faint, "        any of: " .. table.concat(altNames, ", "))
                                 end
                             end
                         end
@@ -1121,7 +1235,12 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                 local keyItemsNeeded = utils.getAllKeyItemsNeeded(missionData, keyitems_db)
                 if #keyItemsNeeded > 0 and keyitem_module then
                     -- Track the expanded state for dynamic height calculation
-                    local keyitems_header_expanded = imgui.CollapsingHeader(string.format("Key Items (%d)###KeyItemsHeader", #keyItemsNeeded), ui_settings.keyitems_section_expanded and ImGuiTreeNodeFlags_DefaultOpen or 0)
+                    local ki_ready = keyItemsSatisfied(keyItemsNeeded, keyitem_module)
+                    local ki_hdr = theme.pushHeader(ki_ready)
+                    local keyitems_header_expanded = imgui.CollapsingHeader(
+                        string.format("Key Items (%d)###KeyItemsHeader", #keyItemsNeeded),
+                        ui_settings.keyitems_section_expanded and ImGuiTreeNodeFlags_DefaultOpen or 0)
+                    if ki_hdr > 0 then imgui.PopStyleColor(ki_hdr) end
 
                     -- Update state if it changed
                     if keyitems_header_expanded ~= ui_settings.keyitems_section_expanded then
@@ -1136,16 +1255,15 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                             imgui.TextColored(col.dim, "  This will require a zone to update.")
                         else
                             for _, ki in ipairs(keyItemsNeeded) do
-                                local hasKI = keyitem_module.hasKeyItem(ki.id)
-                                if hasKI then
+                                if keyitem_module.hasKeyItem(ki.id) then
                                     -- GREEN - Player has it
-                                    imgui.TextColored(col.green, string.format("  [x] KI: %s", ki.name))
+                                    theme.text(col.green, string.format("  [x] %s", ki.name))
                                 elseif ki.optional then
                                     -- GREY - Optional, don't have it (not required to progress)
-                                    imgui.TextColored(col.faint, string.format("  [ ] KI: %s (optional)", ki.name))
+                                    theme.text(col.faint, string.format("  [ ] %s (optional)", ki.name))
                                 else
                                     -- RED - Don't have it
-                                    imgui.TextColored(col.red, string.format("  [ ] KI: %s", ki.name))
+                                    theme.text(col.red, string.format("  [ ] %s", ki.name))
                                 end
                             end
                         end
@@ -1156,7 +1274,15 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                 -- Requirements Section (collapsible, open by default)
                 local requirements = getRequirementRows(missionData, quest_state)
                 if #requirements > 0 then
-                    local req_header_expanded = imgui.CollapsingHeader(string.format("Requirements (%d)###RequirementsHeader", #requirements), ui_settings.requirements_section_expanded and ImGuiTreeNodeFlags_DefaultOpen or 0)
+                    local req_ready = true
+                    for _, req in ipairs(requirements) do
+                        if req.status ~= 'ok' then req_ready = false break end
+                    end
+                    local req_hdr = theme.pushHeader(req_ready)
+                    local req_header_expanded = imgui.CollapsingHeader(
+                        string.format("Requirements (%d)###RequirementsHeader", #requirements),
+                        ui_settings.requirements_section_expanded and ImGuiTreeNodeFlags_DefaultOpen or 0)
+                    if req_hdr > 0 then imgui.PopStyleColor(req_hdr) end
 
                     if req_header_expanded ~= ui_settings.requirements_section_expanded then
                         ui_settings.requirements_section_expanded = req_header_expanded
@@ -1182,7 +1308,12 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                 local prerequisites = getAllPrerequisites(missionData, quest_state, quest_data)
                 if #prerequisites > 0 then
                     -- Track the expanded state for dynamic height calculation
-                    local prereq_header_expanded = imgui.CollapsingHeader(string.format("Prerequisites (%d)###PrereqHeader", #prerequisites), ui_settings.prerequisites_section_expanded and ImGuiTreeNodeFlags_DefaultOpen or 0)
+                    local prereq_ready = prereqsSatisfied(prerequisites, quest_state, quest_data)
+                    local prereq_hdr = theme.pushHeader(prereq_ready)
+                    local prereq_header_expanded = imgui.CollapsingHeader(
+                        string.format("Prerequisites (%d)###PrereqHeader", #prerequisites),
+                        ui_settings.prerequisites_section_expanded and ImGuiTreeNodeFlags_DefaultOpen or 0)
+                    if prereq_hdr > 0 then imgui.PopStyleColor(prereq_hdr) end
 
                     -- Update state if it changed
                     if prereq_header_expanded ~= ui_settings.prerequisites_section_expanded then
@@ -1328,6 +1459,10 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                     end
                 end
 
+                if #steps_to_show > 0 then
+                    theme.divider()
+                end
+
                 for _, i in ipairs(steps_to_show) do
                     local step_data = steps[i]
                     step_data = step_utils.resolveDynamicStep(step_data, currentTopCategory, currentSubfile, current_mission, quest_state)
@@ -1338,6 +1473,18 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                     -- banner can carry its own colour.
                     local text = dyn_banner and (base_text .. '\n \n' .. dyn_banner) or base_text
                     local st = quest_state.getStepState(currentTopCategory, currentSubfile, current_mission, i, step_data)
+
+                    -- Anchor for the current step in the expanded list: a label to find by
+                    -- eye, and the target the "Go to step N" button scrolls to.
+                    if ui_settings.show_all_steps and i == current_step_index then
+                        imgui.Spacing()
+                        theme.text(col.gold, string.format("ACTIVE  -  step %d of %d", i, #steps))
+                        if scroll_to_current and type(imgui.SetScrollHereY) == 'function' then
+                            imgui.SetScrollHereY(0.2)
+                            scroll_to_current = false
+                        end
+                    end
+
                     local cbLabel = string.format("##step_%d", i)
                     local ref = { st }
                     if imgui.Checkbox(cbLabel, ref) then
@@ -1373,7 +1520,14 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                     -- Render the step text
                     -- Use narrower wrap width when scrollbar is present to prevent text cutoff
                     local wrap_width = use_scrollable_text and 55 or 60
-                    local tint = ref[1] and 'done' or (i == current_step_index and 'active' or nil)
+                    -- In compact mode the viewed step is the only thing on screen, so it
+                    -- always reads as the focus even when you have paged ahead of yourself.
+                    local tint
+                    if ref[1] then
+                        tint = 'done'
+                    elseif not ui_settings.show_all_steps or i == current_step_index then
+                        tint = 'active'
+                    end
 
                     -- Group so wrapped lines align under the first, not back at the margin
                     if has_group then imgui.BeginGroup() end
@@ -1399,16 +1553,21 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                         local required_count = kill_req.count
 
                         imgui.Indent(20)
-                        if current_count >= required_count then
-                            imgui.TextColored(col.green, string.format("[%d/%d] Kills Complete!", current_count, required_count))
+                        if required_count > 1 then
+                            -- A count worth watching gets the same gauge as mission progress
+                            local kill_pct = math.min(100, (current_count / required_count) * 100)
+                            theme.progressBar(kill_pct, math.min(current_count, required_count),
+                                              required_count, nil, nil, "killed")
+                        elseif current_count >= required_count then
+                            imgui.TextColored(col.green, "Defeated")
                         else
-                            imgui.TextColored(col.gold, string.format("[%d/%d] Kills Remaining", current_count, required_count))
+                            imgui.TextColored(col.gold, "Not defeated yet")
                         end
 
                         -- Show enemy types if specified (one per line to prevent text overflow)
                         if kill_req.enemies and #kill_req.enemies > 0 then
                             for _, enemy_name in ipairs(kill_req.enemies) do
-                                imgui.TextColored(col.dim, "  - " .. enemy_name)
+                                theme.text(col.dim, "  - " .. enemy_name)
                             end
                         end
                         imgui.Unindent(20)
@@ -1587,6 +1746,17 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                 imgui.SetTooltip("Off = current step only (compact mode)")
             end
 
+            -- Handheld mode toggle
+            imgui.Spacing()
+            local handheld_ref = { ui_settings.handheld_mode }
+            if imgui.Checkbox("Handheld Mode", handheld_ref) then
+                ui_settings.handheld_mode = handheld_ref[1]
+                settings.save('QuestHelper_settings', quest_state.settings)
+            end
+            if imgui.IsItemHovered() then
+                imgui.SetTooltip("Small screens (Steam Deck): the map becomes a tab in this\nwindow instead of a second floating one, so you see the\nsteps or the map, never both fighting for room.")
+            end
+
             settingsSection("Developer")
 
             -- Dev mode toggle
@@ -1622,9 +1792,11 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
     -- Popped last so the settings window is themed too
     theme.pop(theme_colors, theme_vars)
 
-    -- Reset collapsed viewed step if mission changed
+    -- Reset collapsed viewed step if mission changed, and land the expanded list on
+    -- the step you are actually up to rather than at step 1 of 30.
     if new_current_mission ~= current_mission then
         collapsed_viewed_step = nil
+        scroll_to_current = (new_current_mission ~= nil)
     end
 
     prev_show_all_steps = show_all_steps_this_frame

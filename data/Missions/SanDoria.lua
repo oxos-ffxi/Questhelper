@@ -1700,7 +1700,7 @@ return {
                 zone_trigger = "Chateau d'Oraguille",
             },
             { -- Step 6
-                text = "Step 5: Talk to the royal gardener Chalvatot (F-7) in Chateau d'Oraguille to complete the mission. \n \n",
+                text = "Step 6: Talk to the royal gardener Chalvatot (F-7) in Chateau d'Oraguille to complete the mission. \n \n",
                 onmob_target = {"Chalvatot"},
                 trigger_on_event_id = {556},
                 route_to = "Chateau d'Oraguille",

@@ -1840,8 +1840,7 @@ return {
         steps = {
             {
                 text = "Step 1: Speak to Maat in Ru'Lude Gardens (H-5) to start the quest.\n \n" ..
-                       "NOTE: Only needed for your FIRST Maat fight. If you have already beaten him on another\n" ..
-                       "job, tick this and go straight to the burning circle.\n",
+                       "NOTE: Only needed for your FIRST Maat fight. If you have already beaten him on another job, tick this and go straight to the burning circle.\n",
                 route_to = "Ru'Lude Gardens",
                 onmob_target = "Maat",
                 destination_highlight = { position = "H-5", offsetX = 16, offsetY = 16 },
@@ -1881,14 +1880,13 @@ return {
                        "TIP: Home Point to Giddeus #1 (G-12) puts you right outside Balga's Dais.\n \n" ..
                        "===== Before you go in =====\n" ..
                        "CRITICAL: Your SUB JOB is disabled inside. Take /BLM for the Warp out, or a Warp Ring.\n" ..
-                       "CRITICAL: The 10 minute clock starts when you ZONE IN, not when you engage - resting and\n" ..
-                       "buffing inside eats your timer. Bring food, meds and medicines!\n \n" ..
+                       "CRITICAL: The 10 minute clock starts when you ZONE IN, not when you engage!\n \n" ..
                        "===== The fight =====\n" ..
                        "- Maat fights as WHITE MAGE with your job's abilities including Benediction, but he always\n" ..
                        "  swings Hand-to-Hand and uses H2H weapon skills.\n" ..
                        "- Uncapped. He is NOT aggressive, so you get the first move.\n" ..
                        "- He usually concedes before he actually dies, so do not panic at his HP bar.\n" ..
-                       "- WHM can win by a special condition rather than damage - surviving 5 MINUTES from the moment you engage Matt!\n" ..
+                       "- WHM can win by a special condition rather than damage - surviving 5 MINUTES from the moment you engage Maat!\n" ..
                        "- If you have never beaten Maat on ANY job you lose NO experience on a loss. After your first win anywhere, later losses DO cost experience.\n" ..
                        "- If you have Rhapsody in Umber, you can call Trusts once you are inside.\n \n",
                 zone_max_distance = 35,

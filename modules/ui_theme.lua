@@ -50,6 +50,11 @@ local C = {
     HeaderHovered   = colIdx('ImGuiCol_HeaderHovered', 25),
     HeaderActive    = colIdx('ImGuiCol_HeaderActive', 26),
     Separator       = colIdx('ImGuiCol_Separator', 27),
+    Tab             = colIdx('ImGuiCol_Tab', 33),
+    TabHovered      = colIdx('ImGuiCol_TabHovered', 34),
+    TabActive       = colIdx('ImGuiCol_TabActive', 35),
+    TabUnfocused    = colIdx('ImGuiCol_TabUnfocused', 36),
+    TabUnfocusedAct = colIdx('ImGuiCol_TabUnfocusedActive', 37),
     PlotHistogram   = colIdx('ImGuiCol_PlotHistogram', 40),
 }
 ui_theme.C = C
@@ -63,6 +68,7 @@ ui_theme.col = {
     cyan     = {0.42, 0.85, 0.96, 1.00},
     blue     = {0.45, 0.70, 1.00, 1.00},
     green    = {0.36, 0.88, 0.50, 1.00},
+    green_dim= {0.44, 0.64, 0.50, 1.00},  -- finished work, meant to recede
     amber    = {1.00, 0.66, 0.20, 1.00},
     red      = {1.00, 0.42, 0.42, 1.00},
     purple   = {0.70, 0.58, 1.00, 1.00},
@@ -105,6 +111,12 @@ local STYLE_COLORS = {
     {C.ScrollbarGrabH, {0.260, 0.420, 0.720, 0.90}},
     {C.ScrollbarGrabA, col.gold},
     {C.PlotHistogram,  col.gold},
+    -- Tabs ship stock orange, which fought the panel badly in Handheld Mode
+    {C.Tab,            {0.055, 0.100, 0.240, 0.90}},
+    {C.TabHovered,     PANEL_H},
+    {C.TabActive,      {0.160, 0.280, 0.560, 1.00}},
+    {C.TabUnfocused,   {0.045, 0.080, 0.200, 0.90}},
+    {C.TabUnfocusedAct,{0.120, 0.210, 0.420, 1.00}},
 }
 
 -- name -> value. Skipped when the runtime does not expose the var.
@@ -167,16 +179,31 @@ function ui_theme.pushButton(kind)
     return 4
 end
 
+-- Green header colours for a section with nothing outstanding, so a collapsed
+-- section still answers "am I ready?". Returns the pop count (0 when not satisfied).
+function ui_theme.pushHeader(satisfied)
+    if not satisfied then return 0 end
+    imgui.PushStyleColor(C.Header,        {0.10, 0.30, 0.19, 0.90})
+    imgui.PushStyleColor(C.HeaderHovered, {0.14, 0.42, 0.27, 0.92})
+    imgui.PushStyleColor(C.HeaderActive,  {0.18, 0.54, 0.33, 1.00})
+    imgui.PushStyleColor(C.Text,          {0.78, 1.00, 0.85, 1.00})
+    return 4
+end
+
 -- Progress gauge. Gold while in progress, green once finished. Falls back to the
 -- old ASCII bar if the runtime has no ProgressBar.
-function ui_theme.progressBar(pct, done, total, width, height)
+function ui_theme.progressBar(pct, done, total, width, height, noun)
     local frac = 0
     if total and total > 0 then frac = math.max(0, math.min(1, pct / 100)) end
-    local label = string.format("%d%% - %d/%d", math.floor(pct + 0.5), done, total)
+    noun = noun or "steps"
+    -- No percent sign: imgui's text calls treat the string as a printf format, so a
+    -- literal "%" is swallowed as a (broken) conversion - "43% - 3/7" arrived as "43/7".
+    -- The bar already shows the proportion; the count is what needs words.
+    local label = string.format("%d of %d %s", done, total, noun)
 
     if not has('ProgressBar') then
         local bars = math.floor(frac * 20)
-        imgui.TextColored(frac >= 1 and col.green or col.gold,
+        ui_theme.text(frac >= 1 and col.green or col.gold,
             '[' .. string.rep('|', bars) .. string.rep(' ', 20 - bars) .. '] ' .. label)
         return
     end
@@ -185,11 +212,40 @@ function ui_theme.progressBar(pct, done, total, width, height)
     -- of the fill and half of it ends up unreadable whatever colour it is.
     imgui.PushStyleColor(C.PlotHistogram, frac >= 1 and col.green or col.gold)
     imgui.PushStyleColor(C.FrameBg, {0.020, 0.045, 0.120, 0.85})
+    -- Reserve the label's real width where the binding can measure it. A fixed guess
+    -- ran "1 of 20 killed" off the edge, and it would break again at a larger UI scale.
+    local reserve = 130
+    if type(imgui.CalcTextSize) == 'function' then
+        local tw = imgui.CalcTextSize(label)
+        if type(tw) == 'number' and tw > 0 then reserve = tw + 14 end
+    end
     -- height 0 = font height + padding, so the bar matches the text line at any UI scale
-    imgui.ProgressBar(frac, {width or -130, height or 0}, "")
+    imgui.ProgressBar(frac, {width or -reserve, height or 0}, "")
     imgui.PopStyleColor(2)
     imgui.SameLine()
-    imgui.TextColored(frac >= 1 and col.green or col.dim, label)
+    ui_theme.text(frac >= 1 and col.green or col.dim, label)
+end
+
+-- Coloured text that is safe for strings we did not write.
+--
+-- TextColored takes its string as a printf format, so any "%" in it is read as a
+-- conversion and mangles the line (a "43% - 3/7" progress label rendered "43/7").
+-- Text does not have that problem, so colour it with the style stack instead. Use
+-- this for anything carrying quest data - names, step text, route strings.
+function ui_theme.text(colour, str)
+    imgui.PushStyleColor(C.Text, colour)
+    imgui.Text(str)
+    imgui.PopStyleColor(1)
+end
+
+-- Brighter blue rule with room either side. Parts the reference sections from the
+-- step text, which otherwise starts hard against the last section header.
+function ui_theme.divider()
+    imgui.Spacing()
+    imgui.PushStyleColor(C.Separator, {0.35, 0.55, 0.90, 0.70})
+    imgui.Separator()
+    imgui.PopStyleColor(1)
+    imgui.Spacing()
 end
 
 -- A small caption line (group headings, "Choose one:", section notes).
@@ -231,22 +287,41 @@ local PREFIX_COLORS = {
     {'^REWARD:',   col.gold},
 }
 
+-- "Step 18 (Windurst): Run up Parradamo Tor" -> "(Windurst)  Run up Parradamo Tor".
+-- The step number is already in the nav row, so repeating it on the first line of
+-- every step is just noise; what is left becomes the step's title. Returns nil when
+-- the line does not follow the convention, and that line is then left alone.
+local function stepTitle(line)
+    local tag, rest = line:match('^[Ss]tep%s*%d+%s*(.-)%s*:%s*(.+)$')
+    if not rest then return nil end
+    if tag and tag ~= '' then return tag .. '  ' .. rest end
+    return rest
+end
+
 -- Turns a step's text into draw instructions: {kind = 'gap'|'head'|'body'}.
 -- Pure Lua on purpose - the pattern matching and wrapping happen here, away from the
 -- imgui calls, so a bad line can be caught without leaving the indent/style stacks
 -- unbalanced (which would take the rest of the panel down with it).
 local function buildStepLines(text, wrap_width, wrap_fn, body)
     local out = {}
+    local title_done = false
 
     for _, line in ipairs(splitLines(text)) do
         local trimmed = line:match('^%s*(.-)%s*$')
         local heading = trimmed:match('^=+%s*(.-)%s*=+$')
+        local title = (not title_done) and trimmed ~= '' and stepTitle(trimmed) or nil
 
         if trimmed == '' then
             table.insert(out, {kind = 'gap'})
+        elseif title then
+            -- First line of the step becomes its title
+            title_done = true
+            table.insert(out, {kind = 'title', text = wrap_fn(title, wrap_width)})
         elseif heading and heading ~= '' then
+            title_done = true
             table.insert(out, {kind = 'head', text = heading:upper()})
         else
+            title_done = true
             local colour = nil
             for _, entry in ipairs(PREFIX_COLORS) do
                 if trimmed:find(entry[1]) then colour = entry[2] break end
@@ -266,23 +341,28 @@ local function buildStepLines(text, wrap_width, wrap_fn, body)
     return out
 end
 
--- Renders one step's text: "===== Heading =====" becomes a gold heading,
--- CRITICAL/TIP/NOTE lines take their own colour, "- " lines become indented
--- bullets, and blank lines shrink to a thin gap instead of a full line.
--- tint is 'done' | 'active' | nil and colours the ordinary body lines.
+-- Renders one step's text: the first line becomes the step's title, "===== X ====="
+-- becomes a section heading, CRITICAL/TIP/NOTE lines take their own colour, "- "
+-- lines become indented bullets, blank lines shrink to a thin gap.
+--
+-- tint is 'done' | 'active' | nil. State rides on the title line, not the whole
+-- block: colouring every line gold (active) or green (done) turned the panel into
+-- one flat wash and made the instructions harder to read, not easier.
 function ui_theme.renderStepText(text, wrap_width, wrap_fn, tint)
-    local body = col.text
+    local body, title_col = col.text, col.text
     if tint == 'done' then
-        body = col.green
+        body, title_col = col.green_dim, col.green_dim
     elseif tint == 'active' then
-        body = col.gold
+        title_col = col.gold
+    else
+        body = col.dim  -- an upcoming step in the expanded list
     end
 
     local ok, lines = pcall(buildStepLines, text, wrap_width, wrap_fn, body)
     if not ok then
         -- Never swallow the step: show it raw rather than an empty panel.
-        imgui.TextColored(col.red, "(could not format this step: " .. tostring(lines) .. ")")
-        imgui.TextColored(body, tostring(text))
+        ui_theme.text(col.red, "(could not format this step: " .. tostring(lines) .. ")")
+        ui_theme.text(body, tostring(text))
         return
     end
 
@@ -294,15 +374,18 @@ function ui_theme.renderStepText(text, wrap_width, wrap_fn, tint)
     for _, item in ipairs(lines) do
         if item.kind == 'gap' then
             spacer(3)
+        elseif item.kind == 'title' then
+            ui_theme.text(title_col, item.text)
+            spacer(2)
         elseif item.kind == 'head' then
             spacer(2)
-            imgui.TextColored(col.gold, item.text)
+            ui_theme.text(tint == 'done' and col.green_dim or col.gold, item.text)
         elseif item.indent then
             imgui.Indent(12)
-            imgui.TextColored(item.colour, item.text)
+            ui_theme.text(item.colour, item.text)
             imgui.Unindent(12)
         else
-            imgui.TextColored(item.colour, item.text)
+            ui_theme.text(item.colour, item.text)
         end
     end
 

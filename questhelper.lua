@@ -904,9 +904,22 @@ ashita.events.register('d3d_present', 'present_callback', function()
         end
     end
 
+    -- Handheld Mode draws the map inside the main window's Map tab. The map needs a
+    -- pile of dependencies that live here, so hand ui_main a closure rather than them.
+    local handheld = quest_state.settings.ui_settings.handheld_mode
+    local map_fn = nil
+    if handheld and currentTopCategory and currentSubfile and current_mission then
+        map_fn = function()
+            ui_images.renderContent(currentTopCategory, currentSubfile, current_mission,
+                                    quest_state, quest_data, utils, image_loader, map_renderer,
+                                    player_module, zone_data, map_db, floor_mappings,
+                                    quest_state.settings.ui_settings)
+        end
+    end
+
     local window_open, mainX, mainY, mainW, mainH, newShowDrawer, newTopCat, newSubfile, newMission =
         ui_main.render(is_open, currentTopCategory, currentSubfile, current_mission, showImagesDrawer,
-                      quest_data, quest_state, utils, inventory_cache, keyitem_module, keyitems_db)
+                      quest_data, quest_state, utils, inventory_cache, keyitem_module, keyitems_db, map_fn)
 
     if mainW > 0 and mainH > 0 then
         lastMainX = mainX
@@ -934,7 +947,8 @@ ashita.events.register('d3d_present', 'present_callback', function()
         return
     end
 
-    if showImagesDrawer and currentTopCategory and currentSubfile and current_mission then
+    -- No floating drawer in Handheld Mode - the Map tab is the map
+    if showImagesDrawer and not handheld and currentTopCategory and currentSubfile and current_mission then
         ui_images.render(lastMainX, lastMainY, lastMainW, lastMainH,
                         currentTopCategory, currentSubfile, current_mission,
                         quest_state, quest_data, utils, image_loader, map_renderer,
