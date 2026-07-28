@@ -238,6 +238,23 @@ function ui_theme.text(colour, str)
     imgui.PopStyleColor(1)
 end
 
+-- Screen size, when the binding will tell us. Used to keep the Handheld map inside
+-- the display: a Steam Deck is 800px tall and a 512px map plus chrome nearly fills it.
+-- Returns nil rather than guessing, and every caller treats nil as "no cap".
+function ui_theme.displaySize()
+    if type(imgui.GetIO) ~= 'function' then return nil end
+    local ok, io = pcall(imgui.GetIO)
+    if not ok or io == nil then return nil end
+    local ok2, ds = pcall(function() return io.DisplaySize end)
+    if not ok2 or ds == nil then return nil end
+    local w = (type(ds) == 'table') and (ds.x or ds[1]) or nil
+    local h = (type(ds) == 'table') and (ds.y or ds[2]) or nil
+    if type(w) == 'number' and type(h) == 'number' and w > 0 and h > 0 then
+        return w, h
+    end
+    return nil
+end
+
 -- Brighter blue rule with room either side. Parts the reference sections from the
 -- step text, which otherwise starts hard against the last section header.
 function ui_theme.divider()

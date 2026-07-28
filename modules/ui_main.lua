@@ -454,7 +454,22 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
         -- follows ui_scale. window_height is multiplied by ui_scale further down, so
         -- the map term divides it back out and the chrome term rides along.
         local map_scale = ui_settings.map_scale or 1.0
-        window_height = ((512 * map_scale) / ui_scale) + 200
+        local map_px = 512 * map_scale
+        local chrome = 200 * ui_scale
+
+        -- Keep the whole thing on screen. 512 + chrome is 712px, and a Steam Deck is
+        -- 800px tall - it fits only if the window happens to sit at the very top, and
+        -- not at all once Map Size goes up. ui_images fits the image to whatever room
+        -- it ends up with, so shrinking the window here shrinks the map with it.
+        local _, screen_h = theme.displaySize()
+        if screen_h then
+            local max_h = screen_h - 100  -- leave room for the window's own position
+            if map_px + chrome > max_h then
+                map_px = math.max(220, max_h - chrome)
+            end
+        end
+
+        window_height = (map_px + chrome) / ui_scale
     elseif current_mission and not ui_settings.show_all_steps then
         -- Collapsed mode: Calculate height based on current step text
         local missionData = quest_data[currentTopCategory] and quest_data[currentTopCategory][currentSubfile] and quest_data[currentTopCategory][currentSubfile][current_mission]

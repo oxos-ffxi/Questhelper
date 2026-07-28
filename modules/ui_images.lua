@@ -26,20 +26,27 @@ ui_images.current_map_indices = {}
 ui_images.last_auto_switch_zone = nil
 ui_images.last_auto_switch_floor = nil
 
--- Drawable width left in the current window/child, for centring the map.
+-- Drawable space left in the current window/child, for centring and fitting the map.
 -- Returns nil rather than guessing if neither call is available.
-local function availableWidth()
+local function availableSize()
     if type(imgui.GetContentRegionAvail) == 'function' then
-        local w = imgui.GetContentRegionAvail()
-        if type(w) == 'number' and w > 0 then return w end
+        local w, h = imgui.GetContentRegionAvail()
+        if type(w) == 'number' and w > 0 then
+            return w, (type(h) == 'number' and h > 0) and h or nil
+        end
     end
     if type(imgui.GetWindowSize) == 'function' then
         local w = imgui.GetWindowSize()
         if type(w) == 'number' and w > 0 then
-            return w - 20  -- rough allowance for window padding
+            return w - 20, nil  -- rough allowance for window padding
         end
     end
-    return nil
+    return nil, nil
+end
+
+local function availableWidth()
+    local w = availableSize()
+    return w
 end
 
 -- Draws the map itself into whichever window is current. Split out of render() so
@@ -278,6 +285,18 @@ function ui_images.renderContent(currentTopCategory, currentSubfile, current_mis
             -- Apply map scale setting
             local w = (img_data.width or 200) * map_scale
             local h = (img_data.height or 100) * map_scale
+
+            -- Shrink to fit the room we actually have, keeping the aspect ratio. The
+            -- Handheld tab caps its height to the display, so on a small screen the
+            -- map has to come down with it. Never enlarges, and ignores rounding-sized
+            -- overflow so the floating drawer (sized to the map) is left alone.
+            local fit_w, fit_h = availableSize()
+            local fit = 1.0
+            if fit_w and w - fit_w > 4 then fit = math.min(fit, fit_w / w) end
+            if fit_h and h - fit_h > 4 then fit = math.min(fit, fit_h / h) end
+            if fit < 1.0 then
+                w, h = w * fit, h * fit
+            end
 
             -- Centre the map in whatever width it has been given. The floating drawer
             -- is sized to the map so this is a no-op there; Handheld Mode's tab is the
