@@ -275,6 +275,34 @@ function quest_state.clearQuestChoices(cat, sub, mis)
     return removed
 end
 
+--- Drops every bit of in-progress scratch state for one mission: checklist ticks, kill
+--- counts, daily passwords and captured choices. Only for a mission that is finished -
+--- half-killed counts and half-ticked checklists under a completed mission are noise,
+--- and worse, a trigger can still act on them. Leaves step_states alone; the caller
+--- owns those.
+--- defer_save skips the write to disk, as setStepState does.
+function quest_state.clearMissionProgress(cat, sub, mis, defer_save)
+    local tables = {
+        quest_state.settings.partial_progress,
+        quest_state.settings.kill_counts,
+        quest_state.settings.daily_progress,
+        quest_state.settings.quest_choices,
+    }
+
+    local cleared = false
+    for _, t in ipairs(tables) do
+        if t and t[cat] and t[cat][sub] and t[cat][sub][mis] then
+            t[cat][sub][mis] = nil
+            cleared = true
+        end
+    end
+
+    if cleared and not defer_save then
+        settings.save(QUESTHELPER_ALIAS, quest_state.settings)
+    end
+    return cleared
+end
+
 -- Returns the last fame level seen for an area, plus how many Vana'diel days ago it
 -- was seen (nil age if the clock was unavailable at capture). Returns nil if never
 -- checked. NOTE: fame rises silently on any quest turn-in, so this is a historical

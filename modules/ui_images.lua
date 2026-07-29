@@ -462,12 +462,19 @@ function ui_images.render(lastMainX, lastMainY, lastMainW, lastMainH, currentTop
         imgui.SetNextWindowPos({100, 100}, ImGuiCond_FirstUseEver)
     end
 
-    -- Scale window size based on map_scale setting
-    -- Base: 512x512 maps + padding for pagination buttons
+    -- The size has to be set explicitly. renderContent shrinks the map to the room it is
+    -- given (availableSize), so leaving this to AlwaysAutoResize is a feedback loop: the
+    -- window fits the image, the image then fits the smaller window, and it ratchets down
+    -- to nothing. The window leads, the image follows - never the other way round.
+    --
+    -- The padding scales with map_scale because SetWindowFontScale below scales the zone
+    -- caption and pagination row too. Held fixed, it reserved a full-size chrome height at
+    -- every scale, which is the dead space under the map at handheld sizes. At scale 1.0
+    -- this is 30 and 115, exactly as before.
     local map_scale = ui_main_settings and ui_main_settings.map_scale or 1.0
     local base_map_size = 512
-    local width_padding = 30   -- window padding + the 3px frame around the image
-    local height_padding = 115 -- zone caption + pagination row + padding + frame
+    local width_padding = 30 * map_scale
+    local height_padding = 115 * map_scale
     imgui.SetNextWindowSize({(base_map_size * map_scale) + width_padding,
                              (base_map_size * map_scale) + height_padding}, ImGuiCond_Always)
 

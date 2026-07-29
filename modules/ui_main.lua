@@ -1796,6 +1796,18 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                 if imgui.IsItemHovered() then
                     imgui.SetTooltip("Re-apply the last log the server sent. Zone to refresh it.")
                 end
+
+                -- Dev mode only. An entry with no server id is an authoring gap, not
+                -- something a player can act on - custom content will never have one -
+                -- and "17 entries not synced" on the settings screen reads like a fault.
+                -- The full list lives in QH Debug -> Sync.
+                local unmatched = sync_stats.unmatched or {}
+                local ambiguous = sync_stats.ambiguous or {}
+                if ui_settings.dev_mode and (#unmatched > 0 or #ambiguous > 0) then
+                    imgui.TextColored(col.dim, string.format(
+                        "%d entries not linked to a server id - see QH Debug > Sync",
+                        #unmatched + #ambiguous))
+                end
             else
                 imgui.TextColored(col.amber, "Waiting for the server's quest log (zone once)")
             end

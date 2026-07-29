@@ -1684,6 +1684,64 @@ ashita.events.register('command', 'command_callback', function(e)
         return true
     end
 
+    -- /qh_sync [log]  -> what the server's 0x56 actually said. log 0-3 is San d'Oria,
+    -- Bastok, Windurst, Zilart; omit it for all four. Lists every completed mission id
+    -- and the entry it maps to, so a missing tick can be pinned on the server not
+    -- sending the bit rather than on our id being wrong.
+    if command_base == 'qh_sync' then
+        if not quest_sync.hasData() then
+            print(string.format("[%s] No 0x56 seen yet - zone once.", addon.name))
+            e.blocked = true
+            return true
+        end
+
+        -- /qh_sync <text> -> why is this one not ticking. Works for quests too, which the
+        -- per-log dump below does not cover (a quest log has 256 ids and dumping them all
+        -- is unreadable).
+        local search = args[2]
+        if search and not tonumber(search) then
+            quest_sync.buildIndex(quest_data)
+            local rows, misses = quest_sync.explain(table.concat(args, ' ', 2))
+
+            for _, row in ipairs(rows) do
+                print(string.format("\30\106[%s]\30\01 %s%s  %s log %d id %d",
+                    addon.name, row.set and "SERVER SAYS DONE  " or "server has NOT set  ",
+                    row.name, row.kind, row.log, row.id))
+            end
+            for _, name in ipairs(misses) do
+                print(string.format("\30\106[%s]\30\01 NOT MAPPED  %s", addon.name, name))
+            end
+            if #rows == 0 and #misses == 0 then
+                print(string.format("[%s] Nothing matched '%s'.", addon.name, table.concat(args, ' ', 2)))
+            end
+
+            e.blocked = true
+            return true
+        end
+
+        local names = { [0] = "San d'Oria", [1] = "Bastok", [2] = "Windurst", [3] = "Zilart" }
+        local only  = tonumber(args[2])
+
+        for log = 0, 3 do
+            if not only or only == log then
+                local rows = quest_sync.dumpMissionLog(log)
+                print(string.format("\30\106[%s]\30\01 log %d (%s): %d complete", addon.name, log, names[log], #rows))
+                for _, row in ipairs(rows) do
+                    print(string.format("    %2d  %s", row.id, row.name or "(not one of ours)"))
+                end
+            end
+        end
+
+        local cur = quest_sync.currentRaw()
+        if cur then
+            print(string.format("\30\106[%s]\30\01 current: nation %s mission %s, CoP %s",
+                addon.name, tostring(cur.nation), tostring(cur.mission), tostring(cur.cop)))
+        end
+
+        e.blocked = true
+        return true
+    end
+
     -- /qh_clues            -> show what has been captured for the active mission
     -- /qh_clues clear      -> wipe the active mission's captures (re-hear from the NPC)
     -- /qh_clues clearall   -> wipe every mission's captures (test/retry path)

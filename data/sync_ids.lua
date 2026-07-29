@@ -1132,19 +1132,106 @@ sync_ids.overrides = {
     -- The server has a typo here (WELCOME_T_NORG), so the names cannot match.
     ["ZM02: Welcome to Norg"] = { kind = 'mission', log = 3, id = 4 },
 
-    -- The 2-3 nation missions are one entry server-side but three of ours (an intro
-    -- plus a leg in each direction). Which of our two "b" entries is which server id
-    -- is a judgement call about direction, so they are left for you rather than
-    -- guessed - marking the wrong mission complete is worse than marking none.
-    --   San d'Oria (log 0): JOURNEY_ABROAD 5, JOURNEY_TO_BASTOK 6,
-    --                       JOURNEY_TO_WINDURST 7, JOURNEY_TO_BASTOK2 8,
-    --                       JOURNEY_TO_WINDURST2 9
-    --   Bastok (log 1):     THE_EMISSARY 5, THE_EMISSARY_SANDORIA 6,
-    --                       THE_EMISSARY_WINDURST 7, THE_EMISSARY_SANDORIA2 8,
-    --                       THE_EMISSARY_WINDURST2 9
-    --   Windurst (log 2):   THE_THREE_KINGDOMS 5, and the same pattern
-    -- e.g.:
-    -- ["2-3a: Journey Abroad - Introduction"] = { kind = 'mission', log = 0, id = 5 },
+    -- The 2-3 nation missions are five server missions but three of ours. The server
+    -- runs them as a hub plus four legs: id 5 is the hub you start and finish at, and
+    -- ids 6/7 are "visit that nation first", 8/9 "visit it second". Each leg completes
+    -- itself, so the bitmask records the exact route taken.
+    --
+    -- Our "A -> B" entry is the whole route, so it takes the SECOND leg's id - the one
+    -- only set once both halves are done. The route not taken never gets an id set and
+    -- stays unticked, which is what choice_group is for.
+    --
+    --   San d'Oria (log 0): JOURNEY_ABROAD 5, TO_BASTOK 6, TO_WINDURST 7,
+    --                       TO_BASTOK2 8, TO_WINDURST2 9
+    --   Bastok (log 1):     THE_EMISSARY 5, SANDORIA 6, WINDURST 7,
+    --                       SANDORIA2 8, WINDURST2 9
+    --   Windurst (log 2):   THE_THREE_KINGDOMS 5, SANDORIA 6, BASTOK 7,
+    --                       SANDORIA2 8, BASTOK2 9
+    ["2-3a: Journey Abroad - Introduction"]            = { kind = 'mission', log = 0, id = 5 },
+    ["2-3b: Journey Abroad - Bastok -> Windurst"]      = { kind = 'mission', log = 0, id = 9 },
+    ["2-3b: Journey Abroad - Windurst -> Bastok"]      = { kind = 'mission', log = 0, id = 8 },
+
+    ["2-3: The Emissary - Introduction"]               = { kind = 'mission', log = 1, id = 5 },
+    ["2-3: The Emissary - San d'Oria -> Windurst"]     = { kind = 'mission', log = 1, id = 9 },
+    ["2-3: The Emissary - Windurst -> San d'Oria"]     = { kind = 'mission', log = 1, id = 8 },
+
+    ["2-3a: The Three Kingdoms - Introduction"]        = { kind = 'mission', log = 2, id = 5 },
+    ["2-3b: The Three Kingdoms - San d'Oria -> Bastok"] = { kind = 'mission', log = 2, id = 9 },
+    ["2-3b: The Three Kingdoms - Bastok -> San d'Oria"] = { kind = 'mission', log = 2, id = 8 },
+}
+
+-- Whole families of ours that share one server entry, matched by Lua pattern so a new
+-- variant needs no line here. Checked only after `overrides`, first match wins.
+--
+-- The limit break quests are the case this exists for: we split them by job and by which
+-- route you took, the server has one quest each. Their names also carry a "Genkai N: "
+-- label that no amount of normalising will reconcile with the server's IN_DEFIANT_CHALLENGE.
+--
+-- Patterns are Lua patterns - escape magic characters (- . ( ) % + * ? [ ] ^ $) with %.
+sync_ids.override_patterns = {
+    { pattern = "^Genkai 1: In Defiant Challenge",     kind = 'quest', log = 3, id = 128 },
+    { pattern = "^Genkai 2: Atop the Highest Mountains", kind = 'quest', log = 3, id = 129 },
+    { pattern = "^Genkai 3: Whence Blows the Wind",    kind = 'quest', log = 3, id = 130 },
+    { pattern = "^Genkai 4: Riding on the Clouds",     kind = 'quest', log = 3, id = 131 },
+    { pattern = "^Genkai 5b: Beyond the Sun",          kind = 'quest', log = 3, id = 76  },
+
+    -- Genkai 5 is deliberately absent. SHATTERING_STARS (132) is one bit meaning "you
+    -- have beaten Maat at least once" - the server does not record which job. Our fifteen
+    -- per-job entries are the Maat's Cap checklist, so mapping them all to 132 would tick
+    -- all fifteen off the first win and claim a cap the player has not earned. Beyond the
+    -- Sun above is the honest signal: its bit is only set when the cap is actually taken.
+    -- Add { pattern = "^Genkai 5: Shattering Stars", kind = 'quest', log = 3, id = 132 }
+    -- if you would rather have the first win tick everything.
+}
+
+-- Chains of Promathia is not in the completed-mission bitmask - port 0x00D0 carries only
+-- San d'Oria, Bastok, Windurst and Zilart, which is why everything else synced and CoP
+-- never did. The server sends one number for it instead, the CoP mission you are on, in
+-- the port 0xFFFF packet. LSB's own hasCompletedMission reads CoP as "id < current", so
+-- the chain has to be in story order for quest_sync to do the same.
+--
+-- Ids and order are LSB's scripts/globals/missions.lua (xi.mission.id.cop) followed
+-- through the nextMission links in scripts/missions/cop.
+--   1-3 is one server mission covering all three Promyvions.
+--   3-3 and 5-3 have extra legs (335/341, 543-568) that never become `current` - they
+--   go to the status bits instead - so they need no entries here.
+--   After 8-4 the server parks you on THE_LAST_VERSE (850), which is what marks Dawn done.
+sync_ids.cop_chain = {
+    { name = "CoP 1-1: The Rites of Life",                    id = 110 },
+    { name = "CoP 1-2: Below the Arks",                       id = 118 },
+    { name = "CoP 1-3: The Mothercrystals - Promyvion-Dem",   id = 128 },
+    { name = "CoP 1-3: The Mothercrystals - Promyvion-Holla", id = 128 },
+    { name = "CoP 1-3: The Mothercrystals - Promyvion-Mea",   id = 128 },
+    { name = "CoP 2-1: An Invitation West",                   id = 138 },
+    { name = "CoP 2-2: The Lost City",                        id = 218 },
+    { name = "CoP 2-3: Distant Beliefs",                      id = 228 },
+    { name = "CoP 2-4: An Eternal Melody",                    id = 238 },
+    { name = "CoP 2-5: Ancient Vows",                         id = 248 },
+    { name = "CoP 3-1: The Call of the Wyrmking",             id = 258 },
+    { name = "CoP 3-2: A Vessel Without a Captain",           id = 318 },
+    { name = "CoP 3-3: The Road Forks",                       id = 325 },
+    { name = "CoP 3-4: Tending Aged Wounds",                  id = 350 },
+    { name = "CoP 3-5: Darkness Named",                       id = 358 },
+    { name = "CoP 4-1: Sheltering Doubt",                     id = 368 },
+    { name = "CoP 4-2: The Savage",                           id = 418 },
+    { name = "CoP 4-3: The Secrets of Worship",               id = 428 },
+    { name = "CoP 4-4: Slanderous Utterings",                 id = 438 },
+    { name = "CoP 5-1: The Enduring Tumult of War",           id = 448 },
+    { name = "CoP 5-2: Desires of Emptiness",                 id = 518 },
+    { name = "CoP 5-3: Three Paths",                          id = 530 },
+    { name = "CoP 6-1: For Whom the Verse is Sung",           id = 578 },
+    { name = "CoP 6-2: A Place to Return",                    id = 618 },
+    { name = "CoP 6-3: More Questions Than Answers",          id = 628 },
+    { name = "CoP 6-4: One to be Feared",                     id = 638 },
+    { name = "CoP 7-1: Chains and Bonds",                     id = 648 },
+    { name = "CoP 7-2: Flames in the Darkness",               id = 718 },
+    { name = "CoP 7-3: Fire in the Eyes of Men",              id = 728 },
+    { name = "CoP 7-4: Calm Before the Storm",                id = 738 },
+    { name = "CoP 7-5: The Warrior's Path",                   id = 748 },
+    { name = "CoP 8-1: Garden of Antiquity",                  id = 800 },
+    { name = "CoP 8-2: A Fate Decided",                       id = 818 },
+    { name = "CoP 8-3: When Angels Fall",                     id = 828 },
+    { name = "CoP 8-4: Dawn",                                 id = 840 },
 }
 
 return sync_ids

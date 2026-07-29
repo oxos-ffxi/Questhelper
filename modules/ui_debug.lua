@@ -2,6 +2,8 @@
 -- Tab 1 "Log"      : redirected QH debug messages (no chat spam)
 -- Tab 2 "Position" : live coords + visual_zone entry builder
 -- Tab 3 "Target"   : live target NPC coords + locations.lua entry builder
+-- Tab 4 "Validate" : data integrity checks
+-- Tab 5 "Sync"     : what the server's 0x56 linked, and what it did not
 --
 -- Coordinate note: posY_height = horizontal Z (depth), posZ_depth = elevation Y.
 -- Data format:  x = posX,  y = posZ_depth (elev),  z = posY_height (horiz).
@@ -1060,6 +1062,128 @@ local function render_validate_tab(quest_state_mod)
     end
 end
 
+-- ── Tab: Server sync ─────────────────────────────────────────────────────────
+-- Type a name, see whether it is linked to a server id and whether the server has
+-- actually set that bit. Those are the only two failure modes and they need opposite
+-- fixes: an unlinked entry wants a line in sync_ids.lua, an unset bit cannot be fixed
+-- by any mapping at all.
+local sync_ui = { search = { "" }, built = false }
+
+local function render_sync_tab()
+    -- Required here rather than at the top: quest_state pulls in this module, so a
+    -- top-level require risks the load order biting back.
+    local quest_sync = require('modules.quest_sync')
+    local stats = quest_sync.stats()
+
+    if not stats.has_packet then
+        imgui.TextColored({ 1.0, 0.75, 0.2, 1.0 }, "No 0x56 seen yet - zone once.")
+        return
+    end
+
+    imgui.TextColored({ 0.6, 0.6, 0.6, 1.0 }, string.format(
+        "%d missions and %d quests linked   %d not linked",
+        stats.mapped_missions, stats.mapped_quests, #stats.unmatched + #stats.ambiguous))
+
+    imgui.Spacing()
+    imgui.Text("Find:")
+    imgui.SameLine()
+    imgui.InputText("##qhsyncsearch", sync_ui.search, 128)
+    imgui.SameLine()
+    if imgui.SmallButton("clear##qhsyncclear") then sync_ui.search[1] = "" end
+
+    imgui.TextColored({ 0.6, 0.6, 0.6, 1.0 },
+        "linked = we know its server id (same on every character)    done = the server says THIS character finished it")
+
+    imgui.Separator()
+    imgui.BeginChild("QHSyncResults", { 0, 0 }, false, 0)
+
+    local text = sync_ui.search[1] or ""
+    if text == "" then
+        -- No search: one collapsible row per data file, so a glance says which are fully
+        -- wired up. Grouped rather than tabbed - the category count is whatever is in
+        -- data/, and a tab bar stops being glanceable past about six.
+        if not sync_ui.built and val.quest_data then
+            quest_sync.buildIndex(val.quest_data)
+            sync_ui.built = true
+        end
+
+        local cover = quest_sync.coverage()
+        local cats = {}
+        for cat in pairs(cover) do table.insert(cats, cat) end
+        table.sort(cats)
+
+        for _, cat in ipairs(cats) do
+            local subs, linked, unlinked, done = {}, 0, 0, 0
+            for sub, c in pairs(cover[cat]) do
+                table.insert(subs, sub)
+                linked, unlinked, done = linked + c.linked, unlinked + c.unlinked, done + c.done
+            end
+            table.sort(subs)
+
+            local header = string.format("%s  -  %d linked, %d done, %d NOT linked###qhcov%s",
+                cat, linked, done, unlinked, cat)
+            if imgui.CollapsingHeader(header, 0) then
+                for _, sub in ipairs(subs) do
+                    local c = cover[cat][sub]
+                    local sub_header = string.format("    %s  -  %d linked, %d done%s###qhcov%s%s",
+                        sub, c.linked, c.done,
+                        c.unlinked > 0 and string.format(", %d NOT linked", c.unlinked) or "",
+                        cat, sub)
+
+                    if imgui.CollapsingHeader(sub_header, 0) then
+                        for _, row in ipairs(quest_sync.entriesFor(cat, sub)) do
+                            if not row.linked then
+                                imgui.TextColored({ 1.0, 0.4, 0.4, 1.0 }, "      NOT LINKED   " .. row.name)
+                            elseif row.done then
+                                imgui.TextColored({ 0.3, 0.85, 0.3, 1.0 }, "      done         " .. row.name)
+                            else
+                                imgui.TextColored({ 0.6, 0.6, 0.6, 1.0 }, "      not done     " .. row.name)
+                            end
+                        end
+                    end
+                end
+            end
+        end
+
+        if #stats.unmatched > 0 or #stats.ambiguous > 0 then
+            imgui.Spacing()
+            if imgui.CollapsingHeader(string.format("Not linked (%d)###qhcovun", #stats.unmatched + #stats.ambiguous), 0) then
+                imgui.TextColored({ 0.6, 0.6, 0.6, 1.0 }, "These need a line in data/sync_ids.lua:")
+                for _, m in ipairs(stats.unmatched) do
+                    imgui.TextColored({ 1.0, 0.4, 0.4, 1.0 }, m.label)
+                end
+                for _, name in ipairs(stats.ambiguous) do
+                    imgui.TextColored({ 1.0, 0.75, 0.2, 1.0 }, name .. "   (name is in more than one log)")
+                end
+            end
+        end
+    else
+        if not sync_ui.built and val.quest_data then
+            quest_sync.buildIndex(val.quest_data)
+            sync_ui.built = true
+        end
+        local rows, misses = quest_sync.explain(text)
+
+        if #rows == 0 and #misses == 0 then
+            imgui.TextColored({ 0.6, 0.6, 0.6, 1.0 }, "Nothing matched.")
+        end
+        for _, row in ipairs(rows) do
+            if row.set then
+                imgui.TextColored({ 0.3, 0.85, 0.3, 1.0 }, "server says DONE")
+            else
+                imgui.TextColored({ 1.0, 0.75, 0.2, 1.0 }, "server has NOT set")
+            end
+            imgui.SameLine()
+            imgui.Text(string.format("   %s      [%s log %d id %d]", row.name, row.kind, row.log, row.id))
+        end
+        for _, name in ipairs(misses) do
+            imgui.TextColored({ 1.0, 0.4, 0.4, 1.0 }, "NOT LINKED         " .. name)
+        end
+    end
+
+    imgui.EndChild()
+end
+
 -- ── Tab 3: Target + locations.lua builder ────────────────────────────────────
 local function render_target_tab()
     local t = cache.target
@@ -1252,6 +1376,11 @@ function ui_debug.render(player_mod, floor_mappings, quest_state_mod, zone_data)
             if imgui.BeginTabItem("Validate") then
                 active_tab = 'validate'
                 render_validate_tab(quest_state_mod)
+                imgui.EndTabItem()
+            end
+            if imgui.BeginTabItem("Sync") then
+                active_tab = 'sync'
+                render_sync_tab()
                 imgui.EndTabItem()
             end
             imgui.EndTabBar()
