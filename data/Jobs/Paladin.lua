@@ -41,7 +41,7 @@ return {
     -- =========================================================================================
     -- 2) A Squire's Test II
     -- =========================================================================================
-    ["2.Paladin Quest - A Squire's Test 2"] = {
+    ["2.Paladin Quest - A Squire's Test II"] = {
         steps = {
             {
                 text = "Step 1: Return to Balasiel in Southern San d'Oria (F-7) to start the second test.\n \n" ..

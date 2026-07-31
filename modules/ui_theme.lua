@@ -319,7 +319,11 @@ end
 -- Pure Lua on purpose - the pattern matching and wrapping happen here, away from the
 -- imgui calls, so a bad line can be caught without leaving the indent/style stacks
 -- unbalanced (which would take the rest of the panel down with it).
-local function buildStepLines(text, wrap_width, wrap_fn, body)
+--
+-- `mono` drops the per-prefix colours so every line takes `body`. Used for completed
+-- steps: a done step reads as one solid green block, and a red CRITICAL left shouting
+-- inside it just looks broken. Headings already collapse the same way in renderStepText.
+local function buildStepLines(text, wrap_width, wrap_fn, body, mono)
     local out = {}
     local title_done = false
 
@@ -340,8 +344,10 @@ local function buildStepLines(text, wrap_width, wrap_fn, body)
         else
             title_done = true
             local colour = nil
-            for _, entry in ipairs(PREFIX_COLORS) do
-                if trimmed:find(entry[1]) then colour = entry[2] break end
+            if not mono then
+                for _, entry in ipairs(PREFIX_COLORS) do
+                    if trimmed:find(entry[1]) then colour = entry[2] break end
+                end
             end
 
             -- Bullets, and the wrapped continuation lines the data indents under them.
@@ -362,9 +368,14 @@ end
 -- becomes a section heading, CRITICAL/TIP/NOTE lines take their own colour, "- "
 -- lines become indented bullets, blank lines shrink to a thin gap.
 --
--- tint is 'done' | 'active' | nil. State rides on the title line, not the whole
--- block: colouring every line gold (active) or green (done) turned the panel into
--- one flat wash and made the instructions harder to read, not easier.
+-- tint is 'done' | 'active' | nil. For 'active' the state rides on the title line only,
+-- not the whole block: colouring every line gold turned the panel into one flat wash and
+-- made the instructions harder to read, not easier.
+--
+-- 'done' is the exception and goes fully green - body, headings AND callouts. A finished
+-- step is not being read for instructions any more, it is being scanned for "is this
+-- done?", and a red CRITICAL still shouting inside an otherwise green block reads as an
+-- unfinished step. Headings already collapsed this way; `mono` extends it to callouts.
 function ui_theme.renderStepText(text, wrap_width, wrap_fn, tint)
     local body, title_col = col.text, col.text
     if tint == 'done' then
@@ -375,7 +386,8 @@ function ui_theme.renderStepText(text, wrap_width, wrap_fn, tint)
         body = col.dim  -- an upcoming step in the expanded list
     end
 
-    local ok, lines = pcall(buildStepLines, text, wrap_width, wrap_fn, body)
+    -- A completed step goes solid green, callouts included - see buildStepLines' `mono`.
+    local ok, lines = pcall(buildStepLines, text, wrap_width, wrap_fn, body, tint == 'done')
     if not ok then
         -- Never swallow the step: show it raw rather than an empty panel.
         ui_theme.text(col.red, "(could not format this step: " .. tostring(lines) .. ")")

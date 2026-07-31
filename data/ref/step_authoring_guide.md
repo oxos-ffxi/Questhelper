@@ -44,10 +44,68 @@ Rules:
 | Talk to NPC / watch cutscene / trade turn-in | `trigger_on_event_id = {id,...}` | Pull IDs from server `onEventFinish`. Most common + most reliable. |
 | Accept with an accept-message | `trigger_on_talk = {"You have accepted the mission"}` | Only if server sends that `messageSpecial`. Verify first. |
 | Obtain a normal item (mob drop / NPC gives) | `trigger_on_item_obtain = {"Item Name"}` | Pair with `items_needed = {"Item Name"}`. `require_all_items = true` for a set. |
+| Obtain N of an item | `trigger_on_item_obtain = {{item = "Name", quantity = 4}}` | Fires on the obtain/buy message, then verifies the real inventory count. |
+| Skip a gather step the player has already done | `skip_if_have = {item = "name", quantity = 4}` | Periodic inventory check, OR semantics. Catches AH purchases and stock on hand. |
 | Obtain a key item | `trigger_on_keyitem_obtain = {id,...}` | Pair with `keyitems_needed = {id,...}`. `require_all_keyitems = true` for a set. |
 | Enter a zone / battlefield / area cutscene | `zone_trigger = "Zone Name"` | Matches by `zones.lua` ID. Name must exist there. |
 | Kill N mobs in the open world | `kill_requirement = {...}` | See below. Add a `trigger_on_event_id` too if a CS follows the kills. |
 | Gain a status effect | `trigger_on_buff = <id>` | Rare (e.g. Beadeaux Silence). |
+| Witness weather types | `weather_watch = {...}` | Banks elements seen on ZONE-IN. See below. |
+
+`weather_watch` shape (SMN "I Can Hear a Rainbow" is the only user so far):
+```lua
+weather_watch = {
+    label = "Colours shown to the ruby",
+    slots = {                                    -- valid keys: clear fire water earth wind ice thunder
+        { key = "fire", label = "Fire (Hot Spell / Heat Wave)" },
+    },
+    zones = { "Valkurm Dunes", ... },            -- optional: only these zones credit
+    requires_item = "Carbuncle's Ruby",          -- optional but usually essential, see below
+    display_only = true,                         -- optional: track but never auto-complete
+},
+```
+Completes the step once every declared slot has been seen, unless `display_only`.
+
+**Always give it a `requires_item` if the quest has one.** `current_mission` is whatever the player
+has *selected in the UI*, not what they are actually on - so merely browsing a weather quest would
+otherwise bank colours for a quest they have never started. `requires_item` mirrors the server's own
+precondition (SMN's section check is `hasItem(CARBUNCLES_RUBY)`), which makes the addon inactive in
+exactly the cases the server would refuse credit. The handler also skips missions already marked
+complete.
+
+Debug with `/qh_weather` (current weather, banked list, whether tracking is ACTIVE), `test` to force
+a capture past the item gate, `set <name>` / `unset <name>` to correct a slot by hand, and
+`clear` / `clearall` to wipe. `set` matters for players who were part-way through the quest before
+installing the addon - without it their only option is re-hunting weather the server already
+credited.
+
+**It fires on ZONE CHANGE only, and that is deliberate** - the server grants credit in each
+zone's `onZoneIn`, so weather that rolls over while the player stands still earns nothing.
+Polling every frame would show colours as banked that were never credited. The check is also
+deferred ~4s past the zone change (`WEATHER_SETTLE_DELAY` in `questhelper.lua`) because the
+weather value in client memory still holds the previous zone's reading for a moment after the
+zone id flips.
+
+**Never name a slot key after a table operation** - `clear`, `copy`, `map`, `keys`. These keys are
+table indexes, and the state tables are Ashita `T{}`s whose metatable exposes the table library
+through `__index`, so `seen['clear']` returns that *function* and reads as true forever. The SMN
+tracker shipped with exactly that bug: its Clear slot showed DONE regardless of weather and
+survived every wipe. Reads go through `quest_state.hasWeatherSeen`, which uses `rawget`; the key
+itself is `none`, matching `xi.weather.NONE`.
+
+Only the seven elemental buckets exist. Clouds and Fog are not elemental, and Light/Dark
+(Auroras/Gloom) are not in the quest's table - `WEATHER_ELEMENT` in `triggers.lua` leaves all of
+them unmapped on purpose, so they can never tick a slot. Sunshine folds into `clear`, matching the
+server. State is stored in `weather_progress`, persistent like `quest_choices` (**not** day-stamped
+like `daily_progress`) since these sightings hold across days and relogs.
+
+**Item name matching differs by mechanism, and this catches people out.** The *message* match in
+`trigger_on_item_obtain` is a case-sensitive plain `find` against chat text, so the casing has to
+match the log line. The *inventory* checks - `skip_if_have`, and the quantity verification inside
+`trigger_on_item_obtain` - go through `inventory.hasItem`, which is **case-insensitive substring**
+across the item's Name, LogNameSingular and LogNamePlural. So a short lowercase fragment
+(`"gausebit"`) is the robust choice for anything inventory-backed, while message triggers may need
+both casings listed. See `data/Quests/Upper Jeuno.lua` for the pattern.
 
 `kill_requirement` shape:
 ```lua
@@ -73,8 +131,89 @@ trigger_on_event_id = {32001},             -- BCNM win
 | Highlight a roaming enemy to kill | `onmob_enemy = {"Mob"}` (`onmob_enemy_colour`, `onmob_enemy_size`) | No coords needed — radar-highlights the mob live. |
 | Highlight a clickable NPC/object | `onmob_target = {"Name"}` | Display or internal names both work (`"Door: Vestal-chamber"`, `"qm_windy_9_2"`). |
 
-Keep the two map approaches consistent within a mission. Prefer `route_to` for towns/outposts;
-reserve explicit `images` for the multi-floor dungeons that genuinely need per-floor maps.
+### `route_choices` - let the player pick the destination
+When a step is valid in many zones (the SMN weather hunt has 25), drawing every route is
+useless. List them instead and the player clicks one:
+
+```lua
+route_choices_label = "Route to (click one):",   -- optional
+route_choices_per_row = 3,                       -- optional, default 3
+
+-- Either a flat list...
+route_choices = { "Valkurm Dunes", "Konschtat Highlands", ... },
+
+-- ...or grouped, when the zones need explaining:
+route_choices = {
+    { group = "Fire",  zones = { "Valkurm Dunes", "Cape Teriggan" } },
+    { group = "Ice",   zones = { "Beaucedine Glacier", "Xarcabard" } },
+},
+```
+
+**Collapsing finished groups.** `route_choices` knows nothing about *why* a group might be done -
+keep it that way, it is meant to be reusable by any step with several valid destinations. The
+coupling belongs on the feature that owns the progress. For weather, a `weather_watch` slot names
+the group it satisfies:
+
+```lua
+slots = { { key = "fire", label = "Fire (...)", route_group = "Fire" } },
+```
+
+Once that colour is banked the matching group is **hidden**, and when every group is done the whole
+block disappears rather than leaving an empty header. Hiding is safe here precisely because the
+tracker itself is on screen listing every colour as DONE / ____ - leaving a "Fire - DONE" line in
+the route block as well was just duplication. `/qh_weather clear` is the recovery path if a tick is
+ever wrong. Any future tracker can do the same by pointing at a group label.
+
+Group when a bare list of 20+ zones would mean nothing to the player. The group label carries
+the "why", which usually lets you delete the same information from the step text - the SMN
+weather step dropped its whole per-colour table this way. A zone may appear in several groups
+(Valkurm Dunes gets both fire and earth weather); picking it from either routes to the same
+place, so both buttons show as active.
+
+The pick becomes that step's effective `route_to` (maps and the Route panel both follow it),
+persists per step, and clicking the active one clears it. A pick that is no longer in the list -
+because the data file changed - is ignored rather than routing somewhere the step no longer
+mentions. Resolution lives in `quest_state.resolveRouteTo`; never read `step_data.route_to`
+directly in new code.
+
+### `route_to` and `images` are mutually exclusive - never both on one step
+
+Pick one per step:
+
+- **`route_to` + `destination_highlight`** - cities, towns, outposts, open zones. Anywhere the
+  player just needs to *get there*. Maps are generated for you.
+- **`images`** - specific dungeons where you must pinpoint a spot the router cannot express
+  (a particular floor, a lever, a coffer room).
+
+This is not a style preference, it is how the code branches. In `utils.lua` the `images` check
+comes first and **returns unconditionally** (`return matched`, ~line 174), so the `route_to` map
+branch below it is **unreachable whenever `images` is present**. Putting both on a step does not
+give you both - the `images` win and the route maps you thought you were getting never render.
+
+Two consequences worth knowing:
+
+- `images` does its **own** routing. If the player is not in one of the `zone_name` zones, it paths
+  them to the nearest one and uses that image's `highlights` as the destination highlights. So a
+  dungeon step with `images` and no `route_to` still guides the player there.
+- If **no** `images` entry matches the current `state`, `matched` is empty and it *still* returns -
+  so a mis-synced `state` does not merely hide one map, it leaves the step with **no maps at all**.
+
+Need several marked spots without a dungeon map? Use the **array form of `destination_highlight`**
+rather than reaching for `images`:
+
+```lua
+route_to = "Sauromugue Champaign",
+destination_highlight = {
+    { position = "L-8",  label = "Cliff" },
+    { position = "L-10", label = "Cave"  },
+},
+```
+
+`generateRouteImages` accepts that array and supports per-entry `floor_id` and `label`
+(`pathfinding.lua:340-344`).
+
+Note `route_to` still drives the textual **Route** panel in `ui_main.lua` independently of all
+this - that panel reads `step_data.route_to` directly. It is only the *maps* that short-circuit.
 
 `images` entry shape:
 ```lua
@@ -112,11 +251,18 @@ reserve explicit `images` for the multi-floor dungeons that genuinely need per-f
 
 ## 5. Text style
 
+**See `step_text_style_guide.md` for the full rules.** That document owns the prose layer and is
+derived from the renderer in `modules/ui_theme.lua`, which *parses* step text - the conventions
+below are load-bearing, not cosmetic. The short version:
+
 - Prefix every step: `"Step N: ..."`.
 - Paragraph break is `" \n \n"` (space-newline-space-newline); single line break is `" \n"`.
 - Section headers inside a step: `"===== Header ====="`.
 - Callout prefixes: `WARNING:` (aggro/danger), `CRITICAL:` (do-or-fail), `NOTE:` (caveat),
   `TIP:` (shortcut/optional). Wrap purely-optional info in `( ... )`.
+  These are matched EXACTLY and case-sensitively at the start of a line - `Note:` renders grey, a
+  leading `- ` kills the colour, and a callout hard-wrapped across `\n` loses its colour on the
+  second line. One callout = one source line; let the renderer wrap it.
 - Put grid coords inline: `Galaihaurat at (E-6)`. For fights, include level/job/family and any
   immunities (Sleep/Silence/etc.).
 

@@ -96,6 +96,15 @@ end
 -- "1-2: Bat Hunt" find the server's BAT_HUNT without either side being edited.
 local function normalise(name)
     local s = name:gsub('^%d+%-%d+%a*:%s*', ''):gsub('^%u%u+%d+:%s*', '')
+
+    -- Job files number their entries to keep a chain in order - "1.Summoner Quest - I Can
+    -- Hear a Rainbow", or just "4.Father and Son". Strip the ordering prefix and the
+    -- "<Job> Quest - " decoration so what is left is the quest's real name, which is what
+    -- sync_ids holds. Without this every Jobs entry lands in `unmatched` and a player who
+    -- finished a job quest years ago never sees it light up.
+    s = s:gsub('^%d+%.%s*', '')
+    s = s:gsub('^.-%s+Quest%s*%-%s*', '')
+
     return (s:gsub('[^%a%d]', '')):upper()
 end
 

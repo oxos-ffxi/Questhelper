@@ -94,6 +94,22 @@ return {
         floor_id = 0,
         max_distance = 30
     },
+    ["Ensetsu"] = {
+        target_pos = { x = 33.0, y = -6.0, z = 67.0 },
+        trigger_npc = "Ensetsu",
+        visual_mode = "arc",
+        zone = "Port Bastok",
+        floor_id = 0,
+        max_distance = 30
+    },
+    ["Kagetora"] = {
+        target_pos = { x = -96.0, y = -2.0, z = 29.0 },
+        trigger_npc = "Kagetora",
+        visual_mode = "arc",
+        zone = "Port Bastok",
+        floor_id = 0,
+        max_distance = 30
+    },
     -- Metalworks
     ["Cid"] = {
         target_pos = { x = -12.6, y = -13.0, z = 2.5 },
@@ -1371,6 +1387,53 @@ return {
         zone = "Konschtat Highlands",
         max_distance = 60
     },
+    -- Forger ??? (D-8 cave) - Samurai unlock, trade the lump of oriental steel here
+    ["konschtat-forger-qm-d8"] = {
+        target_pos = { x = -709.0, y = 2.0, z = 102.0 },
+        visual_mode = "arc",
+        zone = "Konschtat Highlands",
+        max_distance = 40
+    },
+    -- Meriphataud Mountains
+    -- ??? on the east edge of Drogaroga's Spine (K-8) - Dragoon unlock, trade the wyvern egg
+    ["meriphataud-holy-crest-qm-k8"] = {
+        target_pos = { x = 641.0, y = -15.0, z = 7.0 },
+        visual_mode = "arc",
+        zone = "Meriphataud Mountains",
+        max_distance = 40
+    },
+    -- Valkurm Dunes
+    -- Song Runes on the hidden beach - Bard unlock, just examine them
+    ["valkurm-song-runes"] = {
+        target_pos = { x = -721.0, y = -7.0, z = 102.0 },
+        visual_mode = "arc",
+        zone = "Valkurm Dunes",
+        max_distance = 40
+    },
+    -- Sauromugue Champaign
+    -- Tiger Bones in the cave at (L-10), up the cliff at (L-8) - Ranger unlock
+    ["sauromugue-tiger-bones-l10"] = {
+        target_pos = { x = 666.0, y = -8.0, z = -379.0 },
+        visual_mode = "arc",
+        zone = "Sauromugue Champaign",
+        max_distance = 40
+    },
+    -- Qufim Island
+    -- Nightflowers - Save My Son. Only interactable at night (Vana'diel ~21:30 to dawn)
+    ["qufim-nightflowers"] = {
+        target_pos = { x = -264.8, y = -3.7, z = 28.8 },
+        visual_mode = "arc",
+        zone = "Qufim Island",
+        max_distance = 40
+    },
+    -- Korroloka Tunnel
+    -- ??? that pops the three Korroloka Leeches - Ninja unlock
+    ["korroloka-ninja-qm2"] = {
+        target_pos = { x = -208.0, y = -9.0, z = 176.0 },
+        visual_mode = "arc",
+        zone = "Korroloka Tunnel",
+        max_distance = 30
+    },
     -- Hall Of Transference
     ["hall-of-transference-dem-large-apparatus"] = {
         target_pos = { x = -236.3, y = -44.9, z = -270.0 },
@@ -1857,6 +1920,30 @@ return {
         floor_id = 0,
         max_distance = 20
     },
+    -- Merchant's House door (_6t2) - starts and finishes Save My Son
+    ["jeuno-merchants-house-door"] = {
+        target_pos = { x = -82.2, y = -7.7, z = -168.8 },
+        visual_mode = "arc",
+        zone = "Lower Jeuno",
+        floor_id = 0,
+        max_distance = 25
+    },
+    ["Bki Tbujhja"] = {
+        target_pos = { x = -22.0, y = 0.0, z = -60.0 },
+        trigger_npc = "Bki Tbujhja",
+        visual_mode = "arc",
+        zone = "Lower Jeuno",
+        floor_id = 0,
+        max_distance = 25
+    },
+    ["Mertaire"] = {
+        target_pos = { x = -17.0, y = 0.0, z = -61.0 },
+        trigger_npc = "Mertaire",
+        visual_mode = "arc",
+        zone = "Lower Jeuno",
+        floor_id = 0,
+        max_distance = 25
+    },
     ["Muckvix"] = {
         target_pos = { x = -26.8, y= 3.5, z=-137.3},
         trigger_npc = "Muckvix",
@@ -1895,6 +1982,28 @@ return {
         max_distance = 35
     },
     -- Upper Jeuno
+    -- Chocobo Stables - Chocobo's Wounds / Path of the Beastmaster
+    ["Brutus"] = {
+        target_pos = { x = -55.0, y = 8.0, z = 95.0 },
+        trigger_npc = "Brutus",
+        visual_mode = "arc",
+        zone = "Upper Jeuno",
+        max_distance = 30
+    },
+    ["Osker"] = {
+        target_pos = { x = -61.4, y = 8.2, z = 94.2 },
+        trigger_npc = "Osker",
+        visual_mode = "arc",
+        zone = "Upper Jeuno",
+        max_distance = 30
+    },
+    -- the wounded chocobo you feed the wildgrass to
+    ["upper-jeuno-wounded-chocobo"] = {
+        target_pos = { x = -61.4, y = 8.2, z = 93.0 },
+        visual_mode = "arc",
+        zone = "Upper Jeuno",
+        max_distance = 30
+    },
     ["Paya-Sabya"] = {
         target_pos = { x = 11.85, y= 1.5, z=70.9},
         trigger_npc = "Paya-Sabya",
@@ -2201,6 +2310,34 @@ return {
         visual_mode = "arc",
         trigger_npc = "Marilleune",
         zone = "Norg"
+    },
+    ["Ryoma"] = {
+        target_pos = { x = -23.0, y = 0.0, z = -9.0 },
+        trigger_npc = "Ryoma",
+        visual_mode = "arc",
+        zone = "Norg",
+        max_distance = 35,
+    },
+    ["Jaucribaix"] = {
+        target_pos = { x = 91.0, y = -7.0, z = -8.0 },
+        visual_mode = "arc",
+        trigger_npc = "Jaucribaix",
+        zone = "Norg",
+        max_distance = 35,
+    },
+    ["Aeka"] = {
+        target_pos = { x = 4.0, y = 0.0, z = -4.0 },
+        visual_mode = "arc",
+        trigger_npc = "Aeka",
+        zone = "Norg",
+        max_distance = 35,
+    },
+    ["Ranemaud"] = {
+        target_pos = { x = 15.0, y = 0.0, z = 23.0 },
+        visual_mode = "arc",
+        trigger_npc = "Ranemaud",
+        zone = "Norg",
+        max_distance = 35,
     },
     -- Ifrit's Caldroun
     ["ifrit-6-2-???"] = {
@@ -2687,6 +2824,14 @@ return {
         target_pos = { x = 231.8, y = -1, z = 279.9},
         visual_mode = "arc",
         zone = "The Sanctuary of Zi'Tah"
+    },
+    -- Guardian Treant ??? (L-10, up the rocks at the base of the tree, unmapped area
+    -- east of K-10) - Samurai unlock, hatchet to pop, sacred sprig for the branch
+    ["zitah-guardian-treant-qm-l10"] = {
+        target_pos = { x = 642.0, y = -5.0, z = -150.0 },
+        visual_mode = "arc",
+        zone = "The Sanctuary of Zi'Tah",
+        max_distance = 50
     },
     --delkfutts tower
     ["delkfutts-tower-zm8-lift-???"] = {

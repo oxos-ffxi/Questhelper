@@ -86,6 +86,12 @@ local lastFrameTime = os.clock()
 local lastInventoryTriggerCheck = 0
 local INVENTORY_TRIGGER_CHECK_INTERVAL = 3.0 -- Check every 3 seconds
 local lastZoneId = 0 -- Track zone changes to reset map
+
+-- Weather capture (weather_watch steps) is deferred a few seconds past the zone change.
+-- The weather value in client memory still holds the OLD zone's weather for a moment
+-- after the zone id flips, so reading it immediately banks the wrong element. 0 = idle.
+local pendingWeatherCheck = 0
+local WEATHER_SETTLE_DELAY = 4.0
 local lastCombatTime = 0
 local COMBAT_DEBOUNCE = 6.0
 local dismissed_targets = {}
@@ -178,6 +184,10 @@ ashita.events.register('d3d_present', 'present_callback', function()
                     end
                 end
             end
+
+            -- Arm the weather capture for weather_watch steps. Deferred, not immediate -
+            -- see WEATHER_SETTLE_DELAY.
+            pendingWeatherCheck = frameCurrentTime + WEATHER_SETTLE_DELAY
         end
     else
         if shouldPrintDebugNow then
@@ -201,6 +211,20 @@ ashita.events.register('d3d_present', 'present_callback', function()
                 quest_state.setCurrentMap(player_module.zoneId, currentFloor)
             end
             lastKnownFloor = currentFloor
+        end
+    end
+
+    -- Deferred weather capture for weather_watch steps (SMN "I Can Hear a Rainbow").
+    -- Fires once per zone change, once the client's weather value has settled.
+    if pendingWeatherCheck > 0 and frameCurrentTime >= pendingWeatherCheck then
+        pendingWeatherCheck = 0
+        if currentTopCategory and currentSubfile and current_mission then
+            local ok, err = pcall(triggers_module.handleWeatherCapture,
+                currentTopCategory, currentSubfile, current_mission,
+                quest_data, quest_state, player_module.zoneId)
+            if not ok and quest_state.settings.ui_settings.dev_mode then
+                ui_debug.addLine(string.format("[%s] Weather capture failed: %s", addon.name, tostring(err)))
+            end
         end
     end
 
@@ -1736,6 +1760,154 @@ ashita.events.register('command', 'command_callback', function(e)
         if cur then
             print(string.format("\30\106[%s]\30\01 current: nation %s mission %s, CoP %s",
                 addon.name, tostring(cur.nation), tostring(cur.mission), tostring(cur.cop)))
+        end
+
+        e.blocked = true
+        return true
+    end
+
+    -- /qh_weather              -> show current weather + what the active mission has banked
+    -- /qh_weather test         -> force a capture NOW, ignoring the requires_item gate
+    -- /qh_weather set <name>   -> mark one weather as already seen (started before installing)
+    -- /qh_weather unset <name> -> undo one, for a mistyped set
+    -- /qh_weather clear        -> wipe the active mission's banked colours
+    -- /qh_weather clearall     -> wipe every mission's banked colours
+    if command_base == 'qh_weather' then
+        local arg = (args[2] or ''):lower()
+
+        if arg == 'set' or arg == 'unset' then
+            -- Manual override for a player who did some of the hunt before installing, or
+            -- who lost a capture to a bad read. Matches on the slot key first, then on the
+            -- label, so both "none" and "clear" find Clear / Sunshine.
+            local parts = {}
+            for k = 3, #args do table.insert(parts, args[k]) end
+            local wanted = table.concat(parts, ' '):lower()
+
+            local ww, step_idx
+            if currentTopCategory and currentSubfile and current_mission then
+                local mdata = quest_data[currentTopCategory][currentSubfile][current_mission]
+                step_idx = quest_state.getCurrentStep(currentTopCategory, currentSubfile, current_mission, quest_data)
+                local sdata = mdata and mdata.steps and mdata.steps[step_idx]
+                ww = type(sdata) == 'table' and sdata.weather_watch or nil
+            end
+
+            if not ww then
+                print(string.format('[%s] The current step does not track weather.', addon.name))
+            elseif wanted == '' then
+                local names = {}
+                for _, slot in ipairs(ww.slots or {}) do table.insert(names, slot.key) end
+                print(string.format('[%s] Usage: /qh_weather %s <name>. Valid: %s',
+                    addon.name, arg, table.concat(names, ', ')))
+            else
+                -- An exact key wins outright; otherwise collect partial hits so an
+                -- ambiguous fragment reports instead of guessing.
+                local matches = {}
+                for _, slot in ipairs(ww.slots or {}) do
+                    local key = slot.key:lower()
+                    local lbl = (slot.label or ''):lower()
+                    if key == wanted then
+                        matches = { slot }
+                        break
+                    elseif key:find(wanted, 1, true) or lbl:find(wanted, 1, true) then
+                        table.insert(matches, slot)
+                    end
+                end
+
+                if #matches == 0 then
+                    local names = {}
+                    for _, slot in ipairs(ww.slots or {}) do table.insert(names, slot.key) end
+                    print(string.format('[%s] No weather matching "%s". Valid: %s',
+                        addon.name, wanted, table.concat(names, ', ')))
+                elseif #matches > 1 then
+                    local names = {}
+                    for _, slot in ipairs(matches) do table.insert(names, slot.key) end
+                    print(string.format('[%s] "%s" is ambiguous - matches: %s',
+                        addon.name, wanted, table.concat(names, ', ')))
+                else
+                    local slot = matches[1]
+                    if arg == 'set' then
+                        if quest_state.setWeatherSeen(currentTopCategory, currentSubfile, current_mission, step_idx, slot.key) then
+                            print(string.format('[%s] Marked %s as seen.', addon.name, slot.label or slot.key))
+                        else
+                            print(string.format('[%s] %s was already banked.', addon.name, slot.label or slot.key))
+                        end
+                    else
+                        if quest_state.unsetWeatherSeen(currentTopCategory, currentSubfile, current_mission, step_idx, slot.key) then
+                            print(string.format('[%s] Cleared %s.', addon.name, slot.label or slot.key))
+                        else
+                            print(string.format('[%s] %s was not banked.', addon.name, slot.label or slot.key))
+                        end
+                    end
+
+                    -- Same completion rule the capture path uses, so filling the last slot
+                    -- by hand still ticks the step.
+                    local done, total = 0, 0
+                    for _, s in ipairs(ww.slots or {}) do
+                        total = total + 1
+                        if quest_state.hasWeatherSeen(currentTopCategory, currentSubfile, current_mission, step_idx, s.key) then
+                            done = done + 1
+                        end
+                    end
+                    print(string.format('[%s] %d/%d', addon.name, done, total))
+                    if done >= total and not ww.display_only then
+                        quest_state.setStepState(currentTopCategory, currentSubfile, current_mission, step_idx, true, nil)
+                        print(string.format('[%s] All %d recorded - step complete.', addon.name, total))
+                    end
+                end
+            end
+        elseif arg == 'test' then
+            if not currentTopCategory or not currentSubfile or not current_mission then
+                print(string.format('[%s] No mission selected.', addon.name))
+            else
+                local wname = utils.getWeather()
+                print(string.format('[%s] TEST capture (item gate bypassed), weather is %s...',
+                    addon.name, wname or 'unavailable'))
+                local ok, banked = pcall(triggers_module.handleWeatherCapture,
+                    currentTopCategory, currentSubfile, current_mission,
+                    quest_data, quest_state, player_module.zoneId, true)
+                if not ok then
+                    print(string.format('[%s] Capture errored: %s', addon.name, tostring(banked)))
+                elseif not banked then
+                    print(string.format('[%s] Nothing banked - wrong zone, weather is not a tracked colour, or already have it.', addon.name))
+                end
+            end
+        elseif arg == 'clearall' then
+            local n = quest_state.clearWeatherSeen()
+            print(string.format('[%s] Cleared ALL banked weather (%d entr%s).', addon.name, n, n == 1 and 'y' or 'ies'))
+        elseif arg == 'clear' then
+            if not currentTopCategory or not currentSubfile or not current_mission then
+                print(string.format('[%s] No mission selected - use /qh_weather clearall to wipe everything.', addon.name))
+            else
+                local n = quest_state.clearWeatherSeen(currentTopCategory, currentSubfile, current_mission)
+                print(string.format('[%s] Cleared %d banked colour%s for "%s".',
+                    addon.name, n, n == 1 and '' or 's', current_mission))
+            end
+        else
+            local wname, wid = utils.getWeather()
+            print(string.format('[%s] Current weather: %s (id %s)', addon.name, wname or 'unavailable', tostring(wid)))
+
+            if currentTopCategory and currentSubfile and current_mission then
+                local mdata = quest_data[currentTopCategory][currentSubfile][current_mission]
+                local step_idx = quest_state.getCurrentStep(currentTopCategory, currentSubfile, current_mission, quest_data)
+                local step_data = mdata and mdata.steps and mdata.steps[step_idx]
+                local ww = type(step_data) == 'table' and step_data.weather_watch or nil
+                if ww then
+                    for _, slot in ipairs(ww.slots or {}) do
+                        -- hasWeatherSeen, never seen[key] - see quest_state.hasWeatherSeen
+                        local done = quest_state.hasWeatherSeen(currentTopCategory, currentSubfile,
+                            current_mission, step_idx, slot.key)
+                        print(string.format('  %-36s %s', slot.label or slot.key, done and 'DONE' or '----'))
+                    end
+                    if ww.requires_item then
+                        -- Inventory only, matching the tracker and the server. See triggers.lua.
+                        local inv = require('modules.inventory')
+                        print(string.format('  (tracking %s: %s held in inventory)', ww.requires_item,
+                            inv.hasItem(ww.requires_item, false) and 'ACTIVE -' or 'INACTIVE - not'))
+                    end
+                else
+                    print(string.format('[%s] Step %d of "%s" does not track weather.', addon.name, step_idx, current_mission))
+                end
+            end
         end
 
         e.blocked = true

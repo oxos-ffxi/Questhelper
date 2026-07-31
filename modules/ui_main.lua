@@ -563,7 +563,8 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                                     local current_zone = pathfinding.getCurrentZone(player_zone_id, zones_db)
 
                                     if current_zone then
-                                        local path = pathfinding.findPath(current_zone, step_data.route_to)
+                                        local path = pathfinding.findPath(current_zone,
+                                            quest_state.resolveRouteTo(step_data, currentTopCategory, currentSubfile, current_mission, step_index_to_use))
                                         if path then
                                             local route_str = pathfinding.formatPath(path, current_zone, step_data.destination_highlight)
                                             -- Count lines in route string (each "\n" is a new line)
@@ -1418,7 +1419,9 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                                     local current_zone = pathfinding.getCurrentZone(player_zone_id, zones_db)
 
                                     if current_zone then
-                                        local destination = route_step_data.route_to
+                                        -- Honours the player's route_choices pick for this step
+                                        local destination = quest_state.resolveRouteTo(route_step_data,
+                                            currentTopCategory, currentSubfile, current_mission, route_step_index)
                                         local path = pathfinding.findPath(current_zone, destination)
 
                                         if path then
@@ -1553,7 +1556,10 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                     -- colour so it stands out against the active-step text.
                     if dyn_banner then
                         imgui.Spacing()
-                        imgui.TextColored(col.cyan, utils.wrap_text(dyn_banner, wrap_width))
+                        -- Recedes into green with the rest of a finished step, same as the
+                        -- callouts and headings in renderStepText.
+                        imgui.TextColored(tint == 'done' and col.green_dim or col.cyan,
+                                          utils.wrap_text(dyn_banner, wrap_width))
                     end
                     if has_group then imgui.EndGroup() end
 
@@ -1603,6 +1609,129 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                                     imgui.TextColored(col.green, string.format("  %s = %s", lbl, w))
                                 else
                                     imgui.TextColored(col.gold, string.format("  %s = ____", lbl))
+                                end
+                            end
+                        end
+                        imgui.Unindent(20)
+                    end
+
+                    -- ROUTE CHOICES: steps that name many valid destinations (e.g. the 25 SMN
+                    -- weather zones). Drawing every route at once is unreadable, so the player
+                    -- clicks one and it becomes this step's route_to.
+                    if not st and type(step_data) == 'table' and type(step_data.route_choices) == 'table' then
+                        local picked  = quest_state.getRouteChoice(currentTopCategory, currentSubfile, current_mission, i)
+                        local per_row = step_data.route_choices_per_row or 3
+
+                        -- Normalise to groups so there is one rendering path. A bare run of
+                        -- zone strings becomes one unlabelled group.
+                        local groups, flat = {}, nil
+                        for _, entry in ipairs(step_data.route_choices) do
+                            if type(entry) == 'string' then
+                                if not flat then
+                                    flat = { zones = {} }
+                                    table.insert(groups, flat)
+                                end
+                                table.insert(flat.zones, entry)
+                            elseif type(entry) == 'table' and type(entry.zones) == 'table' then
+                                table.insert(groups, entry)
+                                flat = nil
+                            end
+                        end
+
+                        -- Which groups are already satisfied?
+                        --
+                        -- route_choices deliberately knows nothing about weather - it is just
+                        -- grouped, clickable zones and is meant to be reusable by any step with
+                        -- several valid destinations. The coupling lives on the weather side:
+                        -- a weather_watch slot names the route group it completes.
+                        local done_groups = {}
+                        local ww_slots = type(step_data.weather_watch) == 'table'
+                            and step_data.weather_watch.slots or nil
+                        if ww_slots then
+                            for _, slot in ipairs(ww_slots) do
+                                if slot.route_group and quest_state.hasWeatherSeen(
+                                    currentTopCategory, currentSubfile, current_mission, i, slot.key)
+                                then
+                                    done_groups[slot.route_group] = true
+                                end
+                            end
+                        end
+
+                        -- Finished groups are HIDDEN, not collapsed. The tracker below already
+                        -- reports every colour as DONE / ____, so a "Fire - DONE" line here is
+                        -- pure duplication. Recovery from a wrong tick is /qh_weather clear.
+                        --
+                        -- uid is carried across hidden groups too, so a zone's imgui id does not
+                        -- shift when an earlier group disappears.
+                        local visible, uid = {}, 0
+                        for _, group in ipairs(groups) do
+                            if not (group.group and done_groups[group.group]) then
+                                table.insert(visible, { data = group, uid = uid })
+                            end
+                            uid = uid + #group.zones
+                        end
+
+                        local function groupRule()
+                            imgui.PushStyleColor(theme.C.Separator, {0.35, 0.50, 0.80, 0.35})
+                            imgui.Separator()
+                            imgui.PopStyleColor(1)
+                            imgui.Spacing()
+                        end
+
+                        -- Everything done: draw nothing at all, not an empty header
+                        if #visible > 0 then
+                            imgui.Indent(20)
+                            imgui.TextColored(col.blue, step_data.route_choices_label or "Route to (click one):")
+
+                            for vi, entry in ipairs(visible) do
+                                if vi > 1 then groupRule() end
+
+                                local group = entry.data
+                                if group.group then
+                                    imgui.TextColored(col.gold, "  " .. group.group)
+                                end
+                                for zi, zname in ipairs(group.zones) do
+                                    local active = (zname == picked)
+                                    local label  = (active and "> " or "") .. zname
+                                    if imgui.SmallButton(label .. "##rc" .. i .. "_" .. (entry.uid + zi)) then
+                                        -- Clicking the active one clears it, back to the step's route_to
+                                        quest_state.setRouteChoice(currentTopCategory, currentSubfile,
+                                            current_mission, i, active and nil or zname)
+                                    end
+                                    if zi % per_row ~= 0 and zi < #group.zones then
+                                        imgui.SameLine()
+                                    end
+                                end
+                                imgui.Spacing()
+                            end
+                            imgui.Unindent(20)
+
+                            -- Closing rule, so the buttons do not run into the tracker below
+                            groupRule()
+                        end
+                    end
+
+                    -- WEATHER CACHE UI DISPLAY (e.g. SMN "I Can Hear a Rainbow")
+                    if not st and type(step_data) == 'table' and step_data.weather_watch then
+                        local ww = step_data.weather_watch
+                        imgui.Indent(20)
+                        local done_count = 0
+                        -- hasWeatherSeen, never seen[key] - see quest_state.hasWeatherSeen
+                        local function banked(key)
+                            return quest_state.hasWeatherSeen(currentTopCategory, currentSubfile, current_mission, i, key)
+                        end
+                        if ww.slots then
+                            for _, slot in ipairs(ww.slots) do
+                                if banked(slot.key) then done_count = done_count + 1 end
+                            end
+                            imgui.TextColored(col.blue, string.format("%s (%d/%d):",
+                                ww.label or "Weather seen", done_count, #ww.slots))
+                            for _, slot in ipairs(ww.slots) do
+                                local lbl = slot.label or slot.key
+                                if banked(slot.key) then
+                                    imgui.TextColored(col.green, string.format("  %s - DONE", lbl))
+                                else
+                                    imgui.TextColored(col.gold, string.format("  %s - ____", lbl))
                                 end
                             end
                         end

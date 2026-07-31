@@ -42,12 +42,24 @@ local WEATHER_NAMES = {
     [18] = 'Dark',       [19] = 'Dark x2',
 }
 
--- Returns current weather name and raw ID
+-- Returns current weather name and raw ID, or nil,nil if the value cannot be trusted.
+--
+-- The nil returns matter more than they look. Weather id 0 is 'Clear', and a null or
+-- garbage dereference also reads back as 0 - so an unguarded read makes "the pointer was
+-- not ready" indistinguishable from "clear skies". Anything banking on the result (see
+-- weather_watch) would then record Clear for free on every failed read, which is exactly
+-- what happened before this guard existed. Callers must treat nil as "unknown", never as
+-- clear.
 function utils.getWeather()
     if not weather_ptr or weather_ptr == 0 then return nil, nil end
+
     local ptr = ashita.memory.read_uint32(weather_ptr)
-    local id  = ashita.memory.read_uint8(ptr)
-    return WEATHER_NAMES[id] or ('Unknown('..id..')'), id
+    if not ptr or ptr == 0 then return nil, nil end
+
+    local id = ashita.memory.read_uint8(ptr)
+    if not id or not WEATHER_NAMES[id] then return nil, nil end
+
+    return WEATHER_NAMES[id], id
 end
 
 -- Text wrapping for UI display
@@ -174,8 +186,14 @@ function utils.get_images_for_step(topCat, subfile, mission, stepIndex, quest_da
         return matched
     end
 
-    -- NEW: Auto-generate route maps if route_to is defined
-    if type(step_data) == 'table' and step_data.route_to then
+    -- NEW: Auto-generate route maps if route_to is defined.
+    -- A step offering route_choices routes to whichever the player picked - see
+    -- quest_state.resolveRouteTo.
+    local qs_ok, qs = pcall(require, 'modules.quest_state')
+    local route_target = qs_ok and qs.resolveRouteTo(step_data, topCat, subfile, mission, stepIndex)
+        or (type(step_data) == 'table' and step_data.route_to or nil)
+
+    if route_target then
         -- Load pathfinding module on demand
         local pathfinding_ok, pathfinding = pcall(require, 'modules.pathfinding')
         if pathfinding_ok then
@@ -188,7 +206,7 @@ function utils.get_images_for_step(topCat, subfile, mission, stepIndex, quest_da
                     local current_zone = pathfinding.getCurrentZone(player_zone_id, zones_db)
 
                     if current_zone then
-                        local destination = step_data.route_to
+                        local destination = route_target
                         local backtrack_floor_id = step_data.backtrack_floor_id
                         local path = pathfinding.findPath(current_zone, destination, backtrack_floor_id)
 

@@ -20,6 +20,10 @@ local default_settings = T{
     daily_progress = T{},  -- Day-stamped scratch state (e.g. Castle Oztroja passwords); resets each Vana'diel day
     quest_choices = T{},   -- Server-randomised objectives captured from NPC dialogue (e.g. Genkai 4 clues).
                            -- NOT day-stamped: these hold until the quest is finished or cleared by hand.
+    route_choice = T{},    -- Player's chosen destination for steps offering several (route_choices).
+    weather_progress = T{},-- Weather types witnessed on zone-in (e.g. SMN "I Can Hear a Rainbow").
+                           -- NOT day-stamped, same reasoning as quest_choices: the server remembers
+                           -- which colours the ruby has been shown across days, zoning and relogs.
     current_map = T{},  -- Tracks active map number per zone ID
     keyitem_cache = T{},  -- Cached list of owned key item IDs (array of numbers)
     fame_cache = T{},     -- [area] = {level = n, day = vana_day_stamp}; last value seen from a reputation NPC
@@ -275,8 +279,172 @@ function quest_state.clearQuestChoices(cat, sub, mis)
     return removed
 end
 
+-- Weather cache (weather types witnessed on zone-in).
+--
+-- Same persistence rules as quest_choices and for the same reason: the server records
+-- these in a bitmask that survives day rollovers, zoning and relogs, so a day-stamped
+-- reset like daily_progress would lie to the player. Cleared when the mission completes.
+--
+-- Shape: weather_progress[cat][sub][mis][step][element_key] = true
+
+--- Returns the table of witnessed weather keys for a step (may be empty).
+function quest_state.getWeatherSeen(cat, sub, mis, step)
+    if not quest_state.settings.weather_progress then
+        quest_state.settings.weather_progress = T{}
+    end
+    local path = ensure_key_path(quest_state.settings.weather_progress, cat, sub, mis)
+    if type(path[step]) ~= 'table' then
+        path[step] = T{}
+    end
+    return path[step]
+end
+
+--- True if this element has been banked.
+---
+--- MUST use rawget. These tables are Ashita `T{}`s, whose metatable exposes the table
+--- library helpers through __index - so a plain `seen[key]` lookup for a key that happens
+--- to share a helper's name (`clear`, `copy`, `map`, ...) returns that FUNCTION and reads
+--- as true forever. That is exactly what happened to the SMN tracker's `clear` slot: it
+--- showed DONE regardless of weather and survived every wipe. Never index these directly.
+function quest_state.hasWeatherSeen(cat, sub, mis, step, key)
+    return rawget(quest_state.getWeatherSeen(cat, sub, mis, step), key) ~= nil
+end
+
+--- Records one witnessed weather element. Returns true if this was new (first sighting),
+--- false if it was already banked - the caller uses that to avoid re-announcing.
+function quest_state.setWeatherSeen(cat, sub, mis, step, key)
+    local seen = quest_state.getWeatherSeen(cat, sub, mis, step)
+    if rawget(seen, key) ~= nil then return false end
+
+    seen[key] = true
+    debug_print(string.format("[QuestHelper] Weather captured: %s", tostring(key)))
+    settings.save(QUESTHELPER_ALIAS, quest_state.settings)
+    return true
+end
+
+-- Route choice (steps that offer several valid destinations).
+--
+-- Some steps name a lot of possible zones - the SMN weather hunt has 25. Rather than
+-- draw every route at once, the step lists them in `route_choices` and the player picks
+-- one; that pick becomes the step's effective route_to. Persistent, per step.
+--
+-- Shape: route_choice[cat][sub][mis][step] = "Zone Name"
+
+--- Returns the zone the player picked for this step, or nil.
+function quest_state.getRouteChoice(cat, sub, mis, step)
+    if not quest_state.settings.route_choice then
+        quest_state.settings.route_choice = T{}
+    end
+    local path = ensure_key_path(quest_state.settings.route_choice, cat, sub, mis)
+    return rawget(path, step)
+end
+
+--- Records the player's pick. Pass nil to clear it.
+function quest_state.setRouteChoice(cat, sub, mis, step, zone)
+    if not quest_state.settings.route_choice then
+        quest_state.settings.route_choice = T{}
+    end
+    local path = ensure_key_path(quest_state.settings.route_choice, cat, sub, mis)
+    path[step] = zone
+    settings.save(QUESTHELPER_ALIAS, quest_state.settings)
+end
+
+--- Flattens route_choices to a plain list of zone names.
+---
+--- Entries are either a bare zone string, or a group:
+---   { group = "Fire", zones = { "Valkurm Dunes", ... } }
+--- Groups exist so the buttons can be labelled by what they are FOR (which weather each
+--- zone gets, say) instead of being one undifferentiated wall of zone names. A zone may
+--- appear in several groups - Valkurm Dunes gets both fire and earth weather - and that
+--- is fine: picking it from either routes to the same place.
+function quest_state.routeChoiceZones(step_data)
+    local out = {}
+    if type(step_data) ~= 'table' or type(step_data.route_choices) ~= 'table' then
+        return out
+    end
+
+    for _, entry in ipairs(step_data.route_choices) do
+        if type(entry) == 'string' then
+            table.insert(out, entry)
+        elseif type(entry) == 'table' and type(entry.zones) == 'table' then
+            for _, zone in ipairs(entry.zones) do
+                table.insert(out, zone)
+            end
+        end
+    end
+
+    return out
+end
+
+--- The destination a step should actually route to: the player's pick when it is still
+--- one of the step's offered choices, otherwise the step's own route_to. Validating
+--- against the current list means a pick left over from an edited data file is ignored
+--- rather than routing somewhere the step no longer mentions.
+function quest_state.resolveRouteTo(step_data, cat, sub, mis, step)
+    if type(step_data) ~= 'table' then return nil end
+
+    if type(step_data.route_choices) == 'table' then
+        local choice = quest_state.getRouteChoice(cat, sub, mis, step)
+        if choice then
+            for _, zone in ipairs(quest_state.routeChoiceZones(step_data)) do
+                if zone == choice then return choice end
+            end
+        end
+    end
+
+    return step_data.route_to
+end
+
+--- Forgets one witnessed element. Returns true if it was actually banked.
+--- Manual correction path for /qh_weather unset - lets a mistyped `set` be undone without
+--- wiping the whole quest's progress.
+function quest_state.unsetWeatherSeen(cat, sub, mis, step, key)
+    local seen = quest_state.getWeatherSeen(cat, sub, mis, step)
+    if rawget(seen, key) == nil then return false end
+
+    seen[key] = nil
+    settings.save(QUESTHELPER_ALIAS, quest_state.settings)
+    return true
+end
+
+--- Wipes witnessed weather. Omit `mis` to clear every mission's. Returns how many
+--- element slots were removed.
+function quest_state.clearWeatherSeen(cat, sub, mis)
+    if not quest_state.settings.weather_progress then return 0 end
+
+    local removed = 0
+    local function countSteps(steps)
+        for _, keys in pairs(steps) do
+            if type(keys) == 'table' then
+                for _ in pairs(keys) do removed = removed + 1 end
+            end
+        end
+    end
+
+    if cat and sub and mis then
+        local path = ensure_key_path(quest_state.settings.weather_progress, cat, sub)
+        if type(path[mis]) == 'table' then
+            countSteps(path[mis])
+            path[mis] = nil
+        end
+    else
+        for _, subs in pairs(quest_state.settings.weather_progress) do
+            for _, miss in pairs(subs) do
+                for _, steps in pairs(miss) do
+                    if type(steps) == 'table' then countSteps({steps}) end
+                end
+            end
+        end
+        quest_state.settings.weather_progress = T{}
+    end
+
+    settings.save(QUESTHELPER_ALIAS, quest_state.settings)
+    return removed
+end
+
 --- Drops every bit of in-progress scratch state for one mission: checklist ticks, kill
---- counts, daily passwords and captured choices. Only for a mission that is finished -
+--- counts, daily passwords, captured choices and witnessed weather. Only for a mission
+--- that is finished -
 --- half-killed counts and half-ticked checklists under a completed mission are noise,
 --- and worse, a trigger can still act on them. Leaves step_states alone; the caller
 --- owns those.
@@ -287,6 +455,7 @@ function quest_state.clearMissionProgress(cat, sub, mis, defer_save)
         quest_state.settings.kill_counts,
         quest_state.settings.daily_progress,
         quest_state.settings.quest_choices,
+        quest_state.settings.weather_progress,
     }
 
     local cleared = false
