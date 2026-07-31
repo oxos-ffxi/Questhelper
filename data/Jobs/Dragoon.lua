@@ -5,7 +5,7 @@ return {
     -- There is NO quest script for this in LSB - only the battlefield
     -- (scripts/battlefields/Ghelsba_Outpost/Holy_Crest.lua). Every step below comes from the
     -- individual zone NPC scripts, which drive a single charvar: TheHolyCrest_Event.
-    -- See data/ref/dragoon_reference.md for the full var chain.
+    -- See data/ref/Jobs/dragoon_reference.md for the full var chain.
     -- =========================================================================================
     ["1.Dragoon Quest - The Holy Crest"] = {
         requirements = {

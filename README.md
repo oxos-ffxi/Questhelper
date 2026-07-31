@@ -97,7 +97,7 @@ A wider debug suite is also available (`/qh_debug`, `/qh_verbose`, `/qh_trigger`
 Guides are plain Lua tables describing steps and their triggers. Each step can carry text, map images, in-world `visual_zones`, an NPC target, and one or more completion triggers.
 
 See:
-- `data/ref/step_authoring_guide.md` — rules for turning a walkthrough + server Lua into steps.
+- `data/ref/Contrib/step_authoring_guide.md` — rules for turning a walkthrough + server Lua into steps.
 - `modules/README.md` — module architecture and the addon's internals.
 - `data/Custom/FeatureDemo.lua` — a worked example covering the common fields.
 

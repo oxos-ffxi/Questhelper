@@ -2,7 +2,7 @@ return {
     -- =========================================================================================
     -- 1) The Fanged One (Ranger unlock)
     --
-    -- Log 2 (Windurst) / Quest 31. See data/ref/ranger_reference.md.
+    -- Log 2 (Windurst) / Quest 31. See data/ref/Jobs/ranger_reference.md.
     -- CRITICAL: Old Sabertooth must NOT be fought - it dies on its own.
     -- =========================================================================================
     ["1.Ranger Quest - The Fanged One"] = {

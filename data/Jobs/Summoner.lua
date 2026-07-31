@@ -4,7 +4,7 @@ return {
     --
     -- Log 2 (Windurst) / Quest 75. The quest IS a weather hunt - you show the ruby seven
     -- "colours" by zoning into a listed outdoor area while that weather is up. Step 3 uses
-    -- the weather_watch tracker. See data/ref/summoner_reference.md.
+    -- the weather_watch tracker. See data/ref/Jobs/summoner_reference.md.
     -- =========================================================================================
     ["1.Summoner Quest - I Can Hear a Rainbow"] = {
         requirements = {

@@ -3,7 +3,7 @@ return {
     -- 1) Save My Son
     --
     -- Log 3 (Jeuno) / Quest 5. NOT the unlock - it rewards the Beast Whistle. The job is
-    -- unlocked by Path of the Beastmaster below. See data/ref/beastmaster_reference.md.
+    -- unlocked by Path of the Beastmaster below. See data/ref/Jobs/beastmaster_reference.md.
     -- =========================================================================================
     ["1.Beastmaster Quest - Save My Son"] = {
         requirements = {

@@ -4,7 +4,7 @@ return {
     --
     -- Log 1 (Bastok) / Quest 60 - the quest file lives in scripts/quests/BASTOK, not outlands.
     -- Step order below follows the server's Prog chain, which differs from some wiki
-    -- summaries (Korroloka BEFORE Norg). See data/ref/ninja_reference.md.
+    -- summaries (Korroloka BEFORE Norg). See data/ref/Jobs/ninja_reference.md.
     -- =========================================================================================
     ["1.Ninja Quest - Ayame and Kaede"] = {
         requirements = {

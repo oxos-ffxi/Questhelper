@@ -328,6 +328,13 @@ return {
         floor_id = 0,
         max_distance = 30
     },
+    ["Pikini-Mikini"] = {
+        target_pos = { x = -47.2, y = -5.0, z = 35.3 },
+        visual_mode = "arc",
+        zone = "Mhaura",
+        floor_id = 0,
+        max_distance = 10
+    },
     --Gusgen Mines
     ["Blind Moby"] = {
         target_pos = { x = 210.1, y= -59.2, z=-101.8},
@@ -1402,13 +1409,22 @@ return {
         zone = "Meriphataud Mountains",
         max_distance = 40
     },
+    -- Buburimu Peninsula
+    -- Song Runes on the old monument - the Bard lead-in chain, examine then trade parchment
+    ["buburimu-peninsula-song-runes-g9"] = {
+        target_pos = { x = -246.1, y = 15.0, z = -279.4 },
+        visual_mode = "arc",
+        zone = "Buburimu Peninsula",
+        floor_id = 0,
+        max_distance = 25
+    },
     -- Valkurm Dunes
-    -- Song Runes on the hidden beach - Bard unlock, just examine them
-    ["valkurm-song-runes"] = {
-        target_pos = { x = -721.0, y = -7.0, z = 102.0 },
+    ["valkurm-dunes-song-runes-b7"] = {
+        target_pos = { x = -717.6, y = -8.6, z = 103.0 },
         visual_mode = "arc",
         zone = "Valkurm Dunes",
-        max_distance = 40
+        floor_id = 0,
+        max_distance = 20
     },
     -- Sauromugue Champaign
     -- Tiger Bones in the cave at (L-10), up the cliff at (L-8) - Ranger unlock
@@ -1929,20 +1945,18 @@ return {
         max_distance = 25
     },
     ["Bki Tbujhja"] = {
-        target_pos = { x = -22.0, y = 0.0, z = -60.0 },
-        trigger_npc = "Bki Tbujhja",
+        target_pos = { x = -23.4, y = -1.7, z = -57.8 },
         visual_mode = "arc",
         zone = "Lower Jeuno",
         floor_id = 0,
-        max_distance = 25
+        max_distance = 10
     },
     ["Mertaire"] = {
-        target_pos = { x = -17.0, y = 0.0, z = -61.0 },
-        trigger_npc = "Mertaire",
+        target_pos = { x = -17.2, y = -1.9, z = -60.1 },
         visual_mode = "arc",
         zone = "Lower Jeuno",
         floor_id = 0,
-        max_distance = 25
+        max_distance = 10
     },
     ["Muckvix"] = {
         target_pos = { x = -26.8, y= 3.5, z=-137.3},

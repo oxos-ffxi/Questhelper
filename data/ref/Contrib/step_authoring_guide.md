@@ -42,6 +42,7 @@ Rules:
 | Situation | Field | Notes |
 |---|---|---|
 | Talk to NPC / watch cutscene / trade turn-in | `trigger_on_event_id = {id,...}` | Pull IDs from server `onEventFinish`. Most common + most reliable. |
+| ...scoped to a zone | `trigger_on_event_id = {id, "Zone Name"}` | A string in the list is a zone filter. Use it for any low id. |
 | Accept with an accept-message | `trigger_on_talk = {"You have accepted the mission"}` | Only if server sends that `messageSpecial`. Verify first. |
 | Obtain a normal item (mob drop / NPC gives) | `trigger_on_item_obtain = {"Item Name"}` | Pair with `items_needed = {"Item Name"}`. `require_all_items = true` for a set. |
 | Obtain N of an item | `trigger_on_item_obtain = {{item = "Name", quantity = 4}}` | Fires on the obtain/buy message, then verifies the real inventory count. |
@@ -106,6 +107,19 @@ match the log line. The *inventory* checks - `skip_if_have`, and the quantity ve
 across the item's Name, LogNameSingular and LogNamePlural. So a short lowercase fragment
 (`"gausebit"`) is the robust choice for anything inventory-backed, while message triggers may need
 both casings listed. See `data/Quests/Upper Jeuno.lua` for the pattern.
+
+**Scope low event ids to a zone.** Put the zone name as a string anywhere in the
+`trigger_on_event_id` list and the trigger only fires in that zone:
+
+```lua
+trigger_on_event_id = { 0, "Buburimu Peninsula" },
+```
+
+Server event ids restart per zone, so single-digit ids like 0, 2 and 5 are common everywhere.
+Without a filter, a step waiting on event 2 can be completed by an unrelated cutscene somewhere
+else - and event 0 doubles as the "text interaction" case (`event_id == 0 and param0 == target`),
+making it the most collision-prone value there is. Anything below ~10 should carry a zone.
+Handled in `triggers.handlePacketIn`.
 
 `kill_requirement` shape:
 ```lua

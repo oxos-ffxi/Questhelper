@@ -1,7 +1,7 @@
 ﻿-- =============================================================================
 -- Limit Break (Genkai) quest line
 -- =============================================================================
--- Authored from the wiki + server Lua, following data/ref/step_authoring_guide.md.
+-- Authored from the wiki + server Lua, following data/ref/Contrib/step_authoring_guide.md.
 --
 -- Plan (project memory: genkai-plan):
 --   * Genkai 1-4 are SHARED across all jobs (level caps 50->55->60->65->70).
