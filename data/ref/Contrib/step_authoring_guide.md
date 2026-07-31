@@ -24,6 +24,11 @@ Rules:
    the highlight/arrow stuck on the first NPC while the player has moved on. (See Rescue Drill 2-1.)
 3. **Optional / flavor dialogue = not a step.** Events with no `setMissionStatus` handler are
    just talk. Mention them in the step text (`(NPC nearby has optional dialogue.)`), don't gate on them.
+   The quickest tell in an LSB quest file is the call itself: **`quest:progressEvent(id)` is a step
+   boundary, plain `quest:event(id)` is flavour.** Confirm by checking whether that id appears in the
+   section's `onEventFinish` - if it does not, nothing happens when the cutscene ends. Chocobo's
+   Wounds is the clean example: Osker returns `quest:event(...)` with a different id per progress
+   stage, so he reads the state back to the player but advances nothing.
 4. **Random branches → one step, list every possibility.** When the server rolls a var and routes
    to one of several NPCs/events (e.g. a random knight gives the item), put all the event IDs in
    one `trigger_on_event_id` and all NPCs in `onmob_target`. (See Rescue Drill step 9: `{112,113,114}`.)

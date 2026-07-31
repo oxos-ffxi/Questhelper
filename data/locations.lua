@@ -264,6 +264,13 @@ return {
         floor_id = 2,
         max_distance = 5
     },
+    ["palborough-mines-dock-lever-h8"] = {
+        target_pos = { x = 129.7, y = -30.4, z = 16.2 },
+        visual_mode = "arc",
+        zone = "Palborough Mines",
+        floor_id = 3,
+        max_distance = 15
+    },
     --Dangruf Wadi
     ["Geyser1"] = {
         target_pos = { x = -133, y= 3, z=133.3},
@@ -1435,12 +1442,12 @@ return {
         max_distance = 40
     },
     -- Qufim Island
-    -- Nightflowers - Save My Son. Only interactable at night (Vana'diel ~21:30 to dawn)
-    ["qufim-nightflowers"] = {
+    ["qufim-island-nightflowers-f8"] = {
         target_pos = { x = -264.8, y = -3.7, z = 28.8 },
         visual_mode = "arc",
         zone = "Qufim Island",
-        max_distance = 40
+        floor_id = 0,
+        max_distance = 15
     },
     -- Korroloka Tunnel
     -- ??? that pops the three Korroloka Leeches - Ninja unlock
@@ -1936,13 +1943,12 @@ return {
         floor_id = 0,
         max_distance = 20
     },
-    -- Merchant's House door (_6t2) - starts and finishes Save My Son
-    ["jeuno-merchants-house-door"] = {
+    ["Door: Merchants House"] = {
         target_pos = { x = -82.2, y = -7.7, z = -168.8 },
         visual_mode = "arc",
         zone = "Lower Jeuno",
         floor_id = 0,
-        max_distance = 25
+        max_distance = 15
     },
     ["Bki Tbujhja"] = {
         target_pos = { x = -23.4, y = -1.7, z = -57.8 },
@@ -1996,20 +2002,26 @@ return {
         max_distance = 35
     },
     -- Upper Jeuno
-    -- Chocobo Stables - Chocobo's Wounds / Path of the Beastmaster
     ["Brutus"] = {
-        target_pos = { x = -55.0, y = 8.0, z = 95.0 },
-        trigger_npc = "Brutus",
+        target_pos = { x = -57.0, y = 6.4, z = 97.5 },
         visual_mode = "arc",
         zone = "Upper Jeuno",
-        max_distance = 30
+        floor_id = 0,
+        max_distance = 12
     },
     ["Osker"] = {
-        target_pos = { x = -61.4, y = 8.2, z = 94.2 },
-        trigger_npc = "Osker",
+        target_pos = { x = -61.4, y = 7.0, z = 94.2 },
         visual_mode = "arc",
         zone = "Upper Jeuno",
-        max_distance = 30
+        floor_id = 0,
+        max_distance = 12
+    },
+    ["Chocobo"] = {
+        target_pos = { x = -61.3, y = 6.0, z = 92.9 },
+        visual_mode = "arc",
+        zone = "Upper Jeuno",
+        floor_id = 0,
+        max_distance = 12
     },
     -- the wounded chocobo you feed the wildgrass to
     ["upper-jeuno-wounded-chocobo"] = {

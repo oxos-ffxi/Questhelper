@@ -118,7 +118,7 @@ return {
             },
             {
                 text = "Step 5: Take the Poetic Parchment back to Mertaire in Lower Jeuno (I-8) and trade it to him.\n \n" ..
-                       "- That is 'A Minstrel in Despair' started and finished in one trade. 2,000 gil.\n",
+                       "- That is 'A Minstrel in Despair' started and finished in one trade. 2,100 gil.\n",
                 onmob_target = "Mertaire",
                 route_to = "Lower Jeuno",
                 items_needed = {

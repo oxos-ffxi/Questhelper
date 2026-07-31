@@ -75,6 +75,21 @@ local function serverHasIt(kind, log, id)
     return (seen[log] and seen[log][id]) and true or false
 end
 
+-- Did the server ever send us this log at all?
+--
+-- serverHasIt cannot answer that: "we never received log 5" and "log 5 says not complete"
+-- both come back false, and both render as "not done". They are completely different
+-- problems - one is a missing packet, the other is the server's honest answer - so
+-- anything reporting to a human needs to tell them apart.
+--
+-- CoP has no completion bitmask at all, so it counts as having data once the main
+-- mission packet has arrived.
+local function serverSentLog(kind, log)
+    if kind == 'cop' then return seen_current ~= nil end
+    local seen = (kind == 'quest') and seen_quests or seen_missions
+    return seen[log] ~= nil
+end
+
 -- The choice_group an entry belongs to, namespaced by data file so two files reusing a
 -- group name stay apart. nil when the entry is not one of a set of alternates.
 local function choiceGroup(quest_data, entry)
@@ -439,8 +454,9 @@ function quest_sync.explain(text)
                 for _, entry in ipairs(entries) do
                     if entry.name:lower():find(want, 1, true) then
                         table.insert(rows, {
-                            name = entry.name, kind = kind, log = log, id = id,
-                            set  = serverHasIt(kind, log, id),
+                            name    = entry.name, kind = kind, log = log, id = id,
+                            set     = serverHasIt(kind, log, id),
+                            no_data = not serverSentLog(kind, log),
                         })
                     end
                 end
@@ -455,8 +471,9 @@ function quest_sync.explain(text)
         local link = sync_ids.cop_chain[i]
         if link.name:lower():find(want, 1, true) then
             table.insert(rows, {
-                name = link.name, kind = 'cop', log = COP_LOG, id = link.id,
-                set  = serverHasIt('cop', COP_LOG, link.id),
+                name    = link.name, kind = 'cop', log = COP_LOG, id = link.id,
+                set     = serverHasIt('cop', COP_LOG, link.id),
+                no_data = not serverSentLog('cop', COP_LOG),
             })
         end
     end
@@ -482,6 +499,7 @@ function quest_sync.entriesFor(cat, sub)
                     if entry.cat == cat and entry.sub == sub then
                         table.insert(rows, { name = entry.name, linked = true,
                                              done = serverHasIt(kind, log, id),
+                                             no_data = not serverSentLog(kind, log),
                                              kind = kind, log = log, id = id })
                     end
                 end

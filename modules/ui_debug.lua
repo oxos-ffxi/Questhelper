@@ -1136,6 +1136,11 @@ local function render_sync_tab()
                                 imgui.TextColored({ 1.0, 0.4, 0.4, 1.0 }, "      NOT LINKED   " .. row.name)
                             elseif row.done then
                                 imgui.TextColored({ 0.3, 0.85, 0.3, 1.0 }, "      done         " .. row.name)
+                            elseif row.no_data then
+                                -- The server never sent this log, so "not done" would be a
+                                -- guess dressed up as an answer.
+                                imgui.TextColored({ 0.9, 0.75, 0.3, 1.0 },
+                                    string.format("      NO DATA      %s  (log %d never received)", row.name, row.log))
                             else
                                 imgui.TextColored({ 0.6, 0.6, 0.6, 1.0 }, "      not done     " .. row.name)
                             end

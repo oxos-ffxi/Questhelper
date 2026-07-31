@@ -1,6 +1,8 @@
 return {
     -- =========================================================================================
     -- 1) Blade of Darkness (Dark Knight unlock)
+    --
+    -- Log 1 (Bastok) / Quest 28. See data/ref/Jobs/dark_knight_reference.md.
     -- =========================================================================================
     ["1.Dark Knight Quest - Blade of Darkness"] = {
         requirements = {
@@ -9,42 +11,40 @@ return {
         steps = {
             {
                 text = "Step 1: Speak with Gumbah in Bastok Mines (J-7) until he gives you the cutscene that starts the quest.\n \n" ..
-                       "- He is on the upper floor, across the bridge, toward the Alchemy Guild.\n" ..
-                       "- You must be Level 30+ on your main job.\n \n" ..
-                       "NOTE: Gumbah starts several quests. The Great Sword weaponskill quest 'Inheritance' (Ground Strike)\n" ..
-                       "takes priority over this one - check your quest log before you leave to confirm you picked up\n" ..
-                       "Blade of Darkness and not something else.\n \n",
+                       "- Gumbah starts several quests and the Great Sword weaponskill quest 'Inheritance' takes priority. Check your log before leaving to be sure you picked up the right one.\n \n",
                 onmob_target = "Gumbah",
                 route_to = "Bastok Mines",
                 destination_highlight = { position = "J-7", offsetX = 16, offsetY = 16 },
+                zone_max_distance = 20,
+                visual_zones = {
+                        { zone_name = "Bastok Mines", type = 'arrow', center = { x = 34.1, y = 0.0, z = -57.2 }, size = 3, direction = "up", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Bastok Mines", type = 'arrow', center = { x = 28.4, y = 0.0, z = -24.1 }, size = 3, direction = "left", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Bastok Mines", type = 'arrow', center = { x = -3.9, y = 0.0, z = -23.0 }, size = 3, direction = "up", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Bastok Mines", type = 'arrow', center = { x = -3.5, y = 0.0, z = 10.1 }, size = 3, direction = "right", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Bastok Mines", type = 'arrow', center = { x = 36.9, y = 0.0, z = 8.7 }, size = 3, direction = "right", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Bastok Mines", type = 'arrow', center = { x = 58.7, y = 0.0, z = 7.4 }, size = 3, direction = "down", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Bastok Mines", type = 'arrow', center = { x = 59.7, y = 0.0, z = -12.8 }, size = 3, direction = "left", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Bastok Mines", type = 'arrow', center = { x = 50.4, y = -0.0, z = -13.6 }, size = 3, direction = "down", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Bastok Mines", type = 'rect', center = { x = 49.9, y = -1.4, z = -16.8 }, width = 2.25, height = 2.75, floor_id = 0, colour = "cyan", vertical_axis = 'ns' },
+                },
                 trigger_on_event_id = { 99 },
             },
             {
-                text = "Step 2: Ride the boat in Palborough Mines to Zeruhn Mines for a cutscene and the Chaosbringer.\n \n" ..
-                       "===== Getting there =====\n" ..
-                       "- Home Point Palborough Mines #1 at (H-10) on map 3 is the fastest route by far - it drops you\n" ..
-                       "  a few steps from the boat.\n" ..
-                       "- Otherwise: Port Bastok -> North Gustaberg (K-3) -> Palborough Mines. From the entrance take\n" ..
-                       "  the elevator at (I-8) on map 1 up to map 3.\n" ..
-                       "- Map 3 is the one with the giant burn hole in the centre. The boat lever is at (H-8), very\n" ..
-                       "  close to the top of the elevator.\n \n" ..
-                       "===== The boat =====\n" ..
-                       "- Pull the lever and ride it. Anyone can pull the lever - you only need to make the trip.\n" ..
-                       "- It drops you in Zeruhn Mines (a safe zone connected to Bastok Mines), where the cutscene\n" ..
-                       "  hands you the Chaosbringer (Lv1 Great Sword, WAR/DRK/RUN).\n \n" ..
-                       "WARNING: Make sure you have a free inventory slot BEFORE boarding, or you will have to run all\n" ..
-                       "the way back here for another trip.\n \n" ..
-                       "TIP: If you ever drop the Chaosbringer, ride the boat again to be given a replacement.\n \n",
+                text = "Step 2: Ride the boat in Palborough Mines to Zeruhn Mines for the Chaosbringer.\n \n" ..
+                       "- Home Point Palborough Mines #1 at (H-10) on map 3 drops you a few steps from the boat.\n" ..
+                       "- Anyone can pull the lever - you only need to make the trip.\n" ..
+                       "- Pulling the lever does nothing on its own. The cutscene and the sword come when the boat lands you in Zeruhn Mines, so stay on it.\n" ..
+                       "- Have a free inventory slot before boarding, or you will be making the trip twice.\n",
                 route_to = "Palborough Mines 3",
                 destination_highlight = {
-                    { position = "I-8",  offsetX = 16, offsetY = 16, floor_id = 1, label = "Elevator", color = "cyan" },
-                    { position = "H-8",  offsetX = 16, offsetY = 16, floor_id = 3, label = "Boat",     color = "cyan" },
-                    { position = "H-10", offsetX = 16, offsetY = 16, floor_id = 3, label = "HP",       color = "green" },
+                    { position = "I-8",  offsetX = 16, offsetY = 16, floor_id = 1, },
+                    { position = "H-8",  offsetX = 16, offsetY = 16, floor_id = 3, },
                 },
-                onmob_target = "palborough-mines-elevator-lever-i8",
-                zone_max_distance = 35,
+                onmob_target = {"palborough-mines-elevator-lever-i8",
+                                "palborough-mines-dock-lever-h8"},
+                zone_max_distance = 20,
                 items_needed = { "Chaosbringer" },
-                trigger_on_event_id = { 130, 131 },
+                trigger_on_item_obtain = { "Chaosbringer" },
                 visual_zones = {
                     -- floor 1: entrance to the elevator at (I-8)
                     { zone_name = "Palborough Mines", type = 'arrow', center = { x = 59.0, y = 0.4, z = 66.5 }, size = 4, direction = "up", floor_id = 1, colour = "yellow" },
@@ -61,42 +61,35 @@ return {
                     { zone_name = "Palborough Mines", type = 'arrow', center = { x = 220.3, y = -9.3, z = 33.2 }, size = 4, direction = "up", floor_id = 1, colour = "yellow" },
                     { zone_name = "Palborough Mines", type = 'arrow', center = { x = 206.9, y = -1.2, z = 59.4 }, size = 4, direction = "left", floor_id = 1, colour = "yellow" },
                     { zone_name = "Palborough Mines", type = 'arrow', center = { x = 186.7, y = 0.3, z = 63.1 }, size = 4, direction = "left", floor_id = 1, colour = "yellow" },
+
+                    -- To Boat - Lever h8 - 3rd floor_id
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 185.6, y = -32.0, z = 66.9 }, size = 3, direction = "left", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 171.9, y = -32.0, z = 67.3 }, size = 3, direction = "down", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 169.7, y = -32.0, z = 60.5 }, size = 3, direction = "left", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 139.8, y = -32.0, z = 59.0 }, size = 3, direction = "down", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 139.7, y = -31.6, z = 36.0 }, size = 3, direction = "down", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 141.1, y = -30.5, z = 27.9 }, size = 3, direction = "down", floor_id = 3, colour = "yellow" },
+                    { zone_name = "Palborough Mines", type = 'arrow', center = { x = 140.1, y = -30.5, z = 17.6 }, size = 3, direction = "left", floor_id = 3, colour = "yellow" },
                 },
             },
             {
                 text = "Step 3: Kill 100 enemies with the Chaosbringer.\n \n" ..
-                       "CRITICAL: The Chaosbringer must be EQUIPPED and must land the killing blow as a normal or\n" ..
-                       "critical melee swing. Weapon skills, job abilities (Jump etc.), magic, ranged attacks and\n" ..
-                       "monster suicides (Bomb Toss, Self-Destruct, Final Sting) do NOT count.\n \n" ..
-                       "CRITICAL: Do not drop the Chaosbringer - that is the only thing that resets the count. Zoning,\n" ..
-                       "changing jobs, changing weapons and getting K.O.'d are all safe.\n \n" ..
-                       "===== What counts =====\n" ..
-                       "- Any enemy counts, anywhere. It does not have to give experience points.\n" ..
-                       "- How you damage it is irrelevant, only the final blow matters - sub BLM and nuke it down, or\n" ..
-                       "  soften it with a ranged weapon, then finish with a melee swing.\n \n" ..
-                       "===== Speeding it up =====\n" ..
-                       "- Records of Eminence 'Area Kills' objectives help you keep count.\n" ..
-                       "- During the real-life October Harvest Festival, Wraith Bats spawn outside the starter nations\n" ..
-                       "  with 1 HP.\n \n" ..
-                       "TIP: The follow-up quest 'Blade of Death' needs another 100 kills with the same sword. If you\n" ..
-                       "intend to do it, get all 200 before turning in - the count carries straight over.\n \n" ..
-                       "NOTE: This addon counts your own melee killing blows; it cannot see which weapon you have\n" ..
-                       "equipped. The server is the authority - if you swing something other than the Chaosbringer the\n" ..
-                       "tracker will run ahead of your real count.\n \n",
+                       "- Any enemy anywhere counts, and it does not have to give experience.\n" ..
+                       "- Only the final blow matters, so soften things up however you like - sub BLM, use a bow - then finish with a swing.\n" ..
+                       "- Dropping the sword is the only thing that resets the count. Zoning, job changes, weapon swaps and dying are all safe.\n" ..
+                       "- 'Blade of Death' wants another 100 with the same sword. If you plan to do it, bank all 200 before turning in.\n" ..
+                       "NOTE: It must be EQUIPPED and land the killing blow as a normal or critical melee swing. Weapon skills, job abilities, magic, ranged attacks and monster suicides all count for nothing.\n \n",
                 kill_requirement = {
                     count = 100,
                     kill_type = "melee",
                 },
             },
             {
-                text = "Step 4: Zone into Beadeaux from Pashhow Marshlands (L-11) with the Chaosbringer in your inventory\n" ..
-                       "for the cutscene that unlocks Dark Knight.\n \n" ..
-                       "- Pashhow Marshlands is reached from the top-right of Konschtat Highlands or the bottom of\n" ..
-                       "  Rolanberry Fields. The Beadeaux entrance is on the Pashhow side around (K-11)/(L-11).\n" ..
-                       "- You can be on ANY job for this - the sword does not even need to be equipped, just carried.\n" ..
-                       "- Warping in on the Beadeaux Survival Guide also fires the cutscene.\n \n" ..
-                       "WARNING: Beadeaux Quadav aggro by sight and sound and will make short work of a Lv30 character.\n" ..
-                       "The cutscene fires the moment you zone in, so take it and leave.\n \n",
+                text = "Step 4: Zone into Beadeaux from Pashhow Marshlands (L-11) carrying the Chaosbringer.\n \n" ..
+                       "- Pashhow is reached from the top-right of Konschtat Highlands or the bottom of Rolanberry Fields.\n" ..
+                       "- Any job will do, and the sword only needs to be carried, not equipped.\n" ..
+                       "- Warping in on the Beadeaux Survival Guide fires the cutscene just as well.\n" ..
+                       "- Quadav aggro by sight and sound and will flatten a Lv30 character. The cutscene fires the moment you zone in, so take it and leave.\n \n",
                 route_to = "Beadeaux",
                 destination_highlight = { position = "L-11", offsetX = 16, offsetY = 16 },
                 zone_max_distance = 40,

@@ -1728,9 +1728,18 @@ ashita.events.register('command', 'command_callback', function(e)
             local rows, misses = quest_sync.explain(table.concat(args, ' ', 2))
 
             for _, row in ipairs(rows) do
+                -- "no bit set" and "we never got this log" both used to print the same
+                -- thing, which made a missing packet look like a server answer.
+                local state
+                if row.set then
+                    state = "SERVER SAYS DONE  "
+                elseif row.no_data then
+                    state = "NO DATA - log never received  "
+                else
+                    state = "server has NOT set  "
+                end
                 print(string.format("\30\106[%s]\30\01 %s%s  %s log %d id %d",
-                    addon.name, row.set and "SERVER SAYS DONE  " or "server has NOT set  ",
-                    row.name, row.kind, row.log, row.id))
+                    addon.name, state, row.name, row.kind, row.log, row.id))
             end
             for _, name in ipairs(misses) do
                 print(string.format("\30\106[%s]\30\01 NOT MAPPED  %s", addon.name, name))
