@@ -1151,9 +1151,9 @@ sync_ids.overrides = {
     ["2-3b: Journey Abroad - Bastok -> Windurst"]      = { kind = 'mission', log = 0, id = 9 },
     ["2-3b: Journey Abroad - Windurst -> Bastok"]      = { kind = 'mission', log = 0, id = 8 },
 
-    ["2-3: The Emissary - Introduction"]               = { kind = 'mission', log = 1, id = 5 },
-    ["2-3: The Emissary - San d'Oria -> Windurst"]     = { kind = 'mission', log = 1, id = 9 },
-    ["2-3: The Emissary - Windurst -> San d'Oria"]     = { kind = 'mission', log = 1, id = 8 },
+    ["2-3a: The Emissary - Introduction"]               = { kind = 'mission', log = 1, id = 5 },
+    ["2-3b: The Emissary - San d'Oria -> Windurst"]     = { kind = 'mission', log = 1, id = 9 },
+    ["2-3b: The Emissary - Windurst -> San d'Oria"]     = { kind = 'mission', log = 1, id = 8 },
 
     ["2-3a: The Three Kingdoms - Introduction"]        = { kind = 'mission', log = 2, id = 5 },
     ["2-3b: The Three Kingdoms - San d'Oria -> Bastok"] = { kind = 'mission', log = 2, id = 9 },

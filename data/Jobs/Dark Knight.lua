@@ -86,14 +86,12 @@ return {
             },
             {
                 text = "Step 4: Zone into Beadeaux from Pashhow Marshlands (L-11) carrying the Chaosbringer.\n \n" ..
-                       "- Pashhow is reached from the top-right of Konschtat Highlands or the bottom of Rolanberry Fields.\n" ..
-                       "- Any job will do, and the sword only needs to be carried, not equipped.\n" ..
-                       "- Warping in on the Beadeaux Survival Guide fires the cutscene just as well.\n" ..
-                       "- Quadav aggro by sight and sound and will flatten a Lv30 character. The cutscene fires the moment you zone in, so take it and leave.\n \n",
+                       "- Warping in on the Beadeaux Survival Guide fires the cutscene just as well.\n",
                 route_to = "Beadeaux",
-                destination_highlight = { position = "L-11", offsetX = 16, offsetY = 16 },
                 zone_max_distance = 40,
                 trigger_on_event_id = { 121 },
+                zone_trigger = "Beadeaux",
+
             },
         },
         reward = {

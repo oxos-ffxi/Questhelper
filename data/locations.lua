@@ -1042,6 +1042,13 @@ return {
         floor_id = 0,
         max_distance = 30
     },
+    ["Ostalie"] = {
+        target_pos = { x = -143.4, y = -8.0, z = -11.8 },
+        visual_mode = "arc",
+        zone = "Southern San d'Oria",
+        floor_id = 0,
+        max_distance = 25
+    },
     --Northern San d'Oria
     ["Baraka"] = {
         target_pos = { x = 38.65, y= -3.5, z=-5.75},
@@ -1111,6 +1118,13 @@ return {
         floor_id = 0,
         max_distance = 35
     },
+    ["Morjean"] = {
+        target_pos = { x = 98.6, y = -2.1, z = 114.1 },
+        visual_mode = "arc",
+        zone = "Northern San d'Oria",
+        floor_id = 0,
+        max_distance = 10
+    },
     -- Port San d'Oria
     ["Brifalien"] = {
         target_pos = { x = -19.4, y = -5.2, z = -74.1 },
@@ -1142,6 +1156,20 @@ return {
         zone = "Port San d'Oria",
         floor_id = 0,
         max_distance = 50
+    },
+    ["Ceraulian"] = {
+        target_pos = { x = -0.9, y = -10.2, z = -120.9 },
+        visual_mode = "arc",
+        zone = "Port San d'Oria",
+        floor_id = 0,
+        max_distance = 7
+    },
+    ["Arminibit"] = {
+        target_pos = { x = -0.8, y = -10.2, z = -122.8 },
+        visual_mode = "arc",
+        zone = "Port San d'Oria",
+        floor_id = 0,
+        max_distance = 7
     },
     -- West Ronfaure
     ["west-ronfaure-???-e8"] = {
@@ -1204,6 +1232,16 @@ return {
         zone = "Bostaunieux Oubliette",
         floor_id = 15,
         max_distance = 10
+    },
+    ["Novalmauge"] = {
+        target_pos = { x = 51.6, y = -23.9, z = 19.6 },
+        dynamic_pos = true,
+        y_offset = -2,
+        trigger_npc = "Novalmauge",
+        visual_mode = "arc",
+        zone = "Bostaunieux Oubliette",
+        floor_id = 15,
+        max_distance = 40
     },
     -- Ghelsba Outpost
     ["ghelsba-outpost-hut-door-f10"] = {
@@ -1410,11 +1448,12 @@ return {
     },
     -- Meriphataud Mountains
     -- ??? on the east edge of Drogaroga's Spine (K-8) - Dragoon unlock, trade the wyvern egg
-    ["meriphataud-holy-crest-qm-k8"] = {
-        target_pos = { x = 641.0, y = -15.0, z = 7.0 },
+    ["meriphataud-mountains-holy-creast-qm-k8"] = {
+        target_pos = { x = 640.0, y = -16.9, z = 10.7 },
         visual_mode = "arc",
         zone = "Meriphataud Mountains",
-        max_distance = 40
+        floor_id = 0,
+        max_distance = 45
     },
     -- Buburimu Peninsula
     -- Song Runes on the old monument - the Bard lead-in chain, examine then trade parchment

@@ -82,6 +82,7 @@ local id_to_name = {
     [289] = "Reinforced Cermet",
     [290] = "Letter From Werei",
     [293] = "Old Piece of Wood",
+    [294] = "Dragon Curse Remedy",
     [336] = "Orcish Crest",          -- Genkai 3 (Whence Blows the Wind)
     [337] = "Quadav Crest",          -- Genkai 3
     [338] = "Yagudo Crest",          -- Genkai 3

@@ -414,7 +414,7 @@ return {
         }
     },
 
-    ["2-3: The Emissary - Introduction"] = {
+    ["2-3a: The Emissary - Introduction"] = {
         steps = {
             {
                 text = "Step 1: Receive the mission from any Bastok Gate Guard. They can be found at the entrance gates to the city. \n" ..
@@ -467,7 +467,7 @@ return {
             text = "Nothing. . . wamp wamp!"
         }
     },
-    ["2-3: The Emissary - San d'Oria -> Windurst"] = {
+    ["2-3b: The Emissary - San d'Oria -> Windurst"] = {
         choice_group = "2-3: The Emissary",
         steps = {
             {
@@ -687,7 +687,7 @@ return {
         }
     },
 
-    ["2-3: The Emissary - Windurst -> San d'Oria"] = {
+    ["2-3b: The Emissary - Windurst -> San d'Oria"] = {
         choice_group = "2-3: The Emissary",
         steps = {
             {
