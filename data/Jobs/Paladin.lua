@@ -5,115 +5,123 @@ return {
     ["1.Paladin Quest - A Squire's Test"] = {
         steps = {
             {
-                text = "Step 1: Head to Southern San d'Oria (F-7) and speak with Balasiel.\n \n" ..
-                       "- He can be tricky to locate. Starting at Watchdog Alley (F-6) near the NPC Celyddon:\n \n" ..
-                       "  - Walk west into the stairwell, follow it upward, take the first left.\n" ..
-                       "  - Don't go along the wooden walkway; instead cross the wooden bridge.\n" ..
-                       "  - Stairs go up, then down, curving around to Balasiel's spot.\n \n" ..
-                       "- Once you find him, accept the quest.\n \n",
-                images = {
+                text = "Step 1: Speak with Balasiel in Southern San d'Oria (F-7) and accept the quest.\n \n" ..
+                       "- He is awkward to find. From Watchdog Alley (F-6) by Celyddon: west into the stairwell,\n" ..
+                       "  up, first left. Do not take the wooden walkway - cross the wooden bridge instead.\n" ..
+                       "  The stairs go up, then down and curve around to him.\n \n",
+                route_to = "Southern San d'Oria",
+                destination_highlight = { position = "F-7", offsetX = 16, offsetY = 16 },
+            },
+            {
+                text = "Step 2: Get a Revival Tree Root.\n \n" ..
+                       "- Auction House: [Materials > Alchemy]. Quickest option whenever one is listed.\n" ..
+                       "NOTE: Some enemies spawn between 20:00 and 4:00 Vana'diel time - outside that window there is nothing there to kill.\n \n",
+                route_choices_label = "Farm at (click one):",
+                route_choices = {
                     {
-                        zone_name = "Southern San d'Oria",
-                        width = 512,
-                        height = 512,
-                        state = 1,
-                        highlights = {
-                            { position = "F-7", offsetX = 16, offsetY = 16 },
+                        group = "Gusgen Mines - best rate, longer trip",
+                        default = true,
+                        zones = {
+                            {
+                                zone = "Gusgen Mines",
+                                destination_highlight = {
+                                    { position = "H-7", offsetX = 16, offsetY = 16, floor_id = 1, label = "Bandersnatch" },
+                                },
+                            },
+                        },
+                    },
+                    {
+                        group = "Ronfaure - closest, night only",
+                        -- East has no known camp spot, so it routes with no pin rather than
+                        -- borrowing West's.
+                        zones = {
+                            { zone = "West Ronfaure", destination_highlight = { position = "H-9", offsetX = 16, offsetY = 16 } },
+                            "East Ronfaure",
                         },
                     },
                 },
+                onmob_enemy = { "Bandersnatch", "Bogy", "Tainted Hound" },
+                onmob_enemy_colour = "red",
+                items_needed = { "Revival Tree Root" },
+                trigger_on_item_obtain = { "revival tree root", "Revival Tree Root" },
             },
             {
-                text = "Step 2: Trade Balasiel a Revival Tree Root to complete the quest.\n \n" ..
-                       "- Revival Tree Roots can be:\n" ..
-                       "  - Purchased from AH (Materials -> Alchemy), or\n" ..
-                       "  - Dropped by undead (e.g., in King Ranperre's Tomb).\n \n" ..
-                       "- Despite his dialogue, any Revival Tree Root works; it doesn’t have to be from King Ranperre's.\n" ..
-                       "- You do NOT need to zone after receiving the quest—just trade the item right away.\n \n",
-                images = {},
+                text = "Step 3: Trade the Revival Tree Root to Balasiel (F-7) to complete the quest.\n \n" ..
+                       "- You do not need to zone after accepting - trade it straight away.\n \n",
+                route_to = "Southern San d'Oria",
+                destination_highlight = { position = "F-7", offsetX = 16, offsetY = 16 },
             },
         },
         reward = {
-            text = "Completion of the first Paladin test.\n \n",
+            text = "Completes the first Paladin test.\n \n" ..
+                   "Opens A Squire's Test II.\n \n",
         },
     },
 
     -- =========================================================================================
     -- 2) A Squire's Test II
     -- =========================================================================================
-    ["2.Paladin Quest - A Squire's Test 2"] = {
+    ["2.Paladin Quest - A Squire's Test II"] = {
+        prerequisites = {
+            { category = "Jobs", subfile = "Paladin", name = "1.Paladin Quest - A Squire's Test" },
+        },
         steps = {
             {
                 text = "Step 1: Return to Balasiel in Southern San d'Oria (F-7) to start the second test.\n \n" ..
-                       "- Recommended to have Sneak/Invis for Ordelle's Caves, especially if under Lv.40.\n" ..
-                       "- Having a Warp/Teleport item can help after collecting the Stalactite Dew.\n \n" ..
-                       "- **Optional**: Talk to Chanpau (E-7 in Southern San d'Oria) and Morjean (L-7 in Northern San d'Oria) for extra dialogue.\n" ..
-                       "  - Morjean might be locked if you are mid-quest on Dragoon's “The Holy Crest.”\n \n",
-                images = {
-                    {
-                        zone_name = "Southern San d'Oria",
-                        width = 512,
-                        height = 512,
-                        state = 1,
-                        highlights = {
-                            { position = "F-7", offsetX = 16, offsetY = 16 },
-                        },
-                    },
-                },
+                       "- Bring Sneak and Invisible for Ordelle's Caves, and a warp or teleport item to save the\n" ..
+                       "  run back once you have the dew.\n" ..
+                       "- (Optional: Chanpau at (E-7) here, and Morjean at (L-7) in Northern San d'Oria, have extra\n" ..
+                       "  dialogue. Morjean is unavailable while you are mid-way through Dragoon's The Holy Crest.)\n \n",
+                route_to = "Southern San d'Oria",
+                destination_highlight = { position = "F-7", offsetX = 16, offsetY = 16 },
             },
             {
-                text = "Step 2: Travel to La Theine Plateau (F-6), drop into the ravine near Equesobillot, and enter Ordelle's Caves.\n \n" ..
+                text = "Step 2: Travel to La Theine Plateau (F-6), drop into the ravine near Equesobillot and enter Ordelle's Caves.\n \n" ..
                        "- There is a Survival Guide at the entrance.\n \n",
+                route_to = "La Theine Plateau",
+                destination_highlight = { position = "F-6", offsetX = 16, offsetY = 16 },
+            },
+            {
+                text = "Step 3: In Ordelle's Caves, take the B route from Map 1 (I-6) to the room on Map 2 (G-7) holding two ??? points.\n \n" ..
+                       "- Click the ??? in the pool of water first, then quickly click the second ??? near the\n" ..
+                       "  centre of the room for the Key Item: Stalactite Dew.\n" ..
+                       "- Too slow and nothing happens - re-click the first ??? and try again.\n" ..
+                       "- Aggro: Shriekers, bats and jellies are sound. Will-o'-the-Wisp near the water is sight\n" ..
+                       "  and magic.\n \n",
                 images = {
                     {
-                        zone_name = "La Theine Plateau",
-                        width = 512,
-                        height = 512,
-                        state = 2,
+                        zone_name = "Ordelle's Caves",
+                        floor_id  = 1,
+                        width     = 512,
+                        height    = 512,
+                        state     = 3,
                         highlights = {
-                            { position = "F-6", offsetX = 16, offsetY = 16 },
+                            { position = "I-6", offsetX = 16, offsetY = 16, label = "B route" },
+                        },
+                    },
+                    -- Map 2's raw floor id is unconfirmed - see data/ref/Jobs/paladin_reference.md.
+                    {
+                        zone_name = "Ordelle's Caves",
+                        floor_id  = 2,
+                        width     = 512,
+                        height    = 512,
+                        state     = 3,
+                        highlights = {
+                            { position = "G-7", offsetX = 16, offsetY = 16, label = "???" },
                         },
                     },
                 },
             },
             {
-                text = "Step 3: Navigate Ordelle's Caves on map 1 (I-6) B route, and find the cave room at Map 2 (G-7) containing two ??? points.\n \n" ..
-                       "- You must click the first ??? (in the pool of water), then quickly click the second ??? near the center.\n" ..
-                       "- If done fast enough, you'll receive the key item: Stalactite Dew.\n" ..
-                       "- If not, re-click the first ??? and try again.\n \n" ..
-                       "- Watch for aggro:\n" ..
-                       "  - Sound: Shriekers (mushrooms), Bats, Jellies\n" ..
-                       "  - Sight/Magic: Will-o'-the-Wisp near the water\n \n",
-                images = {
-                    {
-                        zone_name = "Ordelle's Caves", floor_id = 1 --[[VERIFY floor_id]],
-                        width = 512,
-                        height = 512,
-                        state = 3,
-                        highlights = {
-                            { position = "I-6", offsetX = 16, offsetY = 16 },
-                        },
-                    },
-                    {
-                        zone_name = "Ordelle's Caves", floor_id = 2 --[[VERIFY floor_id]],
-                        width = 512,
-                        height = 512,
-                        state = 3,
-                        highlights = {
-                            { position = "G-7", offsetX = 16, offsetY = 16 },
-                        },
-                    },
-                },
-            },
-            {
-                text = "Step 4: Return to Southern San d'Oria (F-7) and talk to Balasiel again.\n \n" ..
-                       "- Hand over the Stalactite Dew key item for recognition.\n" ..
-                       "- You can potentially start “A Knight's Test” immediately if you meet its requirements.\n \n",
-                images = {},
+                text = "Step 4: Take the Stalactite Dew back to Balasiel in Southern San d'Oria (F-7).\n \n" ..
+                       "- A Knight's Test can be started straight away if you meet its requirements.\n \n",
+                route_to = "Southern San d'Oria",
+                destination_highlight = { position = "F-7", offsetX = 16, offsetY = 16 },
             },
         },
         reward = {
-            text = "Completion of the second Paladin test.\n \n",
+            text = "Completes the second Paladin test.\n \n" ..
+                   "Opens A Knight's Test.\n \n",
         },
     },
 
@@ -121,198 +129,142 @@ return {
     -- 3) A Knight's Test
     -- =========================================================================================
     ["3.Paladin Quest - A Knight's Test"] = {
+        prerequisites = {
+            { category = "Jobs", subfile = "Paladin", name = "2.Paladin Quest - A Squire's Test II" },
+        },
         steps = {
             {
-                text = "Step 1: (Southern San d'Oria F-7) Speak with Balasiel once more to get the Key Item “Book of Tasks.”\n \n" ..
-                       "- You must have finished 'A Squire's Test II' and meet the level requirement.\n \n",
-                images = {
-                    {
-                        zone_name = "Southern San d'Oria",
-                        width = 512,
-                        height = 512,
-                        state = 1,
-                        highlights = {
-                            { position = "F-7", offsetX = 16, offsetY = 16 },
-                        },
-                    },
+                text = "Step 1: Speak with Balasiel in Southern San d'Oria (F-7) for the Key Item: Book of Tasks.\n \n",
+                route_to = "Southern San d'Oria",
+                destination_highlight = { position = "F-7", offsetX = 16, offsetY = 16 },
+            },
+            {
+                text = "Step 2: Still in Southern San d'Oria, talk to Baunise on the Westgate parapet (H-9) and Cahaurme on the Eastgate parapet (J-9).\n \n" ..
+                       "- Baunise gives the Key Item: Book of the West.\n" ..
+                       "- Cahaurme gives the Key Item: Book of the East.\n \n",
+                route_to = "Southern San d'Oria",
+                destination_highlight = {
+                    { position = "H-9", offsetX = 16, offsetY = 16, label = "West" },
+                    { position = "J-9", offsetX = 16, offsetY = 16, label = "East" },
                 },
             },
             {
-                text = "Step 2: Speak with Baunise (H-9) over the Westgate parapet and Cahaurme (J-9) over the Eastgate parapet to obtain:\n \n" ..
-                       "- Key Item 'Book of the West' (Baunise)\n" ..
-                       "- Key Item 'Book of the East' (Cahaurme)\n \n",
-                images = {
-                    {
-                        zone_name = "Southern San d'Oria",
-                        width = 512,
-                        height = 512,
-                        state = 2,
-                        highlights = {
-                            { position = "H-9", offsetX = 16, offsetY = 16 },
-                            { position = "J-9", offsetX = 16, offsetY = 16 },
-                        },
-                    },
-                },
+                text = "Step 3: In Davoi, examine the Disused Well at (E-10) for the Key Item: Knight's Soul.\n \n" ..
+                       "- Route: drop into the water at the broken bridge (I-8), follow it west to (D-8), climb\n" ..
+                       "  out at (D-9) and cross the camp to (E-10).\n \n" ..
+                       "WARNING: Orcs in Davoi aggro and hit hard for this level. Sneak and Invisible both.\n \n",
+                route_to = "Davoi",
+                destination_highlight = { position = "E-10", offsetX = 16, offsetY = 16 },
             },
             {
-                text = "Step 3: Travel to Davoi (E-10) and examine the Disused Well for Key Item 'Knight's Soul.'\n \n" ..
-                       "- Recommended route:\n" ..
-                       "  - Go to the broken bridge (I-8) and drop into the water.\n" ..
-                       "  - Follow west to (D-8), exit water at (D-9), move through the camp to (E-10).\n" ..
-                       "- Use Sneak/Invis to avoid Orc aggro.\n \n",
-                images = {
-                    {
-                        zone_name = "Davoi",
-                        width = 512,
-                        height = 512,
-                        state = 3,
-                        highlights = {
-                            { position = "E-10", offsetX = 16, offsetY = 16 },
-                        },
-                    },
-                },
-            },
-            {
-                text = "Step 4: Return to Balasiel in Southern San d'Oria (F-7) after obtaining the Knight's Soul.\n \n",
-                images = {},
+                text = "Step 4: Return to Balasiel in Southern San d'Oria (F-7) with the Knight's Soul.\n \n",
+                route_to = "Southern San d'Oria",
+                destination_highlight = { position = "F-7", offsetX = 16, offsetY = 16 },
             },
         },
         reward = {
-            text = "Completion of 'A Knight's Test' and further progression as a Paladin.\n \n",
+            text = "Completes A Knight's Test.\n \n",
         },
     },
-    ["4.Father and Son"] = {
-            steps = {
-                {
-                    text = "Step 1: In Northern San d'Oria, find Ailbeche near the fountain (approx. J-9).\n \n" ..
-                           "- He's a small boy crying about losing his father.\n" ..
-                           "- He says his father is in armor but without a helmet.\n \n",
-                    images = {
-                        {
-                            zone_name = "Northern San d'Oria", -- Adjust filename as needed
-                            width = 512,
-                            height = 512,
-                            state = 1,
-                            highlights = {
-                                { position = "J-9", offsetX = 16, offsetY = 16 },
-                            },
-                        },
-                    },
-                },
-                {
-                    text = "Step 2: Go to Southern San d'Oria (K-7) and speak with Exoroche inside Helbort's Blades.\n \n" ..
-                           "- This is Ailbeche’s father, the man in armor.\n",
-                    images = {
-                        {
-                            zone_name = "Southern San d'Oria", -- Adjust filename as needed
-                            width = 512,
-                            height = 512,
-                            state = 2,
-                            highlights = {
-                                { position = "K-7", offsetX = 16, offsetY = 16 },
-                            },
-                        },
-                    },
-                },
-                {
-                    text = "Step 3: Return to Ailbeche in Northern San d'Oria (J-9) for another cutscene.\n \n" ..
-                           "- Exoroche shows up, scolds Ailbeche, and hands you the boy’s fishing rod.\n" ..
-                           "- This completes the primary portion of the quest.\n \n",
-                    images = {},
-                },
-                {
-                    text = "Step 4 (Optional): Speak to Ailbeche again.\n \n" ..
-                           "- He wants his fishing rod back. You can trade the Willow Fishing Rod to him.\n" ..
-                           "- Doing so yields no immediate reward, but is *required* to start 'Sharpening the Sword.'\n \n",
-                    images = {},
-                },
+
+    -- =========================================================================================
+    -- 4) Father and Son
+    --
+    -- Not a Paladin-only quest, but Sharpening the Sword will not start until the fishing rod
+    -- has been handed back, so it belongs in this chain.
+    -- =========================================================================================
+    ["4.Paladin Quest - Father and Son"] = {
+        steps = {
+            {
+                text = "Step 1: Talk to Ailbeche by the fountain in Northern San d'Oria (J-9).\n \n" ..
+                       "- He is the boy crying about his lost father, who he says wears armour but no helmet.\n \n",
+                route_to = "Northern San d'Oria",
+                destination_highlight = { position = "J-9", offsetX = 16, offsetY = 16 },
             },
-            reward = {
-                text = "Receive the boy’s fishing rod (Willow Fishing Rod) after the father scolds him.\n \n" ..
-                       "Returning the rod to Ailbeche is optional yet necessary to unlock 'Sharpening the Sword.'\n \n",
+            {
+                text = "Step 2: Speak with Exoroche inside Helbort's Blades in Southern San d'Oria (K-7).\n \n" ..
+                       "- He is the father.\n \n",
+                route_to = "Southern San d'Oria",
+                destination_highlight = { position = "K-7", offsetX = 16, offsetY = 16 },
+            },
+            {
+                text = "Step 3: Return to Ailbeche in Northern San d'Oria (J-9).\n \n" ..
+                       "- Exoroche turns up, scolds him, and hands you the boy's Willow Fishing Rod. This is the\n" ..
+                       "  end of the quest proper.\n \n",
+                route_to = "Northern San d'Oria",
+                destination_highlight = { position = "J-9", offsetX = 16, offsetY = 16 },
+            },
+            {
+                text = "Step 4: Trade the Willow Fishing Rod back to Ailbeche (J-9).\n \n" ..
+                       "- There is no reward for handing it back.\n \n" ..
+                       "CRITICAL: Sharpening the Sword will not start until the rod is returned. Most write-ups call this step optional - for the Paladin chain it is not.\n \n",
+                route_to = "Northern San d'Oria",
+                destination_highlight = { position = "J-9", offsetX = 16, offsetY = 16 },
             },
         },
+        reward = {
+            text = "Willow Fishing Rod (hand it back in step 4).\n \n" ..
+                   "Opens Sharpening the Sword.\n \n",
+        },
+    },
+
     -- =========================================================================================
     -- 5) Sharpening the Sword
     -- =========================================================================================
     ["5.Paladin Quest - Sharpening the Sword"] = {
+        prerequisites = {
+            { category = "Jobs", subfile = "Paladin", name = "4.Paladin Quest - Father and Son" },
+        },
         steps = {
             {
-                text = "Step 1: Prerequisite: Complete the “Father and Son” quest and ensure you returned the Willow Fishing Rod to the son.\n \n" ..
-                       "- Then speak with Ailbeche (Northern San d'Oria J-9), who requests a Key Item 'Ordelle Whetstone.'\n" ..
-                       "- Speak with Sobane (D-6) in Southern San d'Oria. If you get a different cutscene for 'Signed in Blood' or 'Tea with a Tonberry?', talk again.\n \n",
+                text = "Step 1: Speak with Ailbeche in Northern San d'Oria (J-9), who asks for the Key Item: Ordelle Whetstone.\n \n" ..
+                       "- Then speak with Sobane in Southern San d'Oria (D-6). If you get the cutscene for Signed\n" ..
+                       "  in Blood or Tea with a Tonberry instead, just talk to him again.\n \n",
+                onmob_target = "Sobane",
+                route_to = "Northern San d'Oria",
+                destination_highlight = { position = "J-9", offsetX = 16, offsetY = 16 },
+            },
+            {
+                text = "Step 2: Enter Ordelle's Caves from La Theine Plateau (F-7) and find the Stalagmite on Map 1.\n \n" ..
+                       "- Reported around (I-5), with (H-9) and (G-6) on the way - all three are marked.\n" ..
+                       "- Clicking the Stalagmite spawns Polevik, an Earth Elemental.\n" ..
+                       "- (There are Survival Guides at West Ronfaure and at the cave entrance.)\n \n",
                 images = {
                     {
-                        zone_name = "Northern San d'Oria",
-                        width = 512,
-                        height = 512,
-                        state = 1,
+                        zone_name = "Ordelle's Caves",
+                        floor_id  = 1,
+                        width     = 512,
+                        height    = 512,
+                        state     = 2,
                         highlights = {
-                            { position = "J-9", offsetX = 16, offsetY = 16 },
-                        },
-                    },
-                    {
-                        zone_name = "Southern San d'Oria",
-                        width = 512,
-                        height = 512,
-                        state = 1,
-                        highlights = {
-                            { position = "D-6", offsetX = 16, offsetY = 16 },
+                            { position = "I-5", offsetX = 16, offsetY = 16, label = "1" },
+                            { position = "H-9", offsetX = 16, offsetY = 16, label = "2" },
+                            { position = "G-6", offsetX = 16, offsetY = 16, label = "3" },
                         },
                     },
                 },
             },
             {
-                text = "Step 2: Head to Ordelle's Caves, preferably entering from (F-7) in La Theine Plateau.\n \n" ..
-                       "- Alternatively, use Survival Guide teleports (West Ronfaure or Ordelle's Caves direct).\n" ..
-                       "- Navigate to the Stalagmite on the first map near (I-5) or (H-9)/(G-6) path—precise route depends on your server.\n" ..
-                       "- Clicking the Stalagmite spawns NM “Polevik” (Earth Elemental). \n" ..
-                       "  - Recommended Lv.65+ or trust support.\n \n",
-                images = {
-                    {
-                        zone_name = "La Theine Plateau",
-                        width = 512,
-                        height = 512,
-                        state = 2,
-                        highlights = {
-                            { position = "F-7", offsetX = 16, offsetY = 16 },
-                        },
-                    },
-                    {
-                        zone_name = "Ordelle's Caves", floor_id = 1 --[[VERIFY floor_id]],
-                        width = 512,
-                        height = 512,
-                        state = 2,
-                        highlights = {
-                            -- (I-5) or (H-9) approximate
-                            { position = "I-5", offsetX = 16, offsetY = 16 },
-                            { position = "H-9", offsetX = 16, offsetY = 16 },
-                            { position = "G-6", offsetX = 16, offsetY = 16 },
-                        },
-                    },
+                text = "Step 3: Kill Polevik, then click the Stalagmite again for the Key Item: Ordelle Whetstone.\n \n" ..
+                       "- Polevik is an elemental - Lv65+ or Trusts is the sensible bar for soloing it.\n \n",
+                onmob_enemy = "Polevik",
+                kill_requirement = {
+                    count = 1,
+                    enemies = { "Polevik" },
+                    zone = "Ordelle's Caves",
+                    count_party_kills = true,
+                    display_only = true,
                 },
             },
             {
-                text = "Step 3: Defeat Polevik and re-click the Stalagmite to receive Key Item 'Ordelle Whetstone.'\n \n" ..
-                       "- Return to Ailbeche in Northern San d'Oria (J-9) to complete the quest.\n \n",
-                images = {
-                    {
-                        zone_name = "Northern San d'Oria",
-                        width = 512,
-                        height = 512,
-                        state = 3,
-                        highlights = {
-                            -- (I-5) or (H-9) approximate
-                            { position = "J-9", offsetX = 16, offsetY = 16 },
-                        },
-                    },
-                },
+                text = "Step 4: Take the Ordelle Whetstone back to Ailbeche in Northern San d'Oria (J-9).\n \n",
+                route_to = "Northern San d'Oria",
+                destination_highlight = { position = "J-9", offsetX = 16, offsetY = 16 },
             },
         },
         reward = {
-            text = "Completes Sharpening the Sword.\n \n",
-            images = {
-            },
+            text = "Completes Sharpening the Sword.\n \n" ..
+                   "Opens A Boy's Dream.\n \n",
         },
     },
 
@@ -320,148 +272,107 @@ return {
     -- 6) A Boy's Dream
     -- =========================================================================================
     ["6.Paladin Quest - A Boy's Dream"] = {
+        requirements = {
+            level = 50,
+        },
+        prerequisites = {
+            { category = "Jobs", subfile = "Paladin", name = "5.Paladin Quest - Sharpening the Sword" },
+        },
         steps = {
             {
-                text = "Step 1: After completing “Sharpening the Sword,” speak with Ailbeche (J-9) in Northern San d'Oria as a Lv.50+ Paladin.\n \n" ..
-                       "- He requests a Giant Shell Bug. \n" ..
-                       "- Speak with Exoroche (K-7) in Helbort's Blades, Southern San d'Oria for more details.\n \n",
-                images = {
-                    {
-                        zone_name = "Northern San d'Oria",
-                        width = 512,
-                        height = 512,
-                        state = 1,
-                        highlights = {
-                            { position = "J-9", offsetX = 16, offsetY = 16 },
-                        },
-                    },
-                    {
-                        zone_name = "Southern San d'Oria",
-                        width = 512,
-                        height = 512,
-                        state = 1,
-                        highlights = {
-                            { position = "K-7", offsetX = 16, offsetY = 16 },
-                        },
-                    },
-                },
+                text = "Step 1: As a Lv50+ Paladin, speak with Ailbeche in Northern San d'Oria (J-9), then Exoroche in Helbort's Blades, Southern San d'Oria (K-7).\n \n" ..
+                       "- Ailbeche asks for a Giant Shell Bug; Exoroche fills in what it is for.\n \n",
+                route_to = "Northern San d'Oria",
+                destination_highlight = { position = "J-9", offsetX = 16, offsetY = 16 },
             },
             {
-                text = "Step 2: Collect Giant Shell Bugs in Crawler's Nest.\n \n" ..
-                       "- From entrance (H-8) on map 1, use exit A to map 2.\n" ..
-                       "- Check ??? in the alcove at (H-9) to spawn NM “Dreadbug,” dropping 1-4 Giant Shell Bugs.\n" ..
-                       "- You can also purchase them from Auction House if available.\n \n",
+                text = "Step 2: Get a Giant Shell Bug in Crawlers' Nest.\n \n" ..
+                       "- From the entrance on Map 1 (H-8), take exit A down to Map 2.\n" ..
+                       "- Check the ??? in the alcove at (H-9) to spawn Dreadbug, which drops 1-4 of them.\n" ..
+                       "- They turn up on the Auction House too, but not reliably.\n \n",
                 images = {
+                    -- Map 1 is raw floor 15 for this zone (data/floor_mappings.lua [197]).
                     {
-                        zone_name = "Crawlers' Nest", floor_id = 1 --[[VERIFY floor_id]],
-                        width = 512,
-                        height = 512,
-                        state = 2,
+                        zone_name = "Crawlers' Nest",
+                        floor_id  = 15,
+                        width     = 512,
+                        height    = 512,
+                        state     = 2,
                         highlights = {
-                            { position = "H-8", offsetX = 16, offsetY = 16 },
+                            { position = "H-8", offsetX = 16, offsetY = 16, label = "In" },
                         },
                     },
+                    -- Map 2's raw floor id is unconfirmed - see data/ref/Jobs/paladin_reference.md.
                     {
-                        zone_name = "Crawlers' Nest", floor_id = 2 --[[VERIFY floor_id]],
-                        width = 512,
-                        height = 512,
-                        state = 2,
+                        zone_name = "Crawlers' Nest",
+                        width     = 512,
+                        height    = 512,
+                        state     = 2,
                         highlights = {
-                            { position = "H-9", offsetX = 16, offsetY = 16 },
+                            { position = "H-9", offsetX = 16, offsetY = 16, label = "???" },
                         },
                     },
                 },
+                onmob_enemy = "Dreadbug",
+                items_needed = { "Giant Shell Bug" },
+                skip_if_have = { item = "giant shell bug", quantity = 1 },
+                trigger_on_item_obtain = { "giant shell bug", "Giant Shell Bug" },
             },
             {
-                text = "Step 3: Next, you must fish up the NM “Odontotyrannus” in Castle Oztroja - Map 1(J-8) -> Map2(F-9) -> Map 3, around H-9 pond using:\n \n" ..
-                       "- Giant Shell Bug as bait.\n" ..
-                       "- Bring a rod and be ready for a fight once it bites.\n" ..
-                       "- If you're unfamiliar with monster fishing, read about the fishing minigame or bring help.\n \n",
+                text = "Step 3: Fish up Odontotyrannus in Castle Oztroja, at the pond around (H-9) on Map 3.\n \n" ..
+                       "- Route in: Map 1 (J-8), Map 2 (F-9), then Map 3.\n" ..
+                       "- Use a Giant Shell Bug as bait and bring a rod. It fights you the moment it bites.\n" ..
+                       "- Monster fishing is its own minigame - read up or bring help if you have not done it.\n \n",
                 images = {
                     {
-                        zone_name = "Castle Oztroja", floor_id = 1 --[[VERIFY floor_id]],
-                        width = 512,
-                        height = 512,
-                        state = 3,
+                        zone_name = "Castle Oztroja",
+                        floor_id  = 1,
+                        width     = 512,
+                        height    = 512,
+                        state     = 3,
                         highlights = {
-                            { position = "J-8", offsetX = 16, offsetY = 16 },
+                            { position = "J-8", offsetX = 16, offsetY = 16, label = "1" },
                         },
                     },
                     {
-                        zone_name = "Castle Oztroja", floor_id = 2 --[[VERIFY floor_id]],
-                        width = 512,
-                        height = 512,
-                        state = 3,
+                        zone_name = "Castle Oztroja",
+                        floor_id  = 2,
+                        width     = 512,
+                        height    = 512,
+                        state     = 3,
                         highlights = {
-                            { position = "F-9", offsetX = 16, offsetY = 16 },
+                            { position = "F-9", offsetX = 16, offsetY = 16, label = "2" },
                         },
                     },
                     {
-                        zone_name = "Castle Oztroja", floor_id = 3 --[[VERIFY floor_id]],
-                        width = 512,
-                        height = 512,
-                        state = 3,
+                        zone_name = "Castle Oztroja",
+                        floor_id  = 3,
+                        width     = 512,
+                        height    = 512,
+                        state     = 3,
                         highlights = {
-                            { position = "H-9", offsetX = 16, offsetY = 16 },
+                            { position = "H-9", offsetX = 16, offsetY = 16, label = "Pond" },
                         },
                     },
                 },
+                onmob_enemy = "Odontotyrannus",
             },
             {
-                text = "Step 4: Trade the caught Odontotyrannus to Zaldon (H-9) at the Fisherman's Guild in Selbina to receive Key Item 'Knight's Boots.'\n \n" ..
-                       "- If you haven't traded a Giant Shell Bug to Ailbeche yet, do that first or afterwards.\n \n",
-                images = {
-                    {
-                        zone_name = "Selbina",
-                        width = 512,
-                        height = 512,
-                        state = 4,
-                        highlights = {
-                            { position = "H-9", offsetX = 16, offsetY = 16 },
-                        },
-                    },
-                },
+                text = "Step 4: Trade the Odontotyrannus to Zaldon at the Fishermen's Guild in Selbina (H-9) for the Key Item: Knight's Boots.\n \n" ..
+                       "- If you have not given Ailbeche his Giant Shell Bug yet, either order works.\n \n",
+                route_to = "Selbina",
+                destination_highlight = { position = "H-9", offsetX = 16, offsetY = 16 },
             },
             {
-                text = "Step 5: Return to Northern San d'Oria, speak with Ailbeche (J-9), then go to Southern San d'Oria and talk with Exoroche (K-7).\n \n" ..
-                       "- Finally, check Prince Trion's room in Chateau d'Oraguille at (H-7) for a cutscene.\n" ..
-                       "- If you are on Paladin main, this will also start next quest “Under Oath.”\n \n",
-                images = {
-                    {
-                        zone_name = "Northern San d'Oria",
-                        width = 512,
-                        height = 512,
-                        state = 5,
-                        highlights = {
-                            { position = "J-9", offsetX = 16, offsetY = 16 },
-                        },
-                    },
-                    {
-                        zone_name = "Southern San d'Oria",
-                        width = 512,
-                        height = 512,
-                        state = 5,
-                        highlights = {
-                            { position = "K-7", offsetX = 16, offsetY = 16 },
-                        },
-                    },
-                    {
-                        zone_name = "Chateau d'Oraguille",
-                        width = 512,
-                        height = 512,
-                        state = 5,
-                        highlights = {
-                            { position = "H-7", offsetX = 16, offsetY = 16 },
-                        },
-                    },
-                },
+                text = "Step 5: Speak with Ailbeche in Northern San d'Oria (J-9), then Exoroche in Southern San d'Oria (K-7), then check Prince Trion's room in Chateau d'Oraguille (H-7).\n \n" ..
+                       "- On Paladin main the Chateau cutscene also starts Under Oath.\n \n",
+                route_to = "Chateau d'Oraguille",
+                destination_highlight = { position = "H-7", offsetX = 16, offsetY = 16 },
             },
         },
         reward = {
-            text = "Completes A Boy's Dream.\n \n" ..
-                   "Aquire Gallant Leggings!",
-            images = {
-            },
+            text = "Gallant Leggings\n \n" ..
+                   "Opens Under Oath.\n \n",
         },
     },
 
@@ -469,52 +380,46 @@ return {
     -- 7) Under Oath
     -- =========================================================================================
     ["7.Paladin Quest - Under Oath"] = {
+        requirements = {
+            level = 50,
+        },
+        prerequisites = {
+            { category = "Jobs", subfile = "Paladin", name = "6.Paladin Quest - A Boy's Dream" },
+        },
         steps = {
             {
-                text = "Step 1: If you finished “A Boy's Dream” as a Paladin, you may already have the initial cutscene.\n \n" ..
-                       "- Otherwise, go to Chateau d'Oraguille in Northern San d'Oria and click on Prince Trion's door at (H-7).\n \n" ..
-                       "- Note: This quest can block obtaining the Trust: Trion if you haven't triggered all door scenes yet.\n \n",
-                images = {
-                    {
-                        zone_name = "Chateau d'Oraguille",
-                        width = 512,
-                        height = 512,
-                        state = 1,
-                        highlights = {
-                            { position = "H-7", offsetX = 16, offsetY = 16 },
-                        },
-                    },
+                text = "Step 1: Click Prince Trion's door in Chateau d'Oraguille (H-7).\n \n" ..
+                       "- If you finished A Boy's Dream on Paladin you have already had this cutscene.\n" ..
+                       "- (This quest can block the Trust: Trion unlock if you have not seen all of the door\n" ..
+                       "  cutscenes yet, so clear those first if you want the Trust.)\n \n",
+                route_to = "Chateau d'Oraguille",
+                destination_highlight = { position = "H-7", offsetX = 16, offsetY = 16 },
+            },
+            {
+                text = "Step 2: In Southern San d'Oria, speak with Vemalpeau (M-7), then Najjar in Lion Springs Tavern (K-6), then Ullasa at Count Caffaule's Manor (B-6).\n \n" ..
+                       "- Ullasa brings up Mique's Paintbrush, which is the next objective.\n \n",
+                route_to = "Southern San d'Oria",
+                destination_highlight = {
+                    { position = "M-7", offsetX = 16, offsetY = 16, label = "1" },
+                    { position = "K-6", offsetX = 16, offsetY = 16, label = "2" },
+                    { position = "B-6", offsetX = 16, offsetY = 16, label = "3" },
                 },
             },
             {
-                text = "Step 2: Speak with Vemalpeau in Southern San d'Oria (M-7). Next, talk to Najjar (K-6) inside Lion Spring's Tavern, then Ullasa at Count Caffaule's Manor (B-6).\n \n" ..
-                       "- Ullasa mentions “Mique's Paintbrush,” prompting a new objective.\n \n",
+                text = "Step 3: Open a coffer in Castle Zvahl Baileys for the Key Item: Mique's Paintbrush.\n \n" ..
+                       "- Zvahl Coffer Keys drop from Ahriman, Abyssal Demons, Arch Demons, Blood Demons and Doom\n" ..
+                       "  Demons, lower down on Map 3. Thieves can pick the coffer instead.\n" ..
+                       "- The Curio Vendor Moogle sells a Zvahl Coffer Key for 5,000 gil once that shop is open.\n" ..
+                       "- Paladin does not have to be your main job for this coffer.\n \n" ..
+                       "CRITICAL: An active artifact quest for this same coffer takes priority - you will get the AF piece and no paintbrush until that quest is finished.\n \n",
                 images = {
+                    -- Map 3 is raw floor 15 for this zone (data/floor_mappings.lua [161]).
                     {
-                        zone_name = "Southern San d'Oria",
-                        width = 512,
-                        height = 512,
-                        state = 2,
-                        highlights = {
-                            { position = "M-7", offsetX = 16, offsetY = 16 },
-                            { position = "K-6", offsetX = 16, offsetY = 16 },
-                            { position = "B-6", offsetX = 16, offsetY = 16 },
-                        },
-                    },
-                },
-            },
-            {
-                text = "Step 3: Obtain a Zvahl Coffer Key (Castle Zvahl Baileys) or pick the coffer lock as a Thief.\n \n" ..
-                       "- Mobs that drop the key: Ahriman, Abyssal Demons, Arch Demons, Blood Demons, Doom Demons found lower down in map3.\n" ..
-                       "- Or buy a Zvahl Coffer Key from the Curio Vendor Moogle for 5,000 gil if you’ve unlocked that shop.\n \n" ..
-                       "- Open a coffer to get Key Item “Mique's Paintbrush.” Paladin does not have to be main for the coffer.\n" ..
-                       "- If you have an active artifact quest for that coffer, you won't get the paintbrush until AF is completed.\n \n",
-                images = {
-                    {
-                        zone_name = "Castle Zvahl Baileys", floor_id = 3 --[[VERIFY floor_id]],
-                        width = 512,
-                        height = 512,
-                        state = 3,
+                        zone_name = "Castle Zvahl Baileys",
+                        floor_id  = 15,
+                        width     = 512,
+                        height    = 512,
+                        state     = 3,
                         highlights = {
                             { position = "F-6", offsetX = 16, offsetY = 16 },
                             { position = "F-10", offsetX = 16, offsetY = 16 },
@@ -525,132 +430,86 @@ return {
                 },
             },
             {
-                text = "Step 4: Return to Vemalpeau (M-7) in Southern San d'Oria.\n \n" ..
-                       "- Go upstairs, examine the painting on the wall, select “look behind the frame” → “open and examine.”\n" ..
-                       "- You’ll obtain Key Item “Strange Sheet of Paper.”\n \n",
-                images = {
-                    {
-                        zone_name = "Southern San d'Oria",
-                        width = 512,
-                        height = 512,
-                        state = 4,
-                        highlights = {
-                            { position = "M-7", offsetX = 16, offsetY = 16 },
-                        },
-                    },
+                text = "Step 4: Return to Vemalpeau in Southern San d'Oria (M-7).\n \n" ..
+                       "- Go upstairs and examine the painting: pick 'look behind the frame', then 'open and\n" ..
+                       "  examine', for the Key Item: Strange Sheet of Paper.\n \n",
+                route_to = "Southern San d'Oria",
+                destination_highlight = { position = "M-7", offsetX = 16, offsetY = 16 },
+            },
+            {
+                text = "Step 5: Speak to Exoroche in Helbort's Blades (K-7), then examine the Village Well in Davoi (G-9).\n \n" ..
+                       "- The well spawns two NMs: Three-eyed Prozpuz and One-eyed Gwajboj. Clear the Orcs around\n" ..
+                       "  it first - a party around Lv55+ is the usual call.\n" ..
+                       "- Each Paladin who needs one loots their own Well Weight.\n" ..
+                       "- Trade the Well Weight to the Village Well for the Key Item: Knight's Confession.\n \n",
+                route_to = "Davoi",
+                destination_highlight = { position = "G-9", offsetX = 16, offsetY = 16 },
+                onmob_enemy = { "Three-eyed Prozpuz", "One-eyed Gwajboj" },
+                kill_requirement = {
+                    count = 2,
+                    enemies = { "Three-eyed Prozpuz", "One-eyed Gwajboj" },
+                    zone = "Davoi",
+                    count_party_kills = true,
+                    display_only = true,
                 },
             },
             {
-                text = "Step 5: Speak to Exoroche in Helbort's Blades (K-7), who directs you to Davoi.\n \n" ..
-                       "In Davoi (G-9), examine the Village Well to spawn two NMs: “Three-eyed Prozpuz” (RNG) and “One-eyed Gwajboj” (PLD).\n" ..
-                       "- Clear nearby Orcs first; a party or alliance ~Lv.55+ recommended.\n" ..
-                       "- Defeat the NMs, loot 1 Well Weight for each Paladin needing it.\n \n" ..
-                       "- Trade the Well Weight to the Village Well to get Key Item “Knight's Confession.”\n \n",
-                images = {
-                    {
-                        zone_name = "Davoi",
-                        width = 512,
-                        height = 512,
-                        state = 5,
-                        highlights = {
-                            { position = "G-9", offsetX = 16, offsetY = 16 },
-                        },
-                    },
-                },
+                text = "Step 6: Speak to Ailbeche in Northern San d'Oria (J-9), then go to Maiden's Spring in Jugner Forest (E-6).\n \n" ..
+                       "- Walking up to the pond triggers the cutscene. You do not have to dismount.\n \n",
+                route_to = "Jugner Forest",
+                destination_highlight = { position = "E-6", offsetX = 16, offsetY = 16 },
             },
             {
-                text = "Step 6: Return to Ailbeche (J-9) in Northern San d'Oria, who mentions Jugner Forest.\n \n" ..
-                       "- Go to Maiden's Spring in Jugner Forest (E-6). Approaching the pond triggers a cutscene.\n" ..
-                       "- If mounted, you do not need to dismount.\n \n",
-                images = {
-                    {
-                        zone_name = "Northern San d'Oria",
-                        width = 512,
-                        height = 512,
-                        state = 6,
-                        highlights = {
-                            { position = "J-9", offsetX = 16, offsetY = 16 },
-                        },
-                    },
-                    {
-                        zone_name = "Jugner Forest",
-                        width = 512,
-                        height = 512,
-                        state = 6,
-                        highlights = {
-                            { position = "E-6", offsetX = 16, offsetY = 16 },
-                        },
-                    },
-                },
-            },
-            {
-                text = "Step 7: Finally, return to Chateau d'Oraguille in Northern San d'Oria and speak with Prince Trion for a final cutscene.\n \n" ..
-                       "- You get your reward. Optionally, speak with Vemalpeau again for closure (confession letter).\n \n",
-                images = {
-                    {
-                        zone_name = "Chateau d'Oraguille",
-                        width = 512,
-                        height = 512,
-                        state = 7,
-                        highlights = {
-                            { position = "H-7", offsetX = 16, offsetY = 16 },
-                        },
-                    },
-                },
+                text = "Step 7: Speak with Prince Trion in Chateau d'Oraguille (H-7) for the final cutscene.\n \n" ..
+                       "- (Vemalpeau has a closing scene about the confession letter if you want it.)\n \n",
+                route_to = "Chateau d'Oraguille",
+                destination_highlight = { position = "H-7", offsetX = 16, offsetY = 16 },
             },
         },
         reward = {
-            text = "Under Oath completed\n \n" ..
-                   "Aquired Gallant Surcoat!",
-            images = {
-                },
+            text = "Gallant Surcoat\n \n",
         },
     },
 
     -- =========================================================================================
-    -- 8) Borghertz's Stalwart Hands (Paladin AF Hands)
+    -- 8) Borghertz's Stalwart Hands (Paladin AF hands)
     -- =========================================================================================
     ["8.Paladin Quest - Borghertz's Stalwart Hands"] = {
+        requirements = {
+            level = 50,
+        },
         steps = {
             {
-                text = "Step 1: If you have any other “Borghertz's Hands” quest active for a different job, finish it first.\n \n" ..
-                       "- As a Lv.50+ Paladin, speak to Guslam (H-8) in Upper Jeuno (Durable Shields shop) to start the quest.\n \n",
-                images = {
-                    {
-                        zone_name = "Upper Jeuno",
-                        width = 512,
-                        height = 512,
-                        state = 1,
-                        highlights = {
-                            { position = "H-8", offsetX = 16, offsetY = 16 },
-                        },
-                    },
-                },
+                text = "Step 1: As a Lv50+ Paladin, speak to Guslam at Durable Shields in Upper Jeuno (H-8).\n \n" ..
+                       "- Finish any other Borghertz's Hands quest you have open on another job first.\n \n",
+                route_to = "Upper Jeuno",
+                destination_highlight = { position = "H-8", offsetX = 16, offsetY = 16 },
             },
             {
-                text = "Step 2: Head to The Eldieme Necropolis and open a coffer to obtain Key Item “Old Gauntlets.”\n \n" ..
-                       "- If you prefer, come as Thief with tools to pick the coffer.\n" ..
-                       "- Dropped by Mimics, Haunts, Spriggan, Tomb Mage and Tomb Warriors" ..
-                       "- Paladin must be the main job if you want to get the AF item from the coffer.\n \n",
+                text = "Step 2: Open a coffer in The Eldieme Necropolis for the Key Item: Old Gauntlets.\n \n" ..
+                       "- Coffer keys drop from Mimics, Haunts, Spriggans, Tomb Mages and Tomb Warriors. Thieves\n" ..
+                       "  can pick the coffer instead.\n \n" ..
+                       "CRITICAL: Paladin must be your main job when you open the coffer or you will not get the gauntlets.\n \n",
                 images = {
+                    -- Map 1 is raw floor 15 for this zone (data/floor_mappings.lua [195]).
                     {
-                        zone_name = "The Eldieme Necropolis", floor_id = 1 --[[VERIFY floor_id]],
-                        width = 512,
-                        height = 512,
-                        state = 2,
+                        zone_name = "The Eldieme Necropolis",
+                        floor_id  = 15,
+                        width     = 512,
+                        height    = 512,
+                        state     = 2,
                         highlights = {
-                            -- Potential coffer spots
                             { position = "G-6", offsetX = 16, offsetY = 16 },
                             { position = "F-8", offsetX = 16, offsetY = 16 },
                         },
                     },
+                    -- Map 2's raw floor id is unconfirmed - see data/ref/Jobs/paladin_reference.md.
                     {
-                        zone_name = "The Eldieme Necropolis", floor_id = 2 --[[VERIFY floor_id]],
-                        width = 512,
-                        height = 512,
-                        state = 2,
+                        zone_name = "The Eldieme Necropolis",
+                        width     = 512,
+                        height    = 512,
+                        state     = 2,
                         highlights = {
-                            -- Potential coffer spots
                             { position = "E-6", offsetX = 16, offsetY = 16 },
                             { position = "L-9", offsetX = 16, offsetY = 16 },
                             { position = "L-12", offsetX = 16, offsetY = 16 },
@@ -661,76 +520,58 @@ return {
                 },
             },
             {
-                text = "Step 3: If this is your first time completing an AF hands quest:\n \n" ..
-                       "- Return to Guslam. He can't fix them. Deadly Minnow suggests a Mithra in Tenshodo.\n" ..
-                       "- Pay Yin Pocanakhu (Lower Jeuno, Neptune's Spire) 1,000 gil for info.\n" ..
-                       "- Go to Port Jeuno (H-8) near the Duty-Free Shop, check the ??? for a cutscene about repairing.\n" ..
-                       "- Travel to Castle Zvahl Baileys (F-8 torch) to fight Dark Spark.\n" ..
-                       "  - Defeat Dark Spark, re-check torch to get Key Item “Shadow Flames.”\n \n" ..
-                       "  - ===== DARK SPARK ===== \n" ..
-                       "  - Level: 55 \n" ..
-                       "  - HP: 8500 \n" ..
-                       "  - Job: Dark Knight \n" ..
-                       "  - Notes: Be careful it can Self Destruct" ..
-                       "- Back in Port Jeuno, click the ??? again to receive Gallant Gauntlets.\n \n",
+                text = "Step 3: Take the Old Gauntlets back to Guslam in Upper Jeuno (H-8).\n \n" ..
+                       "- He cannot repair them. Deadly Minnow points you at a Mithra in the Tenshodo.\n" ..
+                       "- Pay Yin Pocanakhu 1,000 gil at Neptune's Spire in Lower Jeuno (J-7) for the details.\n \n",
+                route_to = "Upper Jeuno",
+                destination_highlight = { position = "H-8", offsetX = 16, offsetY = 16 },
+            },
+            {
+                text = "Step 4: Examine the ??? near the Duty-Free Shop in Port Jeuno (H-8) for a cutscene about the repair.\n \n",
+                route_to = "Port Jeuno",
+                destination_highlight = { position = "H-8", offsetX = 16, offsetY = 16 },
+            },
+            {
+                text = "Step 5: Go to the torch at (F-8) in Castle Zvahl Baileys, kill Dark Spark, then re-check the torch for the Key Item: Shadow Flames.\n \n" ..
+                       "===== Dark Spark =====\n" ..
+                       "- Lv55, roughly 8,500 HP, Dark Knight.\n" ..
+                       "- It self-destructs, so keep your HP up when it is low.\n \n",
                 images = {
                     {
-                        zone_name = "Upper Jeuno",
-                        width = 512,
-                        height = 512,
-                        state = 3,
+                        zone_name = "Castle Zvahl Baileys",
+                        floor_id  = 1,
+                        width     = 512,
+                        height    = 512,
+                        state     = 5,
                         highlights = {
-                            { position = "H-8", offsetX = 16, offsetY = 16 },
-                        },
-                    },
-                    {
-                        zone_name = "Lower Jeuno",
-                        width = 512,
-                        height = 512,
-                        state = 3,
-                        highlights = {
-                            { position = "J-7", offsetX = 16, offsetY = 16 },
-                        },
-                    },
-                    {
-                        zone_name = "Port Jeuno",
-                        width = 512,
-                        height = 512,
-                        state = 3,
-                        highlights = {
-                            { position = "H-8", offsetX = 16, offsetY = 16 },
-                        },
-                    },
-                    {
-                        zone_name = "Castle Zvahl Baileys", floor_id = 1 --[[VERIFY floor_id]],
-                        width = 512,
-                        height = 512,
-                        state = 3,
-                        highlights = {
-                            { position = "F-8", offsetX = 16, offsetY = 16 },
-                        },
-                    },
-                    {
-                        zone_name = "Port Jeuno",
-                        width = 512,
-                        height = 512,
-                        state = 3,
-                        highlights = {
-                            { position = "H-8", offsetX = 16, offsetY = 16 },
+                            { position = "F-8", offsetX = 16, offsetY = 16, label = "Torch" },
                         },
                     },
                 },
+                onmob_enemy = "Dark Spark",
+                kill_requirement = {
+                    count = 1,
+                    enemies = { "Dark Spark" },
+                    zone = "Castle Zvahl Baileys",
+                    count_party_kills = true,
+                    display_only = true,
+                },
             },
             {
-                text = "Step 4 (Optional Coffers): Guslam hints other armor is scattered across Vana'diel.\n \n" ..
-                       "- You can open coffers in Garlaige Citadel (for Gallant Coronet) and Beadeaux (for Gallant Breeches) while on Paladin main.\n" ..
-                       "- These do not block quest completion but help complete your Paladin AF set.\n \n",
-                images = {},
+                text = "Step 6: Return to the ??? in Port Jeuno (H-8) to receive the Gallant Gauntlets.\n \n",
+                route_to = "Port Jeuno",
+                destination_highlight = { position = "H-8", offsetX = 16, offsetY = 16 },
+            },
+            {
+                text = "Step 7 (Optional): Pick up the rest of the Gallant set.\n \n" ..
+                       "- Garlaige Citadel coffer gives the Gallant Coronet.\n" ..
+                       "- Beadeaux coffer gives the Gallant Breeches.\n" ..
+                       "- Both need Paladin as your main job, and neither blocks this quest.\n \n",
             },
         },
         reward = {
-            text = "Aquired Gallant Gauntlets! \n" ..
-                   "Access to other Paladin AF pieces.\n \n",
+            text = "Gallant Gauntlets\n \n" ..
+                   "Guslam also points you at the Garlaige Citadel and Beadeaux coffers for the rest of the set.\n \n",
         },
     },
 }

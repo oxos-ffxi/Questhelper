@@ -153,11 +153,16 @@ function utils.get_images_for_step(topCat, subfile, mission, stepIndex, quest_da
                                     local backtrack_floor_id = step_data.backtrack_floor_id
                                     local best_path, best_len, best_dest = nil, math.huge, nil
                                     for _, z in ipairs(image_zones) do
-                                        local path = pathfinding.findPath(current_zone, z, backtrack_floor_id)
-                                        if path and #path >= 1 and #path < best_len then
-                                            best_path = path
-                                            best_len = #path
-                                            best_dest = z
+                                        -- A split zone is only a graph node under its sub-zone
+                                        -- names, so retry those before giving up on z. best_dest
+                                        -- stays the image's own zone_name for the highlight match.
+                                        for _, routable in ipairs(pathfinding.getRoutableZoneNames(z)) do
+                                            local path = pathfinding.findPath(current_zone, routable, backtrack_floor_id)
+                                            if path and #path >= 1 and #path < best_len then
+                                                best_path = path
+                                                best_len = #path
+                                                best_dest = z
+                                            end
                                         end
                                     end
                                     if best_path then
@@ -212,8 +217,11 @@ function utils.get_images_for_step(topCat, subfile, mission, stepIndex, quest_da
 
                         if path then
                             -- Generate route images with exit highlights
-                            -- Optional: destination_highlight for marking NPCs/targets at final destination
-                            local dest_highlight = step_data.destination_highlight
+                            -- Optional: destination_highlight for marking NPCs/targets at final destination.
+                            -- A route_choices group may carry its own, so each destination marks its own spot.
+                            local dest_highlight = qs_ok
+                                and qs.resolveDestinationHighlight(step_data, topCat, subfile, mission, stepIndex)
+                                or step_data.destination_highlight
                             local route_images = pathfinding.generateRouteImages(path, current_zone, dest_highlight, backtrack_floor_id)
                             return route_images
                         end

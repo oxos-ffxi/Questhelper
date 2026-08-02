@@ -68,6 +68,7 @@ local id_to_name = {
     [246] = "Dark Fragment",
     [247] = "Prismatic Fragment",
     [250] = "Optistery Ring",
+    [257] = "Strangely Shaped Coral",
     [266] = "Altepa Moonpebble",
     [268] = "Dreamrose",
     [272] = "Paintbrush of Souls",

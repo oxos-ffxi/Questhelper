@@ -357,6 +357,15 @@ end
 --- zone gets, say) instead of being one undifferentiated wall of zone names. A zone may
 --- appear in several groups - Valkurm Dunes gets both fire and earth weather - and that
 --- is fine: picking it from either routes to the same place.
+--- A `zones` entry is either a bare zone name, or a table naming one plus its own fields:
+---   zones = { "East Ronfaure", { zone = "West Ronfaure", destination_highlight = {...} } }
+--- Returns the zone name, and the entry table (nil for bare names).
+function quest_state.routeChoiceZone(entry)
+    if type(entry) == 'string' then return entry, nil end
+    if type(entry) == 'table' and type(entry.zone) == 'string' then return entry.zone, entry end
+    return nil, nil
+end
+
 function quest_state.routeChoiceZones(step_data)
     local out = {}
     if type(step_data) ~= 'table' or type(step_data.route_choices) ~= 'table' then
@@ -367,8 +376,9 @@ function quest_state.routeChoiceZones(step_data)
         if type(entry) == 'string' then
             table.insert(out, entry)
         elseif type(entry) == 'table' and type(entry.zones) == 'table' then
-            for _, zone in ipairs(entry.zones) do
-                table.insert(out, zone)
+            for _, z in ipairs(entry.zones) do
+                local name = quest_state.routeChoiceZone(z)
+                if name then table.insert(out, name) end
             end
         end
     end
@@ -376,10 +386,51 @@ function quest_state.routeChoiceZones(step_data)
     return out
 end
 
---- The destination a step should actually route to: the player's pick when it is still
---- one of the step's offered choices, otherwise the step's own route_to. Validating
---- against the current list means a pick left over from an edited data file is ignored
---- rather than routing somewhere the step no longer mentions.
+--- The zone a route_choices step falls back to when the player has not picked one, so the
+--- step arrives already routed somewhere instead of showing no maps until it is clicked.
+---
+--- Opt-in per group: `default = true` takes that group's first zone, `default = "<zone>"`
+--- names one of its own. Deliberately NOT "just use the first choice" - the SMN weather
+--- step offers 25 zones across 7 groups and auto-routing to one of them would be a guess
+--- dressed up as help. A step that wants a default says so.
+function quest_state.routeChoiceDefault(step_data)
+    if type(step_data) ~= 'table' or type(step_data.route_choices) ~= 'table' then
+        return nil
+    end
+
+    for _, entry in ipairs(step_data.route_choices) do
+        if type(entry) == 'table' and entry.default and type(entry.zones) == 'table' then
+            if type(entry.default) == 'string' then
+                for _, z in ipairs(entry.zones) do
+                    local name = quest_state.routeChoiceZone(z)
+                    if name == entry.default then return name end
+                end
+            else
+                return (quest_state.routeChoiceZone(entry.zones[1]))
+            end
+        end
+    end
+
+    return nil
+end
+
+--- The destination a step should actually route to, in precedence order:
+---
+---   1. the player's pick, when it is still one of the step's offered choices
+---   2. the step's own route_to
+---   3. a route_choices group marked `default`
+---
+--- Validating the pick against the current list means one left over from an edited data
+--- file is ignored rather than routing somewhere the step no longer mentions.
+---
+--- route_to sits ABOVE the group default on purpose. A step carrying both is saying "start
+--- here, and here are the alternatives" - the author's explicit destination should not be
+--- silently overridden by a group flag. `default` is for steps that offer only choices, and
+--- would otherwise sit unrouted until clicked. A step may carry either, both or neither.
+---
+--- Clearing a pick lands back on whichever of those applies rather than on nothing, so on a
+--- step that has one, clicking the active button reads as a no-op. That is intended: the
+--- point is that the step is never left unrouted.
 function quest_state.resolveRouteTo(step_data, cat, sub, mis, step)
     if type(step_data) ~= 'table' then return nil end
 
@@ -390,9 +441,52 @@ function quest_state.resolveRouteTo(step_data, cat, sub, mis, step)
                 if zone == choice then return choice end
             end
         end
+
+        if step_data.route_to then return step_data.route_to end
+
+        local default = quest_state.routeChoiceDefault(step_data)
+        if default then return default end
     end
 
     return step_data.route_to
+end
+
+--- The destination_highlight a step should draw, most specific first:
+---
+---   1. the resolved zone's own entry, when it is a table carrying one
+---   2. the group that zone belongs to
+---   3. the step's own destination_highlight
+---
+--- Without this a step offering several destinations can only carry one highlight, which
+--- then draws on whichever zone was picked - a Gusgen Mines grid ref pinned on the West
+--- Ronfaure map. Per-zone means a group can hold several destinations that each mark their
+--- own spot; per-group still covers the common case where they share one. Anything with
+--- neither falls through and simply routes without a pin.
+---
+--- A zone listed in two groups takes the first one's highlight, matching the order
+--- routeChoiceZones reports.
+function quest_state.resolveDestinationHighlight(step_data, cat, sub, mis, step)
+    if type(step_data) ~= 'table' then return nil end
+
+    if type(step_data.route_choices) == 'table' then
+        local zone = quest_state.resolveRouteTo(step_data, cat, sub, mis, step)
+        if zone then
+            for _, entry in ipairs(step_data.route_choices) do
+                if type(entry) == 'table' and type(entry.zones) == 'table' then
+                    for _, z in ipairs(entry.zones) do
+                        local name, zdata = quest_state.routeChoiceZone(z)
+                        if name == zone then
+                            return (zdata and zdata.destination_highlight)
+                                or entry.destination_highlight
+                                or step_data.destination_highlight
+                        end
+                    end
+                end
+            end
+        end
+    end
+
+    return step_data.destination_highlight
 end
 
 --- Forgets one witnessed element. Returns true if it was actually banked.

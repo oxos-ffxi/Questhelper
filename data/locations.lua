@@ -88,27 +88,25 @@ return {
         zone = "Port Bastok",
     },
     ["Kaede"] = {
-        target_pos = { x = 48.3, y = -7.8, z = 69.2 },
+        target_pos = { x = 48.3, y = -8.1, z = 69.2 },
         visual_mode = "arc",
         zone = "Port Bastok",
         floor_id = 0,
-        max_distance = 30
+        max_distance = 20
     },
     ["Ensetsu"] = {
-        target_pos = { x = 33.0, y = -6.0, z = 67.0 },
-        trigger_npc = "Ensetsu",
+        target_pos = { x = 32.0, y = -8.6, z = 68.8 },
         visual_mode = "arc",
         zone = "Port Bastok",
         floor_id = 0,
-        max_distance = 30
+        max_distance = 20
     },
     ["Kagetora"] = {
-        target_pos = { x = -96.0, y = -2.0, z = 29.0 },
-        trigger_npc = "Kagetora",
+        target_pos = { x = -94.6, y = -4.1, z = 30.5 },
         visual_mode = "arc",
         zone = "Port Bastok",
         floor_id = 0,
-        max_distance = 30
+        max_distance = 20
     },
     -- Metalworks
     ["Cid"] = {
@@ -1490,11 +1488,13 @@ return {
     },
     -- Korroloka Tunnel
     -- ??? that pops the three Korroloka Leeches - Ninja unlock
-    ["korroloka-ninja-qm2"] = {
-        target_pos = { x = -208.0, y = -9.0, z = 176.0 },
+    ["korroloka-tunnel-ninja-qm2-???"] = {
+        target_pos = { x = -206.8, y = -10.9, z = 176.2 },
         visual_mode = "arc",
         zone = "Korroloka Tunnel",
-        max_distance = 30
+        floor_id = 5,
+        max_distance = 15,
+        draw_in_combat = false,
     },
     -- Hall Of Transference
     ["hall-of-transference-dem-large-apparatus"] = {
@@ -2377,11 +2377,11 @@ return {
         zone = "Norg"
     },
     ["Ryoma"] = {
-        target_pos = { x = -23.0, y = 0.0, z = -9.0 },
-        trigger_npc = "Ryoma",
+        target_pos = { x = -26.3, y = -1.3, z = -8.3 },
         visual_mode = "arc",
         zone = "Norg",
-        max_distance = 35,
+        floor_id = 0,
+        max_distance = 35
     },
     ["Jaucribaix"] = {
         target_pos = { x = 91.0, y = -7.0, z = -8.0 },

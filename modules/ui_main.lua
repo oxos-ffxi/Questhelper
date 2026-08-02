@@ -549,8 +549,13 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                     end
                 end
 
-                -- Add height for route display (if route_to is defined)
-                if type(step_data) == 'table' and step_data.route_to then
+                -- Add height for route display (if the step resolves to a destination at all).
+                -- Gate on the RESOLVED destination, not step_data.route_to - a route_choices step
+                -- has no route_to of its own, so the raw field would hide the panel even when a
+                -- pick or a group default has given it somewhere to go.
+                local height_route_dest = quest_state.resolveRouteTo(step_data, currentTopCategory,
+                    currentSubfile, current_mission, step_index_to_use)
+                if type(step_data) == 'table' and height_route_dest then
                     if ui_settings.route_section_expanded then
                         -- Load pathfinding to calculate route lines
                         local pathfinding_ok, pathfinding = pcall(require, 'modules.pathfinding')
@@ -563,10 +568,11 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                                     local current_zone = pathfinding.getCurrentZone(player_zone_id, zones_db)
 
                                     if current_zone then
-                                        local path = pathfinding.findPath(current_zone,
-                                            quest_state.resolveRouteTo(step_data, currentTopCategory, currentSubfile, current_mission, step_index_to_use))
+                                        local path = pathfinding.findPath(current_zone, height_route_dest)
                                         if path then
-                                            local route_str = pathfinding.formatPath(path, current_zone, step_data.destination_highlight)
+                                            local route_str = pathfinding.formatPath(path, current_zone,
+                                                quest_state.resolveDestinationHighlight(step_data, currentTopCategory,
+                                                    currentSubfile, current_mission, step_index_to_use))
                                             -- Count lines in route string (each "\n" is a new line)
                                             local route_lines = 1  -- Start with header line "Route (X zones):"
                                             for _ in route_str:gmatch("\n") do
@@ -1395,7 +1401,13 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                 local route_step_index = ui_settings.show_all_steps and current_step_index or collapsed_viewed_step
                 local route_step_data = steps[route_step_index]
                 route_step_data = step_utils.resolveDynamicStep(route_step_data, currentTopCategory, currentSubfile, current_mission, quest_state)
-                if route_step_data and type(route_step_data) == 'table' and route_step_data.route_to then
+                -- Same rule as the height pass above: a route_choices step has no route_to of its
+                -- own, so gate the panel on the resolved destination or it never renders.
+                local route_destination = route_step_data and type(route_step_data) == 'table'
+                    and quest_state.resolveRouteTo(route_step_data, currentTopCategory,
+                        currentSubfile, current_mission, route_step_index)
+                    or nil
+                if route_destination then
                     -- Track the expanded state for dynamic height calculation
                     local route_header_expanded = imgui.CollapsingHeader("Route###RouteHeader", ui_settings.route_section_expanded and ImGuiTreeNodeFlags_DefaultOpen or 0)
 
@@ -1419,13 +1431,14 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                                     local current_zone = pathfinding.getCurrentZone(player_zone_id, zones_db)
 
                                     if current_zone then
-                                        -- Honours the player's route_choices pick for this step
-                                        local destination = quest_state.resolveRouteTo(route_step_data,
-                                            currentTopCategory, currentSubfile, current_mission, route_step_index)
-                                        local path = pathfinding.findPath(current_zone, destination)
+                                        -- Resolved above: honours the player's route_choices pick,
+                                        -- then route_to, then a group default
+                                        local path = pathfinding.findPath(current_zone, route_destination)
 
                                         if path then
-                                            local route_str = pathfinding.formatPath(path, current_zone, route_step_data.destination_highlight)
+                                            local route_str = pathfinding.formatPath(path, current_zone,
+                                                quest_state.resolveDestinationHighlight(route_step_data,
+                                                    currentTopCategory, currentSubfile, current_mission, route_step_index))
                                             local distance = pathfinding.getRouteDistance(path)
 
                                             if distance == 0 then
@@ -1448,7 +1461,7 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                                             end
                                         else
                                             -- No path found
-                                            imgui.TextColored(col.red, "  No route found to " .. destination)
+                                            imgui.TextColored(col.red, "  No route found to " .. tostring(route_destination))
                                             imgui.TextColored(col.dim, "  (Zone graph incomplete)")
                                         end
                                     else
@@ -1619,7 +1632,13 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                     -- weather zones). Drawing every route at once is unreadable, so the player
                     -- clicks one and it becomes this step's route_to.
                     if not st and type(step_data) == 'table' and type(step_data.route_choices) == 'table' then
-                        local picked  = quest_state.getRouteChoice(currentTopCategory, currentSubfile, current_mission, i)
+                        -- Show whatever the maps and Route panel are actually using, not just an
+                        -- explicit pick - so a route_to or a group default renders as the active
+                        -- button too. A destination that is not one of the listed zones simply
+                        -- lights nothing, which is honest: the step is routed elsewhere and these
+                        -- are the alternatives.
+                        local picked  = quest_state.resolveRouteTo(step_data, currentTopCategory,
+                            currentSubfile, current_mission, i)
                         local per_row = step_data.route_choices_per_row or 3
 
                         -- Normalise to groups so there is one rendering path. A bare run of
@@ -1690,16 +1709,23 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                                 if group.group then
                                     imgui.TextColored(col.gold, "  " .. group.group)
                                 end
-                                for zi, zname in ipairs(group.zones) do
-                                    local active = (zname == picked)
-                                    local label  = (active and "> " or "") .. zname
-                                    if imgui.SmallButton(label .. "##rc" .. i .. "_" .. (entry.uid + zi)) then
-                                        -- Clicking the active one clears it, back to the step's route_to
-                                        quest_state.setRouteChoice(currentTopCategory, currentSubfile,
-                                            current_mission, i, active and nil or zname)
-                                    end
-                                    if zi % per_row ~= 0 and zi < #group.zones then
-                                        imgui.SameLine()
+                                for zi, zentry in ipairs(group.zones) do
+                                    -- Entries are a bare name or { zone = "Name", ... }
+                                    local zname = quest_state.routeChoiceZone(zentry)
+                                    if zname then
+                                        local active = (zname == picked)
+                                        -- Gold for the live destination, matching every other active
+                                        -- toggle in the UI. Not green - green here reads as "done".
+                                        local pushed = theme.pushButton(active and 'accent' or 'neutral')
+                                        if imgui.SmallButton(zname .. "##rc" .. i .. "_" .. (entry.uid + zi)) then
+                                            -- Clicking the active one clears it, back to route_to or the default
+                                            quest_state.setRouteChoice(currentTopCategory, currentSubfile,
+                                                current_mission, i, active and nil or zname)
+                                        end
+                                        imgui.PopStyleColor(pushed)
+                                        if zi % per_row ~= 0 and zi < #group.zones then
+                                            imgui.SameLine()
+                                        end
                                     end
                                 end
                                 imgui.Spacing()

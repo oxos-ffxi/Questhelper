@@ -168,6 +168,58 @@ route_choices = {
 },
 ```
 
+**A default destination.** A group may declare `default = true` (its first zone) or
+`default = "<zone>"` (one of its own), and the step routes there before the player clicks
+anything - maps, the Route panel and the active button all follow it:
+
+```lua
+route_choices = {
+    { group = "Gusgen Mines - best rate", zones = { "Gusgen Mines" }, default = true,
+      destination_highlight = { position = "H-7", offsetX = 16, offsetY = 16, label = "Bandersnatch" } },
+    { group = "West Ronfaure - closest",  zones = { "West Ronfaure" },
+      destination_highlight = { position = "H-9", offsetX = 16, offsetY = 16, label = "Tainted Hound" } },
+},
+```
+
+It is opt-in, **not** "just use the first choice". The SMN weather step offers 25 zones across 7
+groups; auto-routing to one of them would be a guess dressed up as help.
+
+**Precedence, when a step carries both `route_to` and `route_choices`** (which is allowed):
+
+1. the player's pick, if it is still one of the offered zones
+2. the step's own `route_to`
+3. a group marked `default`
+
+`route_to` beats the group default deliberately - a step with both is saying "start here, and here
+are the alternatives", and an explicit destination should not be silently overridden by a group
+flag. `default` exists for steps that offer *only* choices and would otherwise sit unrouted until
+clicked. Clearing a pick lands back on whichever of those applies rather than on nothing, so
+clicking the active button on such a step reads as a no-op - that is the point, the step is never
+left unrouted. A destination that is not one of the listed zones lights no button at all.
+
+**Per-zone and per-group `destination_highlight`.** Without one, a multi-destination step carries
+a single highlight that draws on *whichever* zone was picked - a Gusgen Mines grid ref pinned on
+the West Ronfaure map. A `zones` entry may be a bare name or a table carrying its own fields, so
+destinations that share a pin and destinations that need their own can sit in the same group:
+
+```lua
+{
+    group = "Ronfaure - closest, night only",
+    zones = {
+        { zone = "West Ronfaure", destination_highlight = { position = "H-9", offsetX = 16, offsetY = 16 } },
+        "East Ronfaure",   -- no known spot: routes with no pin
+    },
+},
+```
+
+Most specific wins: the zone's own entry, then its group's, then the step's. Anything with none
+of those routes without a pin, which is the right answer when the spot is unknown - do not borrow
+a neighbour's coordinate to fill the field. A zone listed in two groups takes the first one's.
+
+Resolution is `quest_state.resolveDestinationHighlight`, and `quest_state.routeChoiceZone(entry)`
+normalises an entry to `name, table`. Never read `step_data.destination_highlight` directly in new
+code, same rule as `resolveRouteTo`.
+
 **Collapsing finished groups.** `route_choices` knows nothing about *why* a group might be done -
 keep it that way, it is meant to be reusable by any step with several valid destinations. The
 coupling belongs on the feature that owns the progress. For weather, a `weather_watch` slot names
