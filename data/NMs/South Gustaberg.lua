@@ -33,7 +33,6 @@ return {
                     type = "FEET",
                     races = "All Races",
                     stats = { "DEF:+3", "DEX:+3", "AGI:+3" },
-                    level = "7",
                     jobs = "WAR/RDM/THF/PLD/DRK/BST/BRD/RNG/SAM/NIN/DRG/BLU/COR/DNC",
                     note = "Drop Rate: ~6.7%"
                 }

@@ -4578,7 +4578,6 @@ s
                     type = "Neck",
                     races = "All Races",
                     stats = { "DEF+1", "STR+1", "DEX+1", "VIT+1", "AGI+1" },
-                    level = "54",
                     jobs = "All Jobs",
                 },
             },

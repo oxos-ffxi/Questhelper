@@ -181,6 +181,9 @@ route_choices = {
 },
 ```
 
+`default` may sit on the group, or on a single zone entry when you want to name one precisely -
+both are checked, zone entry first.
+
 It is opt-in, **not** "just use the first choice". The SMN weather step offers 25 zones across 7
 groups; auto-routing to one of them would be a guess dressed up as help.
 
@@ -219,6 +222,18 @@ a neighbour's coordinate to fill the field. A zone listed in two groups takes th
 Resolution is `quest_state.resolveDestinationHighlight`, and `quest_state.routeChoiceZone(entry)`
 normalises an entry to `name, table`. Never read `step_data.destination_highlight` directly in new
 code, same rule as `resolveRouteTo`.
+
+**Per-zone and per-group `visual_zones`.** Same two levels, but **additive** rather than
+most-specific-wins: the step's markers, plus the resolved group's, plus the resolved zone's. A
+highlight is one pin so two of them fight; arrow chains compose, letting a group hold the shared
+approach and a zone its own final leg.
+
+Scope a chain to its choice whenever the step offers several destinations. `zone_name` already
+stops chains colliding *inside* a zone, but it does not stop an unpicked destination's chain
+drawing when you happen to be in that zone - a King Ranperre's chain lighting up while you cross
+East Ronfaure heading for Gusgen Mines. Resolution is `quest_state.resolveVisualZones`, read by
+`questhelper.lua`; it returns the author's own list unchanged when no choice contributes, so the
+per-frame draw path allocates nothing in the common case.
 
 **Collapsing finished groups.** `route_choices` knows nothing about *why* a group might be done -
 keep it that way, it is meant to be reusable by any step with several valid destinations. The
@@ -300,6 +315,45 @@ this - that panel reads `step_data.route_to` directly. It is only the *maps* tha
 - `type`: `'arrow'` (needs `direction`: up/down/left/right/nw/ne/se/sw), `'square'`, `'rect'` (needs `width`/`height`, optional `vertical`/`rotation`/`vertical_axis`).
 - **Colour convention:** `yellow` = path/direction arrows, `cyan` = target location, `green` =
   survival guide / warp / start point, `red` = enemy.
+
+---
+
+## 3b. Reward items
+
+`reward.items` renders one collapsible entry per item, above `reward.text`:
+
+```lua
+reward = {
+    text  = "Title: Knight in Training\n \n",
+    items = {
+        { name = "Spatha", type = "Sword", races = "All Races" },
+    },
+},
+```
+
+Fields: `name` (required), `type`, `races`, `stats` (a list of strings), `level`, `jobs`, `note`.
+
+**Only `name` is really required.** `modules/item_info.lua` looks the name up in the game's own
+resources - exact, case-insensitive, so `Spatha` will not match `Spatha +1` - and fills in
+`level`, `jobs`, and a `DMG: n, Delay: n` stat line for weapons. Anything the data file states
+wins; the game only fills gaps. So write `stats` by hand for gear whose useful line is not
+DMG/Delay, and leave it off for weapons.
+
+Not pulled from the game: `type`, `races` and `note`. `races` is deliberate - the race bitmask
+layout was never confirmed, and a wrong race line is worse than none. The job list IS decoded
+from a mask (`JOBS` in `item_info.lua`) and is **unverified against a live client** - if a
+reward's jobs read wrong, that table is the first thing to check, and authoring `jobs` on the
+item overrides it.
+
+The item's **in-game icon** is drawn next to the name automatically, also from the name alone -
+`item.Bitmap` is already a standard in-memory bitmap, so D3DX detects the format with no header
+handling. Approach lifted from `oxos-ffxi/ffxi-tcg` `modules/textures.lua`.
+
+Lookups are cached per name. The first miss triggers one sweep of the item resources to build a
+name index, so the cost lands once rather than per frame. Icon textures are cached by item id and
+**deliberately never released** - `d3d8.gc_safe_release` frees the underlying D3D texture when the
+cdata is collected, so dropping that reference while ImGui still holds the id is a use-after-free,
+not a leak. Icons are 32x32 and reward items are few.
 
 ---
 

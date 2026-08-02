@@ -24,6 +24,7 @@ local quest_sync = require('modules.quest_sync')
 local col = theme.col
 local has_group = type(imgui.BeginGroup) == 'function'
 local step_utils = require('modules.utils')  -- resolveDynamicStep (randomised-objective quests)
+local item_info = require('modules.item_info')  -- reward item stats pulled from the game by name
 
 -- Inventory checking (periodic, not every frame)
 local inventory_results = {} -- Cached results
@@ -1788,12 +1789,28 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                         for idx, item_data in ipairs(reward.items) do
                             if type(item_data) == 'table' and item_data.name then
                                 if imgui.TreeNode(item_data.name .. "##rewarditem" .. idx) then
+                                    -- Anything the data file states wins; the game fills the gaps,
+                                    -- so a reward can carry just a name. Cached per name.
+                                    local game = item_info.getStats(item_data.name)
+
+                                    local lvl = item_data.level or (game and game.level and tostring(game.level))
+                                    local jobs = item_data.jobs or (game and game.jobs)
+                                    local stats = item_data.stats
+                                    if not stats and game and game.damage and game.delay then
+                                        stats = { "DMG: " .. game.damage, "Delay: " .. game.delay }
+                                    end
+
+                                    local icon = item_info.getIconTextureId(item_data.name)
+                                    if icon then
+                                        imgui.Image(icon, {32, 32})
+                                    end
+
                                     imgui.TextColored(col.gold,"  Name: ");  imgui.SameLine(); imgui.TextWrapped(item_data.name)
                                     if item_data.type then imgui.TextColored(col.gold,"  Type: "); imgui.SameLine(); imgui.TextWrapped(item_data.type) end
                                     if item_data.races then imgui.TextColored(col.gold,"  Race: "); imgui.SameLine(); imgui.TextWrapped(item_data.races) end
-                                    if item_data.stats then imgui.TextColored(col.gold,"  Stat: "); imgui.SameLine(); imgui.TextWrapped(table.concat(item_data.stats, ", ")) end
-                                    if item_data.level then imgui.TextColored(col.gold,"  Lvl.: "); imgui.SameLine(); imgui.TextWrapped(item_data.level) end
-                                    if item_data.jobs then imgui.TextColored(col.gold,"  Jobs: "); imgui.SameLine(); imgui.TextWrapped(item_data.jobs) end
+                                    if stats then imgui.TextColored(col.gold,"  Stat: "); imgui.SameLine(); imgui.TextWrapped(table.concat(stats, ", ")) end
+                                    if lvl then imgui.TextColored(col.gold,"  Lvl.: "); imgui.SameLine(); imgui.TextWrapped(lvl) end
+                                    if jobs then imgui.TextColored(col.gold,"  Jobs: "); imgui.SameLine(); imgui.TextWrapped(jobs) end
                                     if item_data.note then imgui.TextColored(col.gold,"  Note: "); imgui.SameLine(); imgui.TextWrapped(item_data.note) end
                                     imgui.TreePop()
                                 end

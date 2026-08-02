@@ -1047,6 +1047,13 @@ return {
         floor_id = 0,
         max_distance = 25
     },
+    ["Balasiel"] = {
+        target_pos = { x = -138.3, y = -13.1, z = 65.8 },
+        visual_mode = "arc",
+        zone = "Southern San d'Oria",
+        floor_id = 0,
+        max_distance = 12
+    },
     --Northern San d'Oria
     ["Baraka"] = {
         target_pos = { x = 38.65, y= -3.5, z=-5.75},
@@ -1323,6 +1330,20 @@ return {
         zone = "Ordelle's Caves",
         floor_id = 1,
         max_distance = 25
+    },
+    -- Paladin: A Squire's Test II. Click the pool, then reach the second within 30 seconds.
+    -- No floor_id: which map they sit on is unconfirmed, and omitting it draws on all.
+    ["ordelles-caves-stalactite-pool-qm2"] = {
+        target_pos = { x = -94.0, y = 1.0, z = 273.0 },
+        visual_mode = "arc",
+        zone = "Ordelle's Caves",
+        max_distance = 30
+    },
+    ["ordelles-caves-stalactite-dew-qm3"] = {
+        target_pos = { x = -139.0, y = 0.1, z = 264.0 },
+        visual_mode = "arc",
+        zone = "Ordelle's Caves",
+        max_distance = 30
     },
     -- Horlias Peak
     ["horlais-peak-burning-circle"] = {

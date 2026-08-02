@@ -399,14 +399,22 @@ function quest_state.routeChoiceDefault(step_data)
     end
 
     for _, entry in ipairs(step_data.route_choices) do
-        if type(entry) == 'table' and entry.default and type(entry.zones) == 'table' then
-            if type(entry.default) == 'string' then
-                for _, z in ipairs(entry.zones) do
-                    local name = quest_state.routeChoiceZone(z)
-                    if name == entry.default then return name end
+        if type(entry) == 'table' and type(entry.zones) == 'table' then
+            -- A zone entry may claim it directly, which is the precise form
+            for _, z in ipairs(entry.zones) do
+                local name, zdata = quest_state.routeChoiceZone(z)
+                if name and zdata and zdata.default then return name end
+            end
+
+            if entry.default then
+                if type(entry.default) == 'string' then
+                    for _, z in ipairs(entry.zones) do
+                        local name = quest_state.routeChoiceZone(z)
+                        if name == entry.default then return name end
+                    end
+                else
+                    return (quest_state.routeChoiceZone(entry.zones[1]))
                 end
-            else
-                return (quest_state.routeChoiceZone(entry.zones[1]))
             end
         end
     end
@@ -487,6 +495,89 @@ function quest_state.resolveDestinationHighlight(step_data, cat, sub, mis, step)
     end
 
     return step_data.destination_highlight
+end
+
+--- Concatenates marker lists, avoiding a new table whenever it can - this runs every frame
+--- in the draw loop, so returning the author's own list unchanged is the common path.
+local function mergeMarkers(a, b, c)
+    local lists, kept = {}, nil
+    for _, l in ipairs({ a or false, b or false, c or false }) do
+        if type(l) == 'table' and #l > 0 then
+            table.insert(lists, l)
+            kept = l
+        end
+    end
+
+    if #lists == 0 then return a end
+    if #lists == 1 then return kept end
+
+    local out = {}
+    for _, l in ipairs(lists) do
+        for _, marker in ipairs(l) do table.insert(out, marker) end
+    end
+    return out
+end
+
+--- The visual_zones a step should draw: its own, plus any carried by the resolved
+--- route_choices group and zone.
+---
+--- ADDITIVE, unlike resolveDestinationHighlight where the most specific wins. A highlight is
+--- one pin, so two of them fight; arrow chains compose - a group can hold the shared approach
+--- and a zone its own final leg.
+---
+--- The point is that a chain belonging to an unpicked destination never draws. zone_name
+--- already stops chains colliding *inside* a zone, but not a Tomb chain lighting up while you
+--- pass through East Ronfaure on your way to Gusgen. Scoping by choice does.
+function quest_state.resolveVisualZones(step_data, cat, sub, mis, step)
+    if type(step_data) ~= 'table' then return nil end
+
+    local own = step_data.visual_zones
+    if type(step_data.route_choices) ~= 'table' then return own end
+
+    local zone = quest_state.resolveRouteTo(step_data, cat, sub, mis, step)
+    if not zone then return own end
+
+    for _, entry in ipairs(step_data.route_choices) do
+        if type(entry) == 'table' and type(entry.zones) == 'table' then
+            for _, z in ipairs(entry.zones) do
+                local name, zdata = quest_state.routeChoiceZone(z)
+                if name == zone then
+                    return mergeMarkers(own, entry.visual_zones, zdata and zdata.visual_zones)
+                end
+            end
+        end
+    end
+
+    return own
+end
+
+--- The draw radius a step's markers fall back to: the resolved route_choices zone's, then its
+--- group's, then the step's zone_max_distance. A per-marker `max_distance` still beats all of
+--- it. Pairs with resolveVisualZones - a choice carrying its own chain can carry the radius
+--- that suits it, so a tight dungeon route and an open-field one can live on one step.
+function quest_state.resolveZoneMaxDistance(step_data, cat, sub, mis, step)
+    if type(step_data) ~= 'table' then return nil end
+
+    local own = step_data.zone_max_distance
+    if type(step_data.route_choices) ~= 'table' then return own end
+
+    local zone = quest_state.resolveRouteTo(step_data, cat, sub, mis, step)
+    if not zone then return own end
+
+    for _, entry in ipairs(step_data.route_choices) do
+        if type(entry) == 'table' and type(entry.zones) == 'table' then
+            for _, z in ipairs(entry.zones) do
+                local name, zdata = quest_state.routeChoiceZone(z)
+                if name == zone then
+                    return (zdata and zdata.zone_max_distance)
+                        or entry.zone_max_distance
+                        or own
+                end
+            end
+        end
+    end
+
+    return own
 end
 
 --- Forgets one witnessed element. Returns true if it was actually banked.

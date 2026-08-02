@@ -678,8 +678,15 @@ ashita.events.register('d3d_present', 'present_callback', function()
                     end
 
                     -- Draw visual zones outside shouldDraw: shapes with their own zone_name
-                    -- draw in that zone; shapes without fall back to the step-level shouldDraw
-                    if step_data.visual_zones then
+                    -- draw in that zone; shapes without fall back to the step-level shouldDraw.
+                    -- Resolved, not raw: a route_choices group or zone may add its own chain,
+                    -- so an unpicked destination's arrows never draw.
+                    local visual_zones = quest_state.resolveVisualZones(step_data,
+                        currentTopCategory, currentSubfile, current_mission, step_idx)
+                    if visual_zones then
+                        -- Resolved the same way, so a choice's chain can carry its own radius
+                        local vz_max_distance = quest_state.resolveZoneMaxDistance(step_data,
+                            currentTopCategory, currentSubfile, current_mission, step_idx)
                         local player_floor = player_module.getFloorId(floor_mappings)
                         beam_drawing.calculateDynamicColor()
                         local playerRaceId
@@ -694,7 +701,7 @@ ashita.events.register('d3d_present', 'present_callback', function()
                         if step_data.daily_passwords then
                             pw_words = quest_state.getDailyPasswords(currentTopCategory, currentSubfile, current_mission, step_idx)
                         end
-                        for _, zone in ipairs(step_data.visual_zones) do
+                        for _, zone in ipairs(visual_zones) do
                             local shape_should_draw
                             if zone.zone_name then
                                 local zid = zone_data[zone.zone_name]
@@ -771,7 +778,7 @@ ashita.events.register('d3d_present', 'present_callback', function()
                                 end
 
                                 if should_draw_zone then
-                                    local max_dist = zone.max_distance or step_data.zone_max_distance
+                                    local max_dist = zone.max_distance or vz_max_distance
                                     local dist_ok = true
                                     if max_dist then
                                         local ref_x, ref_y, ref_z
