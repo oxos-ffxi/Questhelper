@@ -107,7 +107,7 @@ return {
                         height    = 512,
                         state     = 4,
                         highlights = {
-                            { position = "L-8", offsetX = 16, offsetY = 16, label = "6", color = "cyan" },
+                            { position = "L-8", offsetX = 16, offsetY = 16, label = "6" },
                         },
                     },
                 },

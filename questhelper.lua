@@ -32,6 +32,7 @@ local utils            = require('modules.utils')
 local inventory_cache  = require('modules.inventory_cache')
 local keyitem_module   = require('modules.keyitem')
 local quest_sync       = require('modules.quest_sync')
+local item_info        = require('modules.item_info')  -- item icons for onmob_target_icon
 -- local floor_debug      = require('debug_floor_state')  -- Commented out - file doesn't exist
 
 -- Validation
@@ -72,6 +73,36 @@ local map_db = T{}
 local questIconTexture = nil
 local floor_mappings = T{}  -- Floor ID mappings for multi-floor zones
 local keyitems_db = require('data.keyitems')  -- Key items database
+
+-- Named markers for onmob_target_icon, checked BEFORE item names. WoW's vocabulary: "!" starts
+-- a quest, "?" hands one in, a bubble is talk-to-me with nothing changing hands. "!" is also the
+-- default when a step names no icon at all, so quest starts need not ask for it.
+-- No FFXI item is called "!", "?" or "speech", so these can never shadow a real item.
+local MARKER_ASSETS = {
+    ['!']      = 'assets/quest_icon.png',
+    ['?']      = 'assets/quest_question.png',
+    ['speech'] = 'assets/speech_bubble.png',
+    -- readable aliases for the same three
+    ['start']  = 'assets/quest_icon.png',
+    ['handin'] = 'assets/quest_question.png',
+    ['talk']   = 'assets/speech_bubble.png',
+}
+local marker_textures = {}  -- name -> texture, or false once a load has failed
+
+--- One onmob_target_icon name to a texture: named marker first, then the game's item icons.
+local function resolveMarkerTexture(name)
+    local asset = MARKER_ASSETS[name]
+    if not asset then
+        return item_info.getIconTexture(name)
+    end
+
+    local hit = marker_textures[name]
+    if hit == nil then
+        hit = helpers.getTexture(addon.path .. asset) or false
+        marker_textures[name] = hit
+    end
+    return hit or nil
+end
 
 --------------------------------------------------------------------------------
 -- Debug Settings
@@ -455,6 +486,9 @@ ashita.events.register('d3d_present', 'present_callback', function()
     -- Resolve targets to draw beams to
     local targetsToDraw = {}
 
+    -- Per-step override for the marker icon floating over each target. nil = the default "!".
+    local stepIconTexture = nil
+
     if currentTopCategory and currentSubfile and current_mission then
         local missionData = quest_data[currentTopCategory][currentSubfile][current_mission]
         if missionData and missionData.steps then
@@ -483,6 +517,22 @@ ashita.events.register('d3d_present', 'present_callback', function()
                 end
 
                 if type(step_data) == 'table' then
+                    -- onmob_target_icon names a marker ("!", "?", "speech") or an ITEM, or a list
+                    -- mixing both, replacing the "!" over every target this step draws. Names
+                    -- that do not resolve are dropped, and an empty result leaves the default in
+                    -- place - so a typo costs that icon, never the marker.
+                    local icon_ref = step_data.onmob_target_icon
+                    if type(icon_ref) == 'string' then
+                        stepIconTexture = resolveMarkerTexture(icon_ref)
+                    elseif type(icon_ref) == 'table' then
+                        local list = {}
+                        for _, icon_name in ipairs(icon_ref) do
+                            local tex = resolveMarkerTexture(icon_name)
+                            if tex then list[#list + 1] = tex end
+                        end
+                        if #list > 0 then stepIconTexture = list end
+                    end
+
                     local target_ref = step_data.onmob_target
 
                     -- Reset dismissed targets when the step changes
@@ -917,7 +967,7 @@ ashita.events.register('d3d_present', 'present_callback', function()
     beam_drawing.updateBeamProgress(deltaTime)
     beam_drawing.drawBeamsToTargets(filteredTargets, player_module.posX, player_module.posZ_depth,
                                    player_module.posY_height, memManager, drawArcModule,
-                                   questIconTexture, helpers, shouldPrintDebugNow, addon.name)
+                                   stepIconTexture or questIconTexture, helpers, shouldPrintDebugNow, addon.name)
 
     -- Apply anything the server's quest log told us. Runs whether or not the window
     -- is open, so progress is right the moment it is opened.
@@ -1146,6 +1196,42 @@ ashita.events.register('command', 'command_callback', function(e)
         else
             print(string.format("\30\68[NOT FOUND]\30\01 Item '%s' not found in any storage.", itemName))
         end
+        e.blocked = true
+        return true
+    end
+
+    if command_base == 'qh_item' then
+        local itemName = table.concat(args, ' ', 2)
+        if itemName == "" then
+            print(string.format("[%s] Usage: /qh_item <item name>", addon.name))
+            print(string.format("[%s] Example: /qh_item Rajas Ring", addon.name))
+            e.blocked = true
+            return true
+        end
+
+        local game = item_info.getStats(itemName)
+
+        print(string.format("[%s] ========== Item Resource: %s ==========", addon.name, itemName))
+        if not game then
+            print(string.format("\30\68[NOT FOUND]\30\01 No resource matches that name exactly (case-insensitive)."))
+        else
+            print(string.format("[%s] Id=%s Level=%s Damage=%s Delay=%s", addon.name,
+                tostring(game.id), tostring(game.level), tostring(game.damage), tostring(game.delay)))
+            print(string.format("[%s] Jobs: %s", addon.name, tostring(game.jobs)))
+            print(string.format("[%s] Parsed stats: %s", addon.name,
+                game.stats and table.concat(game.stats, ", ") or "(none)"))
+
+            local raw = item_info.getRawDescription(itemName)
+            if raw then
+                print(string.format("[%s] Raw description:", addon.name))
+                for line in raw:gsub('\r\n', '\n'):gmatch('[^\n]+') do
+                    print(string.format("  |%s", line))
+                end
+            else
+                print(string.format("[%s] Raw description: (none)", addon.name))
+            end
+        end
+        print(string.format("[%s] ==========================================", addon.name))
         e.blocked = true
         return true
     end

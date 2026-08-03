@@ -45,6 +45,7 @@ local id_to_name = {
     [75] = "Ronfaure Supplies",
     [78] = "Gustaberg Supplies",
     [103] = "Lost Document",
+    [117] = "Old Tiger's Fang",       -- The Fanged One (Ranger unlock)
     [121] = "Tenshodo Application Form",
     [131] = "White Orb",             -- Crimson Orb quest (Davoi, Wall of Banishing)
     [132] = "Pink Orb",              -- Crimson Orb quest (after 1 pool)

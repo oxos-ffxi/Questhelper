@@ -258,7 +258,22 @@ function beam_drawing.drawBeamsToTargets(targetsToDraw, playerPosX, playerPosZ_d
                 local sx, sy, sz = helpers.worldToScreen(targetWorldX, targetWorldZ, targetWorldY, view, projection)
 
                 if sx and sz > 0 and sz < 1 then
-                    beam_drawing.drawQuestIcon(sx, sy, 0.5, 1.0, 32, 0xFFFFFFFF, questIconTexture)
+                    -- One texture or a list of them. A list lays out horizontally, centred on the
+                    -- target, so a step needing two items shows both side by side. A texture is
+                    -- cdata, never a table, so this test cannot misread the single case.
+                    local icons = type(questIconTexture) == 'table'
+                        and questIconTexture
+                        or { questIconTexture }
+
+                    local ICON_SIZE = 32
+                    local ICON_GAP  = 4
+                    local stride    = ICON_SIZE + ICON_GAP
+                    local originX   = sx - ((#icons - 1) * stride) * 0.5
+
+                    for i = 1, #icons do
+                        beam_drawing.drawQuestIcon(originX + (i - 1) * stride, sy,
+                                                   0.5, 1.0, ICON_SIZE, 0xFFFFFFFF, icons[i])
+                    end
                 end
             end
         end

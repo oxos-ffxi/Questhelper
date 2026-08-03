@@ -1795,7 +1795,10 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
 
                                     local lvl = item_data.level or (game and game.level and tostring(game.level))
                                     local jobs = item_data.jobs or (game and game.jobs)
-                                    local stats = item_data.stats
+                                    -- Description first: it is the item's full in-game stat block.
+                                    -- DMG/Delay stays as the fallback for records with no usable
+                                    -- description, and only ever covers weapons.
+                                    local stats = item_data.stats or (game and game.stats)
                                     if not stats and game and game.damage and game.delay then
                                         stats = { "DMG: " .. game.damage, "Delay: " .. game.delay }
                                     end

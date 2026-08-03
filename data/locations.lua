@@ -290,6 +290,21 @@ return {
         floor_id = 0,
         max_distance = 35
     },
+    -- Support Job unlock: Elder Memories (Selbina)
+    ["Isacio"] = {
+        target_pos = { x = -58.1, y = -2.9, z = -46.4 },
+        visual_mode = "arc",
+        zone = "Selbina",
+        floor_id = 0,
+        max_distance = 35
+    },
+    ["Vera"] = {
+        target_pos = { x = -53.0, y = -5.6, z = 17.2 },
+        visual_mode = "arc",
+        zone = "Mhaura",
+        floor_id = 0,
+        max_distance = 35
+    },
     ["Vobo"] = {
         target_pos = { x = 37.9, y = -16.0, z = 81.2 },
         visual_mode = "arc",
@@ -1475,11 +1490,12 @@ return {
         max_distance = 60
     },
     -- Forger ??? (D-8 cave) - Samurai unlock, trade the lump of oriental steel here
-    ["konschtat-forger-qm-d8"] = {
-        target_pos = { x = -709.0, y = 2.0, z = 102.0 },
+    ["konschtat-highlands-forger-qm-d8-???"] = {
+        target_pos = { x = -709.2, y = 2.7, z = 102.3 },
         visual_mode = "arc",
         zone = "Konschtat Highlands",
-        max_distance = 40
+        floor_id = 0,
+        max_distance = 25
     },
     -- Meriphataud Mountains
     -- ??? on the east edge of Drogaroga's Spine (K-8) - Dragoon unlock, trade the wyvern egg
@@ -1509,11 +1525,12 @@ return {
     },
     -- Sauromugue Champaign
     -- Tiger Bones in the cave at (L-10), up the cliff at (L-8) - Ranger unlock
-    ["sauromugue-tiger-bones-l10"] = {
-        target_pos = { x = 666.0, y = -8.0, z = -379.0 },
+    ["sauromugue-champaign-tiger-bones-l10"] = {
+        target_pos = { x = 665.2, y = -8.5, z = -380.1 },
         visual_mode = "arc",
         zone = "Sauromugue Champaign",
-        max_distance = 40
+        floor_id = 0,
+        max_distance = 10
     },
     -- Qufim Island
     ["qufim-island-nightflowers-f8"] = {
@@ -2013,6 +2030,13 @@ return {
         floor_id = 0,
         max_distance = 35
     },
+    ["Toji Mumosulah"] = {
+        target_pos = { x = 51.5, y = -13.1, z = -50.6 },
+        visual_mode = "arc",
+        zone = "Kazham",
+        floor_id = 0,
+        max_distance = 15
+    },
     -- Lower Jeuno
     ["Ghebi Damomohe"] = {
         target_pos = { x = 15.6, y= -1.7, z=-7.6},
@@ -2429,25 +2453,25 @@ return {
         max_distance = 35
     },
     ["Jaucribaix"] = {
-        target_pos = { x = 91.0, y = -7.0, z = -8.0 },
+        target_pos = { x = 90.3, y = -9.3, z = -5.9 },
         visual_mode = "arc",
-        trigger_npc = "Jaucribaix",
         zone = "Norg",
-        max_distance = 35,
+        floor_id = 0,
+        max_distance = 15
     },
     ["Aeka"] = {
-        target_pos = { x = 4.0, y = 0.0, z = -4.0 },
+        target_pos = { x = 6.3, y = -2.0, z = -4.7 },
         visual_mode = "arc",
-        trigger_npc = "Aeka",
         zone = "Norg",
-        max_distance = 35,
+        floor_id = 0,
+        max_distance = 15
     },
     ["Ranemaud"] = {
-        target_pos = { x = 15.0, y = 0.0, z = 23.0 },
+        target_pos = { x = 16.4, y = -2.0, z = 25.7 },
         visual_mode = "arc",
-        trigger_npc = "Ranemaud",
         zone = "Norg",
-        max_distance = 35,
+        floor_id = 0,
+        max_distance = 15
     },
     -- Ifrit's Caldroun
     ["ifrit-6-2-???"] = {
@@ -2937,11 +2961,13 @@ return {
     },
     -- Guardian Treant ??? (L-10, up the rocks at the base of the tree, unmapped area
     -- east of K-10) - Samurai unlock, hatchet to pop, sacred sprig for the branch
-    ["zitah-guardian-treant-qm-l10"] = {
-        target_pos = { x = 642.0, y = -5.0, z = -150.0 },
+    ["sanctuary-of-zitah-guardian-treant-qm-l10"] = {
+        target_pos = { x = 642.3, y = -5.0, z = -149.6 },
         visual_mode = "arc",
         zone = "The Sanctuary of Zi'Tah",
-        max_distance = 50
+        floor_id = 0,
+        max_distance = 35,
+        draw_in_combat = false,
     },
     --delkfutts tower
     ["delkfutts-tower-zm8-lift-???"] = {

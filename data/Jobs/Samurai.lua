@@ -8,19 +8,35 @@ return {
         },
         steps = {
             {
-                text = "Step 1: Speak with Jaucribaix in Norg (K-8) and accept the quest.\n \n" ..
-                       "- He is on the upper level, at the end of the hallway near the Captain's Quarters.\n" ..
-                       "- He asks for a Lump of Bomb Steel and a Sacred Branch, and points you at his two pupils.\n" ..
-                       "- The dialogue ends with a choice - you must pick the option that accepts, or the quest\n" ..
-                       "  does not start.\n \n" ..
-                       "===== Getting to Norg =====\n" ..
-                       "- Airship to Kazham, out into Yuhtunga Jungle, then in at the Sea Serpent Grotto entrance\n" ..
-                       "  (E-11). Norg is a short run inside; a chocobo from Kazham saves most of the jungle.\n" ..
-                       "- WARNING: Sahagin in Sea Serpent Grotto aggro. Sneak is strongly recommended at Lv30.\n" ..
-                       "- TIP: Norg has a Home Point and a chocobo of its own - the return trips get much cheaper\n" ..
-                       "  once you have been there once.\n \n",
+                text = "Step 1: In Kazham, buy a Hatchet from Toji Mumosulah at M & P's Market (I-8).\n \n" ..
+                       "TIP: Or buy from the Auction House: [Others > Misc.]\n \n",
+                route_to = "Kazham",
+                destination_highlight = { position = "I-8", offsetX = 16, offsetY = 16 },
+                items_needed = { "Hatchet" },
+                -- Inventory check, so it also catches one bought off the AH or already in the bag.
+                trigger_on_item_obtain = { "Hatchet" },
+                onmob_target = "Toji Mumosulah",
+                -- Marker over him is the Hatchet's own icon rather than the default "!".
+                onmob_target_icon = "Hatchet",
+                zone_max_distance = 25,
+                visual_zones = {
+                        { zone_name = "Kazham", type = 'arrow', center = { x = -37.0, y = -9.0, z = -78.9 }, size = 3, direction = "right", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Kazham", type = 'arrow', center = { x = -13.7, y = -10.0, z = -87.7 }, size = 3, direction = "right", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Kazham", type = 'arrow', center = { x = 15.3, y = -8.0, z = -86.8 }, size = 3, direction = "right", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Kazham", type = 'arrow', center = { x = 32.4, y = -8.0, z = -83.9 }, size = 3, direction = "up", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Kazham", type = 'arrow', center = { x = 36.4, y = -11.0, z = -53.0 }, size = 3, direction = "right", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Kazham", type = 'rect', center = { x = 43.3, y = -12.9, z = -53.0 }, width = 3.00, height = 2.75, floor_id = 0, colour = "cyan", vertical_axis = 'z' },
+                },
+            },
+            {
+                text = "Step 2: Speak with Jaucribaix in Norg (K-8) and accept.\n \n" ..
+                       "- Upper level, end of the hallway by the Captain's Quarters. He asks for a Lump of Bomb\n" ..
+                       "  Steel and a Sacred Branch, and sends you to his two pupils downstairs.\n \n" ..
+                       "CRITICAL: The dialogue ends in a choice - pick the accepting option or nothing starts.\n \n" ..
+                       "TIP: From Kazham it is out through Yuhtunga Jungle to the Sea Serpent Grotto entrance (E-11). Sneak for the Sahagin. Norg has its own Home Point, so later trips are cheap.\n \n",
                 onmob_target = "Jaucribaix",
                 route_to = "Norg",
+                zone_max_distance = 30,
                 visual_zones = {
                     -- Kazham exit south-west through Yuhtunga to the Sea Serpent Grotto entrance
                     { zone_name = "Yuhtunga Jungle", type = 'arrow', center = { x = -206.8, y = 0.0, z = 435.6 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
@@ -62,16 +78,30 @@ return {
                     { zone_name = "Sea Serpent Grotto", type = 'arrow', center = { x = -61.1, y = -0.5, z = 374.1 }, size = 3, direction = "up", floor_id = 1, colour = "yellow" },
                     { zone_name = "Sea Serpent Grotto", type = 'arrow', center = { x = -61.0, y = 1.3, z = 398.9 }, size = 3, direction = "up", floor_id = 1, colour = "yellow" },
                     { zone_name = "Sea Serpent Grotto", type = 'arrow', center = { x = -60.6, y = -0.6, z = 414.9 }, size = 3, direction = "up", floor_id = 1, colour = "yellow" },
+
+                    -- Talk to Jaucribalx
+                    { zone_name = "Norg", type = 'arrow', center = { x = -18.1, y = 0.3, z = -51.5 }, size = 3, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Norg", type = 'arrow', center = { x = 0.2, y = 0.1, z = -23.2 }, size = 3, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Norg", type = 'arrow', center = { x = 2.6, y = -0.3, z = -0.2 }, size = 3, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Norg", type = 'arrow', center = { x = 25.0, y = -5.8, z = 0.3 }, size = 3, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Norg", type = 'arrow', center = { x = 56.0, y = -6.3, z = -0.3 }, size = 3, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Norg", type = 'arrow', center = { x = 74.9, y = -6.3, z = -12.0 }, size = 3, direction = "right", floor_id = 0, colour = "yellow" },
                 },
                 destination_highlight = { position = "K-8", offsetX = 16, offsetY = 16 },
+                -- 25 branches on the dialogue option and only option 1 begins the quest.
+                -- trigger_on_event_id cannot see the option, so declining still ticks this step -
+                -- same caveat as Paladin's 616/631. Nothing is handed over on accept, so there is
+                -- no key item or item to wait on instead. Untick if you decline.
                 trigger_on_event_id = { 25 },
             },
             {
-                text = "Step 2: Go down the long steps and talk to Aeka (I-8) for the Lump of Oriental Steel.\n \n" ..
-                       "NOTE: If you lose the steel or fail against Forger, Aeka will sell you a replacement for\n" ..
-                       "1x Darksteel Ore.\n \n",
+                text = "Step 3: Down the long steps, talk to Aeka (I-8) for the Lump of Oriental Steel.\n \n" ..
+                       "NOTE: Lose it, or wipe to Forger, and Aeka sells a replacement for 1x Darksteel Ore.\n \n",
                 onmob_target = "Aeka",
+                -- Pure conversation, nothing traded to her.
+                onmob_target_icon = "speech",
                 route_to = "Norg",
+
                 visual_zones = {
                     -- Kazham exit south-west through Yuhtunga to the Sea Serpent Grotto entrance
                     { zone_name = "Yuhtunga Jungle", type = 'arrow', center = { x = -206.8, y = 0.0, z = 435.6 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
@@ -113,16 +143,24 @@ return {
                     { zone_name = "Sea Serpent Grotto", type = 'arrow', center = { x = -61.1, y = -0.5, z = 374.1 }, size = 3, direction = "up", floor_id = 1, colour = "yellow" },
                     { zone_name = "Sea Serpent Grotto", type = 'arrow', center = { x = -61.0, y = 1.3, z = 398.9 }, size = 3, direction = "up", floor_id = 1, colour = "yellow" },
                     { zone_name = "Sea Serpent Grotto", type = 'arrow', center = { x = -60.6, y = -0.6, z = 414.9 }, size = 3, direction = "up", floor_id = 1, colour = "yellow" },
+
+                    -- Talk to Aeka
+                    { zone_name = "Norg", type = 'arrow', center = { x = 88.2, y = -7.1, z = -11.5 }, size = 3, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Norg", type = 'arrow', center = { x = 54.6, y = -6.3, z = -0.0 }, size = 3, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Norg", type = 'arrow', center = { x = 19.1, y = -5.8, z = 0.1 }, size = 3, direction = "left", floor_id = 0, colour = "yellow" },
+
+
                 },
                 destination_highlight = { position = "I-8", offsetX = 16, offsetY = 16 },
                 zone_max_distance = 35,
                 trigger_on_event_id = { 44, 47 },
             },
             {
-                text = "Step 3: Talk to Ranemaud (I-7), just along from Aeka, for the Sacred Sprig.\n \n" ..
-                       "NOTE: If you lose the sprig, Ranemaud will sell you a replacement for 1x Platinum Ore and\n" ..
-                       "2x Gold Ore.\n \n",
+                text = "Step 4: Talk to Ranemaud (I-7), just along from Aeka, for the Sacred Sprig.\n \n" ..
+                       "NOTE: A replacement costs 1x Platinum Ore and 2x Gold Ore.\n \n",
                 onmob_target = "Ranemaud",
+                -- Pure conversation, nothing traded to him.
+                onmob_target_icon = "speech",
                 route_to = "Norg",
                 visual_zones = {
                     -- Kazham exit south-west through Yuhtunga to the Sea Serpent Grotto entrance
@@ -165,74 +203,177 @@ return {
                     { zone_name = "Sea Serpent Grotto", type = 'arrow', center = { x = -61.1, y = -0.5, z = 374.1 }, size = 3, direction = "up", floor_id = 1, colour = "yellow" },
                     { zone_name = "Sea Serpent Grotto", type = 'arrow', center = { x = -61.0, y = 1.3, z = 398.9 }, size = 3, direction = "up", floor_id = 1, colour = "yellow" },
                     { zone_name = "Sea Serpent Grotto", type = 'arrow', center = { x = -60.6, y = -0.6, z = 414.9 }, size = 3, direction = "up", floor_id = 1, colour = "yellow" },
+
+                    -- Talk to Ranemaud
+                    { zone_name = "Norg", type = 'arrow', center = { x = 4.6, y = -0.3, z = -1.7 }, size = 3, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Norg", type = 'arrow', center = { x = 8.5, y = -0.0, z = 14.2 }, size = 3, direction = "ne", floor_id = 0, colour = "yellow" },
                 },
                 destination_highlight = { position = "I-7", offsetX = 16, offsetY = 16 },
                 zone_max_distance = 35,
                 trigger_on_event_id = { 40, 43 },
             },
             {
-                text = "Step 4: In The Sanctuary of Zi'Tah, pop and kill the Guardian Treant, then trade the Sacred\n" ..
-                       "Sprig to the ??? for the Sacred Branch.\n \n" ..
-                       "===== Finding the ??? =====\n" ..
-                       "- At (K-10) there is a pathway leading into an UNMAPPED area. Head straight east to (L-10)\n" ..
-                       "  and you will see a large tree.\n" ..
-                       "- Climb the rocks at the base of the tree to get close enough to the ??? to use it.\n \n" ..
-                       "===== The pop =====\n" ..
-                       "- Trade or use a Hatchet on the ??? to spawn the Guardian Treant. The hatchet is NOT\n" ..
-                       "  consumed, and only one person in a party needs one.\n" ..
-                       "- Kill the Treant, then trade the Sacred Sprig to the ??? to receive the Sacred Branch.\n" ..
-                       "- Everyone in the party can trade a sprig for a branch off a single Treant kill - you do\n" ..
-                       "  not need one NM per person.\n \n" ..
-                       "NOTE: The ??? goes on a 10 minute cooldown after the Treant despawns. If it says a strange\n" ..
-                       "force prevents you, the timer is still running.\n \n" ..
-                       "NOTE: This step and the Konschtat one can be done in either order. If you do Konschtat\n" ..
-                       "first, tick that step off manually.\n \n",
+                text = "Step 5: In The Sanctuary of Zi'Tah, take the path at (K-10) east into the UNMAPPED area to the large tree at (L-10)\n \n" ..
+                       "- Trade the Hatchet to the ??? and kill the Guardian Treant.\n \n" ..
+                       "- Climb the rocks at the base of the tree to get close enough to use the ???. The hatchet is not consumed, and one per party is enough.\n \n",
                 route_to = "The Sanctuary of Zi'Tah",
                 destination_highlight = {
-                    { position = "K-10", offsetX = 16, offsetY = 16, label = "Path", color = "yellow" },
-                    { position = "L-10", offsetX = 16, offsetY = 16, label = "???",  color = "cyan" },
+                    { position = "K-10", offsetX = 16, offsetY = 16},
                 },
-                onmob_target = "zitah-guardian-treant-qm-l10",
+                onmob_target = "sanctuary-of-zitah-guardian-treant-qm-l10",
+                onmob_target_icon = "Hatchet",
                 onmob_enemy = "Guardian Treant",
-                zone_max_distance = 50,
-                items_needed = { "Hatchet" },
-                trigger_on_item_obtain = { "Sacred Branch", "sacred branch" },
+                zone_max_distance = 30,
+                kill_requirement = {
+                    count = 1,
+                    enemies = { "Guardian Treant" },
+                    zone = "The Sanctuary of Zi'Tah",
+                    count_party_kills = true,
+                },
                 visual_zones = {
-                    { zone_name = "The Sanctuary of Zi'Tah", type = 'square', center = { x = 642.0, y = -5.0, z = -150.0 }, size = 2, floor_id = 0, colour = "cyan" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = -452.7, y = 0.6, z = -454.1 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = -421.8, y = -0.8, z = -420.1 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = -400.4, y = 0.0, z = -401.7 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = -368.1, y = 0.3, z = -428.6 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = -340.2, y = -0.4, z = -448.6 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = -303.7, y = 0.7, z = -419.5 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = -279.7, y = -0.0, z = -396.1 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = -243.7, y = 0.1, z = -393.2 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = -211.6, y = 0.9, z = -345.3 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = -180.9, y = 1.0, z = -322.3 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = -144.0, y = 0.8, z = -272.0 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = -114.5, y = 0.1, z = -235.7 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = -95.6, y = 0.9, z = -234.7 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = -93.4, y = 0.3, z = -205.9 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = -77.6, y = 0.9, z = -181.8 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = -59.3, y = -0.0, z = -144.2 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = -32.9, y = 0.7, z = -136.5 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = 11.7, y = 0.0, z = -127.5 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = 32.0, y = 0.3, z = -130.2 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = 42.8, y = 0.1, z = -129.9 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = 61.2, y = -0.7, z = -151.3 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = 97.6, y = 0.9, z = -157.4 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = 117.6, y = 0.0, z = -160.0 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = 144.1, y = 0.3, z = -130.7 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = 152.2, y = 0.2, z = -121.0 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = 173.0, y = 0.4, z = -136.6 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = 203.8, y = 2.4, z = -142.2 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = 229.7, y = 0.3, z = -146.4 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = 254.3, y = 0.6, z = -166.2 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = 265.6, y = 0.7, z = -193.5 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = 277.6, y = 0.2, z = -207.8 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = 282.8, y = 0.3, z = -249.7 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = 314.4, y = 0.1, z = -279.4 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = 360.9, y = -0.0, z = -281.1 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = 406.2, y = 0.1, z = -279.5 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = 417.4, y = 0.8, z = -273.7 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = 433.2, y = 0.4, z = -250.1 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = 434.8, y = 0.2, z = -207.7 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = 453.7, y = 0.6, z = -185.2 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = 511.8, y = 2.8, z = -180.9 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = 549.4, y = 0.8, z = -181.5 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = 593.1, y = 0.2, z = -183.9 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = 621.8, y = -0.1, z = -175.7 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
                 },
             },
             {
-                text = "Step 5: In Konschtat Highlands, trade the Lump of Oriental Steel to the ??? at (D-8) to pop\n" ..
-                       "Forger, then kill it and loot the Lump of Bomb Steel.\n \n" ..
-                       "- The ??? is inside a cave. You must be standing right next to it - stand off and the trade\n" ..
-                       "  is refused with a 'must be closer' message.\n" ..
-                       "- Forger drops exactly one Lump of Bomb Steel.\n \n" ..
-                       "CRITICAL: If you lose the fight the Oriental Steel is gone - you have to go back to Aeka in\n" ..
-                       "Norg with a Darksteel Ore for another one. Bring help if you are close to Lv30.\n \n" ..
-                       "NOTE: The ??? stays visible but will not pop Forger again for 2 minutes after he despawns,\n" ..
-                       "so parties popping him back to back need to wait their turn.\n \n",
+                text = "Step 6: Trade the Sacred Sprig to the same ??? for the Sacred Branch.\n \n" ..
+                       "- Everyone who needs one trades off the single kill, so a party does not need one Treant per person.\n \n",
+                route_to = "The Sanctuary of Zi'Tah",
+                destination_highlight = {
+                    { position = "K-10", offsetX = 16, offsetY = 16},
+                },
+                onmob_target = "sanctuary-of-zitah-guardian-treant-qm-l10",
+                onmob_target_icon = "Sacred Sprig",
+                zone_max_distance = 30,
+                items_needed = { "Sacred Sprig" },
+                trigger_on_item_obtain = { "Sacred Branch" },
+                visual_zones = {
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = -452.7, y = 0.6, z = -454.1 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = -421.8, y = -0.8, z = -420.1 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = -400.4, y = 0.0, z = -401.7 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = -368.1, y = 0.3, z = -428.6 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = -340.2, y = -0.4, z = -448.6 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = -303.7, y = 0.7, z = -419.5 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = -279.7, y = -0.0, z = -396.1 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = -243.7, y = 0.1, z = -393.2 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = -211.6, y = 0.9, z = -345.3 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = -180.9, y = 1.0, z = -322.3 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = -144.0, y = 0.8, z = -272.0 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = -114.5, y = 0.1, z = -235.7 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = -95.6, y = 0.9, z = -234.7 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = -93.4, y = 0.3, z = -205.9 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = -77.6, y = 0.9, z = -181.8 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = -59.3, y = -0.0, z = -144.2 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = -32.9, y = 0.7, z = -136.5 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = 11.7, y = 0.0, z = -127.5 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = 32.0, y = 0.3, z = -130.2 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = 42.8, y = 0.1, z = -129.9 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = 61.2, y = -0.7, z = -151.3 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = 97.6, y = 0.9, z = -157.4 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = 117.6, y = 0.0, z = -160.0 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = 144.1, y = 0.3, z = -130.7 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = 152.2, y = 0.2, z = -121.0 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = 173.0, y = 0.4, z = -136.6 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = 203.8, y = 2.4, z = -142.2 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = 229.7, y = 0.3, z = -146.4 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = 254.3, y = 0.6, z = -166.2 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = 265.6, y = 0.7, z = -193.5 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = 277.6, y = 0.2, z = -207.8 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = 282.8, y = 0.3, z = -249.7 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = 314.4, y = 0.1, z = -279.4 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = 360.9, y = -0.0, z = -281.1 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = 406.2, y = 0.1, z = -279.5 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = 417.4, y = 0.8, z = -273.7 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = 433.2, y = 0.4, z = -250.1 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = 434.8, y = 0.2, z = -207.7 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = 453.7, y = 0.6, z = -185.2 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = 511.8, y = 2.8, z = -180.9 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = 549.4, y = 0.8, z = -181.5 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = 593.1, y = 0.2, z = -183.9 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "The Sanctuary of Zi'Tah", type = 'arrow', center = { x = 621.8, y = -0.1, z = -175.7 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                },
+            },
+            {
+                text = "Step 7: In Konschtat Highlands, trade the Lump of Oriental Steel to the ??? in the cave at (D-8) to pop Forger, then kill it for the Lump of Bomb Steel.\n \n" ..
+                       "- Stand right next to the ??? or the trade is refused with a 'must be closer' message.\n" ..
+                       "- Forger drops exactly one.\n \n" ..
+                       "CRITICAL: Lose the fight and the Oriental Steel is gone - back to Aeka with a Darksteel Ore for another. Bring help if you are near Lv30.\n \n" ..
+                       "NOTE: The ??? stays visible but will not re-pop Forger for 2 minutes after he despawns.\n \n",
                 route_to = "Konschtat Highlands",
                 destination_highlight = { position = "D-8", offsetX = 16, offsetY = 16 },
-                onmob_target = "konschtat-forger-qm-d8",
+                onmob_target = "konschtat-highlands-forger-qm-d8-???",
+                onmob_target_icon = "Oriental Steel",
                 onmob_enemy = "Forger",
-                zone_max_distance = 40,
+                zone_max_distance = 35,
+                items_needed = { "Bomb Steel" },
+                trigger_on_item_obtain = { "Bomb Steel" },
+                -- The drop is the objective, not the kill, so the counter is display_only and the
+                -- step advances on the item. Mirrors step 4, which waits on the Sacred Branch.
                 kill_requirement = {
                     count = 1,
                     enemies = { "Forger" },
                     zone = "Konschtat Highlands",
                     count_party_kills = true,
+                    display_only = true,
                 },
                 visual_zones = {
-                    { zone_name = "Konschtat Highlands", type = 'square', center = { x = -709.0, y = 2.0, z = 102.0 }, size = 2, floor_id = 0, colour = "cyan" },
+                    { zone_name = "Konschtat Highlands", type = 'arrow', center = { x = -509.4, y = 16.3, z = 234.7 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Konschtat Highlands", type = 'arrow', center = { x = -569.1, y = 8.1, z = 239.5 }, size = 4, direction = "sw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Konschtat Highlands", type = 'arrow', center = { x = -615.2, y = 8.2, z = 195.7 }, size = 4, direction = "sw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Konschtat Highlands", type = 'arrow', center = { x = -652.2, y = 7.5, z = 155.2 }, size = 4, direction = "sw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Konschtat Highlands", type = 'arrow', center = { x = -687.1, y = 5.3, z = 114.8 }, size = 4, direction = "sw", floor_id = 0, colour = "yellow" },
                 },
             },
             {
-                text = "Step 6: Return to Norg and trade the Lump of Bomb Steel AND the Sacred Branch to Jaucribaix\n" ..
-                       "(K-8) together.\n \n" ..
-                       "CRITICAL: Both items go in the SAME trade window. Trading them one at a time does nothing.\n \n" ..
+                text = "Step 8: Trade the Lump of Bomb Steel AND the Sacred Branch to Jaucribaix in Norg (K-8).\n \n" ..
+                       "CRITICAL: Both items go in the SAME trade window. One at a time does nothing.\n \n" ..
                        "- He tells you the blade will be ready in 3 Vana'diel days.\n \n",
                 onmob_target = "Jaucribaix",
+                -- Both trade items over his head, side by side, so the pair is visible at a glance.
+                onmob_target_icon = { "Bomb Steel", "Sacred Branch" },
                 route_to = "Norg",
+                zone_max_distance = 25,
                 visual_zones = {
                     -- Kazham exit south-west through Yuhtunga to the Sea Serpent Grotto entrance
                     { zone_name = "Yuhtunga Jungle", type = 'arrow', center = { x = -206.8, y = 0.0, z = 435.6 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
@@ -274,21 +415,28 @@ return {
                     { zone_name = "Sea Serpent Grotto", type = 'arrow', center = { x = -61.1, y = -0.5, z = 374.1 }, size = 3, direction = "up", floor_id = 1, colour = "yellow" },
                     { zone_name = "Sea Serpent Grotto", type = 'arrow', center = { x = -61.0, y = 1.3, z = 398.9 }, size = 3, direction = "up", floor_id = 1, colour = "yellow" },
                     { zone_name = "Sea Serpent Grotto", type = 'arrow', center = { x = -60.6, y = -0.6, z = 414.9 }, size = 3, direction = "up", floor_id = 1, colour = "yellow" },
+
+                    -- Talk to Jaucribalx
+                    { zone_name = "Norg", type = 'arrow', center = { x = -18.1, y = 0.3, z = -51.5 }, size = 3, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Norg", type = 'arrow', center = { x = 0.2, y = 0.1, z = -23.2 }, size = 3, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Norg", type = 'arrow', center = { x = 2.6, y = -0.3, z = -0.2 }, size = 3, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Norg", type = 'arrow', center = { x = 25.0, y = -5.8, z = 0.3 }, size = 3, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Norg", type = 'arrow', center = { x = 56.0, y = -6.3, z = -0.3 }, size = 3, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Norg", type = 'arrow', center = { x = 74.9, y = -6.3, z = -12.0 }, size = 3, direction = "right", floor_id = 0, colour = "yellow" },
                 },
                 destination_highlight = { position = "K-8", offsetX = 16, offsetY = 16 },
                 trigger_on_event_id = { 27 },
             },
             {
-                text = "Step 7: Wait 3 Vana'diel days, then speak to Jaucribaix (K-8) again for the cutscene where\n" ..
-                       "Gilgamesh hands you the Mumeito and unlocks Samurai.\n \n" ..
-                       "- 3 Vana'diel days is 2 hours 53 minutes of real time. Talking to him early just gives the\n" ..
-                       "  'not ready' dialogue with the hours remaining - it costs nothing to check.\n \n" ..
-                       "TIP: Park it here and go level. Norg's Home Point makes the return trip trivial.\n \n" ..
-                       "CRITICAL: Keep the Mumeito. It is needed for the Samurai AF Great Katana quest 'The Sacred\n" ..
-                       "Katana' - if you drop it, Ranemaud charges 30,000 gil for a replacement, and only after you\n" ..
-                       "have already accepted that quest.\n \n",
+                text = "Step 9: Wait 3 Vana'diel days (2h53m real), then talk to Jaucribaix (K-8) for the cutscene where Gilgamesh hands over the Mumeito and unlocks Samurai.\n \n" ..
+                       "- Talking early just gives the 'not ready' line with the hours left, so checking is free.\n" ..
+                       "  Park it and go level - Norg's Home Point makes the return trivial.\n \n" ..
+                       "CRITICAL: Keep the Mumeito. The AF quest 'The Sacred Katana' consumes it, and a replacement costs Ranemaud 30,000 gil - only obtainable after accepting that quest.\n \n",
                 onmob_target = "Jaucribaix",
+                -- Collecting the reward, so the hand-in mark rather than the quest-start "!".
+                onmob_target_icon = "?",
                 route_to = "Norg",
+                zone_max_distance = 25,
                 visual_zones = {
                     -- Kazham exit south-west through Yuhtunga to the Sea Serpent Grotto entrance
                     { zone_name = "Yuhtunga Jungle", type = 'arrow', center = { x = -206.8, y = 0.0, z = 435.6 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
@@ -330,17 +478,30 @@ return {
                     { zone_name = "Sea Serpent Grotto", type = 'arrow', center = { x = -61.1, y = -0.5, z = 374.1 }, size = 3, direction = "up", floor_id = 1, colour = "yellow" },
                     { zone_name = "Sea Serpent Grotto", type = 'arrow', center = { x = -61.0, y = 1.3, z = 398.9 }, size = 3, direction = "up", floor_id = 1, colour = "yellow" },
                     { zone_name = "Sea Serpent Grotto", type = 'arrow', center = { x = -60.6, y = -0.6, z = 414.9 }, size = 3, direction = "up", floor_id = 1, colour = "yellow" },
+
+                    -- Talk to Jaucribalx
+                    { zone_name = "Norg", type = 'arrow', center = { x = -18.1, y = 0.3, z = -51.5 }, size = 3, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Norg", type = 'arrow', center = { x = 0.2, y = 0.1, z = -23.2 }, size = 3, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Norg", type = 'arrow', center = { x = 2.6, y = -0.3, z = -0.2 }, size = 3, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Norg", type = 'arrow', center = { x = 25.0, y = -5.8, z = 0.3 }, size = 3, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Norg", type = 'arrow', center = { x = 56.0, y = -6.3, z = -0.3 }, size = 3, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Norg", type = 'arrow', center = { x = 74.9, y = -6.3, z = -12.0 }, size = 3, direction = "right", floor_id = 0, colour = "yellow" },
                 },
                 destination_highlight = { position = "K-8", offsetX = 16, offsetY = 16 },
                 trigger_on_event_id = { 29 },
             },
         },
         reward = {
-            text = "Unlocks the Samurai job!\n \n" ..
-                   "Mumeito (Lv1 Great Katana - keep it for the AF quest 'The Sacred Katana')\n" ..
-                   "Title: Bushido Blade\n" ..
-                   "Job gesture: Samurai\n" ..
-                   "Norg fame +20\n \n",
+            text = "Unlocks the Samurai job!\n" ..
+                   "Title: Bushido Blade\n",
+            items = {
+                {
+                    name  = "Mumeito",
+                    type  = "Great Katana",
+                    races = "All Races",
+                    note  = "Keep it - the AF quest 'The Sacred Katana' consumes this one",
+                },
+            },
         },
     },
 }

@@ -442,7 +442,7 @@ return {
     ["Waughroon Shrine"] = {
     },
     ["Gusgen Mines"] = {
-        {zone = "Konschtat Highlands", exit = "D-6"}
+        {zone = "Konschtat Highlands", exit = "H-10"}
     },
     ["Beadeaux"] = {
         {zone = "Pashhow Marshlands", exit = "E-7"}

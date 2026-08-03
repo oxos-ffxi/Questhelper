@@ -30,6 +30,16 @@ local D3DX_DEFAULT     = 0xFFFFFFFF
 local D3DFMT_A8R8G8B8  = 21
 local D3DPOOL_MANAGED  = 1
 
+-- D3DX's BMP loader treats a 32-bit BMP as XRGB and throws the alpha channel away, so an icon
+-- arrives fully opaque and its background renders as a black square. Colour-keying opaque black
+-- back out is the fix: D3DX turns every matching pixel transparent as it builds the texture.
+--
+-- The cost is that it keys on colour, not on position - any PURE black pixel inside the artwork
+-- goes transparent too. Most FFXI icons outline in near-black rather than #000000 so they survive,
+-- but an icon with true-black detail will show holes. Set this to 0 to disable keying and get the
+-- black square back.
+local ICON_COLOR_KEY   = 0xFF000000
+
 -- name (lowercased) -> item table, or false for "looked and did not find"
 local cache = {}
 
@@ -129,10 +139,64 @@ local function decodeJobs(mask)
     return table.concat(out, ' ')
 end
 
+--- The item's own help text, split into lines, or nil. This is where the real stat list lives
+--- ("Ranged Accuracy +5") - no integer field on the record exposes it, and Damage/Delay only
+--- ever covers weapons, so without this every piece of non-weapon gear shows a blank Stat row.
+--- The trailing "Lv.14 RNG" line is dropped because level and jobs have their own rows.
+-- DAT text is Shift-JIS; ImGui wants UTF-8. The 0x81 lead byte is the full-width punctuation
+-- block, and stat ranges use the full-width tilde (0x81 0x60) - which renders as "?`" because
+-- 0x81 is invalid UTF-8 and 0x60 is literally a backtick. Keyed on the TRAIL byte: an unmapped
+-- one returns nil, so gsub leaves those two bytes untouched rather than eating them.
+local SJIS_TRAIL = {
+    [string.char(96)] = '~',   -- full-width tilde, "STR+2~5"
+    [string.char(91)] = '-',   -- long vowel mark
+    [string.char(65)] = ',',
+    [string.char(66)] = '.',
+    [string.char(72)] = '?',
+    [string.char(73)] = '!',
+    [string.char(64)] = ' ',   -- full-width space
+}
+
+local function rawDescription(item)
+    local ok, raw = pcall(function() return item.Description[LANGUAGE] end)
+    if not ok or type(raw) ~= 'string' or raw == '' then return nil end
+
+    return (raw:gsub(string.char(129) .. '(.)', function(trail)
+        return SJIS_TRAIL[trail]
+    end))
+end
+
+--- The unparsed description, for /qh_item. Use this to see what the game actually holds before
+--- deciding whether a reward still needs a hand-authored `stats`.
+function item_info.getRawDescription(name)
+    local item = item_info.getByName(name)
+    return item and rawDescription(item) or nil
+end
+
+local function descriptionLines(item)
+    local raw = rawDescription(item)
+    if not raw then return nil end
+
+    local out = {}
+    for line in raw:gsub('\r\n', '\n'):gmatch('[^\n]+') do
+        local trimmed = line:gsub('^%s+', ''):gsub('%s+$', '')
+        if trimmed ~= '' and not trimmed:match('^<?%s*[Ll][Vv]%.?%s*%d+') then
+            table.insert(out, trimmed)
+        end
+    end
+
+    if #out == 0 then return nil end
+    return out
+end
+
 --- Display-ready fields pulled from the game, or nil when the item is not found.
 --- Only the plain integers are trusted here: Level, Damage and Delay are read straight off
 --- the record. Jobs goes through the mask table above; Races is deliberately NOT decoded,
 --- because its bit layout was never confirmed and a wrong race line is worse than none.
+---
+--- `stats` is gated on the job mask decoding to something, i.e. on the item being equipment.
+--- Furnishings and materials carry flavour prose in the same field ("Steam Clock"), and that
+--- would otherwise render as a stat line.
 function item_info.getStats(name)
     local item = item_info.getByName(name)
     if not item then return nil end
@@ -143,12 +207,15 @@ function item_info.getStats(name)
         return nil
     end
 
+    local jobs = decodeJobs(select(2, pcall(function() return item.Jobs end)))
+
     return {
         id     = num('Id'),
         level  = num('Level'),
         damage = num('Damage'),
         delay  = num('Delay'),
-        jobs   = decodeJobs(select(2, pcall(function() return item.Jobs end))),
+        jobs   = jobs,
+        stats  = jobs and descriptionLines(item) or nil,
     }
 end
 
@@ -161,9 +228,9 @@ end
 local icon_cache = {}
 local device = nil
 
---- Texture id for an item's in-game icon, ready for imgui.Image, or nil.
---- Same number form ui_images uses: a uintptr_t cast of the texture pointer.
-function item_info.getIconTextureId(name)
+--- Loads and caches an item's icon, returning the cache entry or nil.
+--- { tex = IDirect3DTexture8*, base = IDirect3DBaseTexture8*, id = <number for imgui> }
+local function loadIcon(name)
     local item = item_info.getByName(name)
     if not item then return nil end
 
@@ -172,7 +239,7 @@ function item_info.getIconTextureId(name)
 
     local hit = icon_cache[id]
     if hit ~= nil then
-        return hit and hit.id or nil
+        return hit or nil
     end
 
     local ok = pcall(function()
@@ -191,12 +258,19 @@ function item_info.getIconTextureId(name)
             D3DFMT_A8R8G8B8,
             D3DPOOL_MANAGED,
             D3DX_DEFAULT, D3DX_DEFAULT,
-            0, nil, nil, out)
+            ICON_COLOR_KEY, nil, nil, out)
 
         if hr ~= 0 or out[0] == nil then error('D3DX returned ' .. tostring(hr)) end
 
         local tex = d3d.gc_safe_release(out[0])
-        icon_cache[id] = { tex = tex, id = tonumber(ffi.cast('uintptr_t', tex)) }
+        icon_cache[id] = {
+            tex = tex,
+            -- SetTexture wants the BASE type, same as util/helpers.lua getTexture hands back.
+            -- This cast does not carry the gc anchor, so it stays valid only while .tex is
+            -- held - which is forever, see the note above icon_cache.
+            base = ffi.cast('IDirect3DBaseTexture8*', tex),
+            id = tonumber(ffi.cast('uintptr_t', tex)),
+        }
     end)
 
     if not ok then
@@ -204,7 +278,21 @@ function item_info.getIconTextureId(name)
         return nil
     end
 
-    return icon_cache[id].id
+    return icon_cache[id]
+end
+
+--- Texture id for an item's in-game icon, ready for imgui.Image, or nil.
+--- Same number form ui_images uses: a uintptr_t cast of the texture pointer.
+function item_info.getIconTextureId(name)
+    local hit = loadIcon(name)
+    return hit and hit.id or nil
+end
+
+--- The same icon as a D3D texture for d3d8dev:SetTexture, so the 3D world marker can use an
+--- item's icon in place of the default "!" quest icon. nil when the item is not found.
+function item_info.getIconTexture(name)
+    local hit = loadIcon(name)
+    return hit and hit.base or nil
 end
 
 --- Clears the caches. For /qh debugging after a DAT or resource swap.

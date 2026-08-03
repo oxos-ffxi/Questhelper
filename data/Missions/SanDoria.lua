@@ -2548,8 +2548,8 @@ return {
                         zone_name = "Beadeaux",
                         floor_id = 1,
                         highlights = {
-                             { position = "I-9", offsetX = 16, offsetY = 16, label = "D", color = "yellow" },
-                             { position = "F-6", offsetX = 16, offsetY = 16, label = "G", color = "cyan" },
+                             { position = "I-9", offsetX = 16, offsetY = 16, label = "D" },
+                             { position = "F-6", offsetX = 16, offsetY = 16, label = "G" },
                         },
                     },
                 },
@@ -5536,8 +5536,8 @@ return {
                         zone_name = "The Eldieme Necropolis",
                         floor_id = 15,
                         highlights = {
-                            { position = "H-8", offsetX = 16, offsetY = 16,label = "1", color = "yellow" },
-                            { position = "G-9", offsetX = 16, offsetY = 16,label = "2", color = "cyan" },
+                            { position = "H-8", offsetX = 16, offsetY = 16,label = "1" },
+                            { position = "G-9", offsetX = 16, offsetY = 16,label = "2" },
                         },
                     },
                 },

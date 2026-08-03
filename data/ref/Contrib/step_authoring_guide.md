@@ -149,6 +149,63 @@ trigger_on_event_id = {32001},             -- BCNM win
 | In-world directional arrows through a dungeon/zone | `visual_zones = {...}` + `zone_max_distance` | Progressive arrows; markers only draw within `zone_max_distance`. |
 | Highlight a roaming enemy to kill | `onmob_enemy = {"Mob"}` (`onmob_enemy_colour`, `onmob_enemy_size`) | No coords needed — radar-highlights the mob live. |
 | Highlight a clickable NPC/object | `onmob_target = {"Name"}` | Display or internal names both work (`"Door: Vestal-chamber"`, `"qm_windy_9_2"`). |
+| Swap the marker icon over those targets | `onmob_target_icon = "Hatchet"` | Names an ITEM; its in-game icon replaces the default "!". See below. |
+
+### `onmob_target_icon` - the marker floating over a target
+
+By default every `onmob_target` draws the "!" from `assets/quest_icon.png`. This field swaps it,
+and takes either a **named marker** or an **item name**.
+
+**Named markers** borrow WoW's vocabulary, so the shape tells the player what kind of interaction
+this is before they read a word:
+
+| Name | Alias | Asset | Means |
+|---|---|---|---|
+| `"!"` | `"start"` | `quest_icon.png` | Accept / begin a quest. **The default**, so a quest-start step need not ask for it. |
+| `"?"` | `"handin"` | `quest_question.png` | Hand in, collect, complete. |
+| `"speech"` | `"talk"` | `speech_bubble.png` | Just talk to them; nothing changes hands. |
+
+**Item names** draw that item's own 32x32 in-game icon, pulled from the game's resources by
+`item_info.getIconTexture` - the same lookup the reward panel uses, so no asset is added. Use it
+whenever something is being traded, so the marker shows *what* to hand over:
+
+```lua
+onmob_target = "Toji Mumosulah",
+onmob_target_icon = "Hatchet",     -- the NPC who sells it gets a hatchet over his head
+```
+
+Named markers are checked first, then item names. No FFXI item is called `!`, `?` or `speech`, so
+the two namespaces cannot collide. `data/Jobs/Samurai.lua` uses the whole vocabulary end to end if
+you want a worked example - bubbles on the two pupils who only talk, item icons on all four
+trades, `?` on the final collect.
+
+A **list** draws several icons side by side, centred on the target - for a step that trades more
+than one thing:
+
+```lua
+onmob_target_icon = { "Bomb Steel", "Sacred Branch" },   -- both items over the NPC's head
+```
+
+Any number works; they lay out horizontally at 32px with a 4px gap, so keep it to two or three
+before it starts covering the NPC.
+
+It applies to **every** target the step draws, not one of them - the icons are resolved once for
+the whole `drawBeamsToTargets` pass. Per-target icons would need them threaded into
+`targetsToDraw`, which they are not.
+
+Each name must match an item exactly (case-insensitive, no substring), same rule as `reward.items`.
+Names that do not resolve are **dropped from the list**, and a step whose names all fail falls back
+to the default "!" - so a typo costs you that one icon, never the marker. The tell is an icon
+silently missing from a pair: check the exact item name with `/qh_item <name>`, remembering that
+`Bomb Steel` and `lump of bomb steel` are the item's Name and its log name respectively, and only
+the former resolves here.
+
+**This does not overload `onmob_target`.** That field is already a *list of target names*
+(`{"pool-qm2", "dew-qm3"}`), so a second string in it means another target, not an icon.
+
+Only item icons work today. Speech bubbles, fight icons and similar would each need a PNG in
+`assets/` plus a name-to-texture table - the draw path itself takes any texture, so that is the
+easy half.
 
 ### `route_choices` - let the player pick the destination
 When a step is valid in many zones (the SMN weather hunt has 25), drawing every route is
@@ -335,9 +392,19 @@ Fields: `name` (required), `type`, `races`, `stats` (a list of strings), `level`
 
 **Only `name` is really required.** `modules/item_info.lua` looks the name up in the game's own
 resources - exact, case-insensitive, so `Spatha` will not match `Spatha +1` - and fills in
-`level`, `jobs`, and a `DMG: n, Delay: n` stat line for weapons. Anything the data file states
-wins; the game only fills gaps. So write `stats` by hand for gear whose useful line is not
-DMG/Delay, and leave it off for weapons.
+`level`, `jobs` and `stats`. Anything the data file states wins; the game only fills gaps.
+
+`stats` comes from the item's own **description** field, the same text the in-game help window
+shows, so `Ranged Accuracy +5 Ranged Attack +5` arrives without anyone typing it. The trailing
+`Lv.14 RNG` line is stripped, since level and jobs already have their own rows. `DMG: n, Delay: n`
+built from the integer fields remains as a fallback for records whose description does not come
+through.
+
+**Do not hand-write `stats` just to fill the row** - if it is blank, the lookup failed and that is
+the bug to chase. Author it only to say something the game does not, e.g. narrowing a range or
+adding a caveat. Description reading is gated on the item decoding a job mask, i.e. on it being
+equipment: furnishings and materials keep flavour prose in that same field, and `Steam Clock`
+would otherwise render a paragraph of it as its stat line.
 
 Not pulled from the game: `type`, `races` and `note`. `races` is deliberate - the race bitmask
 layout was never confirmed, and a wrong race line is worse than none. The job list IS decoded

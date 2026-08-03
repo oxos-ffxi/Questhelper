@@ -2721,8 +2721,8 @@ return {
                         zone_name = "Beadeaux",
                         floor_id = 1,
                         highlights = {
-                             { position = "I-9", offsetX = 16, offsetY = 16, label = "D", color = "yellow" },
-                             { position = "F-6", offsetX = 16, offsetY = 16, label = "G", color = "cyan" },
+                             { position = "I-9", offsetX = 16, offsetY = 16, label = "D" },
+                             { position = "F-6", offsetX = 16, offsetY = 16, label = "G" },
                         },
                     },
                 },
@@ -4466,8 +4466,8 @@ s
                         zone_name = "Castle Oztroja",
                         floor_id = 1,
                         highlights = {
-                            { position = "H-9", offsetX = 16, offsetY = 16, label = "P1", color = "Cyan" },
-                            { position = "J-8", offsetX = 16, offsetY = 16, color = "Yellow" },
+                            { position = "H-9", offsetX = 16, offsetY = 16, label = "P1" },
+                            { position = "J-8", offsetX = 16, offsetY = 16 },
                         },
                     },
                     {
@@ -4477,8 +4477,8 @@ s
                         zone_name = "Castle Oztroja",
                         floor_id = 2,
                         highlights = {
-                            { position = "I-8", offsetX = 16, offsetY = 16, label = "P3", color = "Cyan" },
-                            { position = "G-7", offsetX = 16, offsetY = 16, label = "P2", color = "Cyan" },
+                            { position = "I-8", offsetX = 16, offsetY = 16, label = "P3" },
+                            { position = "G-7", offsetX = 16, offsetY = 16, label = "P2" },
                         },
                     },
                     {
@@ -4528,7 +4528,7 @@ s
                         zone_name = "Castle Oztroja",
                         floor_id = 15,
                         highlights = {
-                            { position = "H-9", offsetX = 16, offsetY = 16, label = "P2", color = "Cyan" },
+                            { position = "H-9", offsetX = 16, offsetY = 16, label = "P2" },
                             { position = "G-5", offsetX = 16, offsetY = 16 },
                         },
                     },
