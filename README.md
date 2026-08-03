@@ -9,9 +9,20 @@ Guides are written in a readable Lua format, so anyone can extend or add their o
 
 ## Showcase
 
+**Create guides for quests by drawing arrows/squares to help navigate the player**
+<img width="1595" height="900" alt="image" src="https://github.com/user-attachments/assets/1a822ef4-e34c-47fb-a61a-713a6b3335bc" />
+
+**Routing and Quest markers, with items and keyitem tracking**
+<img width="1452" height="1022" alt="image" src="https://github.com/user-attachments/assets/c6869bbe-c0e9-424a-9eac-60ce9fc4e6df" />
+<img width="1635" height="722" alt="image" src="https://github.com/user-attachments/assets/d9aa6156-f5ab-493b-a5f2-abda92bfacbe" />
 
 
+** Some help with the moutain... **
 https://github.com/user-attachments/assets/a28e2438-a4f6-4489-b669-f720379a4330
+
+
+** Syncs to your characters quest/mission progress automagically **
+<img width="982" height="971" alt="image" src="https://github.com/user-attachments/assets/a5f7ca87-79be-4871-ba0b-e5a2548b0810" />
 
 
 
