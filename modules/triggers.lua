@@ -587,6 +587,224 @@ function triggers.handleDailyPasswordText(e, incoming_text, currentTopCategory, 
     end
 end
 
+-- Raw client weather id -> the element bucket a `weather_watch` step counts it as.
+-- Ids come from utils.getWeather() and match LSB's xi.weather enum exactly.
+--
+-- Deliberate omissions: CLOUDS(2) and FOG(3) are NOT elemental and the server's
+-- validWeatherTable excludes them, and so are LIGHT(16/17) and DARK(18/19) - Auroras and
+-- Gloom are not among the ruby's colours. Weather the quest ignores must stay unmapped
+-- here, or the addon would tick a slot the server never credited.
+--
+-- SUNSHINE(1) folds into 'clear' because the server does the same
+-- (`if weather == xi.weather.SUNSHINE then weather = xi.weather.NONE end`).
+-- Keys deliberately match LSB's element names. Note 'none' rather than 'clear': these keys
+-- get used as table indexes, and 'clear' collides with a T{} helper method name (see
+-- quest_state.hasWeatherSeen). Avoid key names that read like table operations.
+local WEATHER_ELEMENT = {
+    [0]  = 'none',    [1]  = 'none',
+    [4]  = 'fire',    [5]  = 'fire',
+    [6]  = 'water',   [7]  = 'water',
+    [8]  = 'earth',   [9]  = 'earth',
+    [10] = 'wind',    [11] = 'wind',
+    [12] = 'ice',     [13] = 'ice',
+    [14] = 'thunder', [15] = 'thunder',
+}
+
+-- HANDLE: weather_watch (e.g. SMN "I Can Hear a Rainbow").
+--
+-- Banks which elemental weathers the player has stood in, so the UI can show a
+-- "Fire - DONE" checklist for a quest whose only progress signal is a cutscene.
+--
+-- Called ON ZONE CHANGE ONLY, and that is not an optimisation - it mirrors the server.
+-- Credit is granted in the zone's onZoneIn handler, so weather that rolls over while the
+-- player is standing still does NOT count. Polling continuously would show colours as
+-- banked that the server never gave them.
+--
+-- `bypass_gates` is the /qh_weather test path: it skips the requires_item and
+-- mission-complete guards so the tracker can be exercised without owning the quest item.
+-- Never pass it from the normal zone-change path.
+--
+-- Returns true if a new element was banked (caller may announce it).
+function triggers.handleWeatherCapture(currentTopCategory, currentSubfile, current_mission, quest_data, quest_state, playerZoneId, bypass_gates)
+    if not currentTopCategory or not currentSubfile or not current_mission then return false end
+
+    local missionData = quest_data[currentTopCategory] and quest_data[currentTopCategory][currentSubfile]
+        and quest_data[currentTopCategory][currentSubfile][current_mission]
+    if not missionData or not missionData.steps then return false end
+
+    local step_idx  = quest_state.getCurrentStep(currentTopCategory, currentSubfile, current_mission, quest_data)
+    local step_data = missionData.steps[step_idx]
+    if type(step_data) ~= 'table' or not step_data.weather_watch then return false end
+
+    local ww = step_data.weather_watch
+    if type(ww.slots) ~= 'table' then return false end
+
+    -- The mission being SELECTED in the UI is not the same as the player being ON it:
+    -- current_mission is just whatever they have open. Two guards keep browsing from
+    -- banking colours.
+
+    -- 1. Nothing to track on a quest already finished.
+    if not bypass_gates and quest_state.isMissionComplete and
+       quest_state.isMissionComplete(currentTopCategory, currentSubfile, current_mission, quest_data)
+    then
+        return false
+    end
+
+    -- 2. Mirror the server's own precondition. "I Can Hear a Rainbow" only credits weather
+    --    while the player is holding the Carbuncle's Ruby (its section check is
+    --    hasItem(CARBUNCLES_RUBY)), so without the item the server gives nothing and
+    --    neither do we - no matter which step the UI thinks is current.
+    if ww.requires_item and not bypass_gates then
+        local inv_ok, inv = pcall(require, 'modules.inventory')
+        if not inv_ok then return false end
+        -- INVENTORY ONLY (second arg false). The server's own check is
+        -- hasItem(CARBUNCLES_RUBY, xi.inventoryLocation.INVENTORY) - a ruby sitting in the
+        -- Mog Satchel does NOT credit weather, whatever the wikis say. Searching all
+        -- storages here would report the tracker active while the server ignored the player.
+        local has = inv.hasItem(ww.requires_item, false)
+        if not has then
+            debug_print(string.format("\30\105[QH Debug]\30\01 Weather skipped: %s not held",
+                tostring(ww.requires_item)))
+            return false
+        end
+    end
+
+    -- Only certain zones credit the player. Skip silently anywhere else.
+    --
+    -- Fails CLOSED on purpose: if the zone list is declared but we cannot work out where
+    -- the player actually is, bank nothing. The earlier version skipped the whole check
+    -- when playerZoneId was missing, which credited weather anywhere.
+    if type(ww.zones) == 'table' then
+        if not playerZoneId or playerZoneId == 0 then return false end
+
+        local zone_ok, zone_db = pcall(require, 'data.zones')
+        if not zone_ok then return false end
+
+        local matched = false
+        for _, zname in ipairs(ww.zones) do
+            if zone_db[zname] == playerZoneId then matched = true break end
+        end
+        if not matched then return false end
+    end
+
+    local utils_ok, utils_mod = pcall(require, 'modules.utils')
+    if not utils_ok or not utils_mod.getWeather then return false end
+
+    -- nil means the read could not be trusted - NOT clear skies. See utils.getWeather.
+    local weather_name, weather_id = utils_mod.getWeather()
+    if not weather_id then
+        debug_print("\30\105[QH Debug]\30\01 Weather read unavailable, nothing banked")
+        return false
+    end
+
+    local key = WEATHER_ELEMENT[weather_id]
+    if not key then
+        debug_print(string.format("\30\105[QH Debug]\30\01 Weather %s (id %d) is not one of the ruby's colours",
+            tostring(weather_name), weather_id))
+        return false
+    end
+
+    -- The element must be one this step actually asks for
+    local wanted, total = false, 0
+    for _, slot in ipairs(ww.slots) do
+        total = total + 1
+        if slot.key == key then wanted = true end
+    end
+    if not wanted then return false end
+
+    if not quest_state.setWeatherSeen(currentTopCategory, currentSubfile, current_mission, step_idx, key) then
+        return false  -- already banked, stay quiet
+    end
+
+    local count = 0
+    for _, slot in ipairs(ww.slots) do
+        if quest_state.hasWeatherSeen(currentTopCategory, currentSubfile, current_mission, step_idx, slot.key) then
+            count = count + 1
+        end
+    end
+
+    print(string.format("\30\106[QH]\30\01 Weather captured: %s (%d/%d)", tostring(weather_name), count, total))
+
+    if count >= total then
+        if not ww.display_only then
+            quest_state.setStepState(currentTopCategory, currentSubfile, current_mission, step_idx, true, nil)
+        end
+        print(string.format("\30\106[QH]\30\01 All %d colours shown to the ruby!", total))
+    end
+
+    return true
+end
+
+-- HANDLE: event_choices (e.g. Genkai 4 "Riding on the Clouds").
+--
+-- Some quests have the SERVER pick objectives at random and tell the player in plain
+-- dialogue. This watches for the distinctive `match` fragment of each candidate in
+-- data/clue_tables.lua and records which one was named.
+--
+-- Deliberately MISSION-scoped, not step-scoped like handleDailyPasswordText: the NPC
+-- will re-read the hints at any point in the quest (Maat's event 89), so a player who
+-- is already on step 3 and walks back to re-hear them must still be able to capture.
+-- We therefore scan every step of the current mission for an event_choices block.
+--
+-- One dialogue line can only name one candidate, but a single text_in event may carry
+-- several, so this does NOT early-out on the first hit.
+function triggers.handleClueText(e, incoming_text, currentTopCategory, currentSubfile, current_mission, quest_data, quest_state)
+    if not currentTopCategory or not currentSubfile or not current_mission then return end
+    if ignored_chat_modes[e.mode] then return end  -- ignore player chat
+    if not incoming_text or incoming_text == '' then return end
+
+    local missionData = quest_data[currentTopCategory] and quest_data[currentTopCategory][currentSubfile]
+        and quest_data[currentTopCategory][currentSubfile][current_mission]
+    if not missionData or not missionData.steps then return end
+
+    -- Find the event_choices block anywhere in this mission (see MISSION-scoped note).
+    local ec
+    for _, step_data in ipairs(missionData.steps) do
+        if type(step_data) == 'table' and step_data.event_choices then
+            ec = step_data.event_choices
+            break
+        end
+    end
+    if not ec or not ec.table or not ec.slots then return end
+
+    local ok, clue_tables = pcall(require, 'data.clue_tables')
+    if not ok or type(clue_tables) ~= 'table' then return end
+
+    local tbl = clue_tables[ec.table]
+    if type(tbl) ~= 'table' then
+        debug_print(string.format('[QuestHelper] event_choices: no clue table named %q', tostring(ec.table)))
+        return
+    end
+
+    -- Case-INSENSITIVE compare. Confirmed necessary in-game: Maat says "rolanberry
+    -- souvenirs" in lower case where the wiki (and this table) capitalise Rolanberry.
+    -- Same approach the daily-password handler uses.
+    local lower_text = incoming_text:lower()
+
+    debug_print(string.format('[QuestHelper] clue scan: %s', incoming_text))
+
+    for _, slot in ipairs(ec.slots) do
+        local candidates = tbl[slot]
+        if type(candidates) == 'table' then
+            -- 0-based and sparse by design - pairs(), never ipairs().
+            for index, entry in pairs(candidates) do
+                if type(entry) == 'table' and entry.match
+                   and lower_text:find(entry.match:lower(), 1, true) then
+
+                    local existing = quest_state.getQuestChoice(currentTopCategory, currentSubfile, current_mission, slot)
+                    if not existing or existing.index ~= index then
+                        quest_state.setQuestChoice(currentTopCategory, currentSubfile, current_mission, slot, index, entry)
+                        print(string.format('\30\106[QH]\30\01 Clue matched (%s): %s - %s%s',
+                            tostring(slot), tostring(entry.npc), tostring(entry.zone),
+                            entry.pos and (' (' .. entry.pos .. ')') or ''))
+                    end
+                    break  -- one candidate per slot
+                end
+            end
+        end
+    end
+end
+
 -- HANDLE: fame (reputation) checker dialogue.
 -- The client is never sent a numeric fame value, so we recover it by fingerprinting
 -- the checker NPC's reply (see modules/fame.lua). Unlike the other text handlers this

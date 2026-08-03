@@ -3491,7 +3491,7 @@ return {
             },
             {
                 text = "Step 21: [Ulmia] Travel to Uleguerand Range and fall through the hole at (J-9) - the north-westernmost hole drops you nearest to Bearclaw Pinnacle.\n \n" ..
-                       "Note: PLEASE READ! Kill 'Cwn Annwn' and 'Uleguerand Tiger' for Snow Lily's, it's best to grab 4 PER PERSON for upcoming missions.  MAKE SURE YOU GET 4 or have GIL ready!! \n \n",
+                       "Note: PLEASE READ! Kill 'Cwn Annwn' and 'Uleguerand Tiger' for Snow Lily's, it's best to grab 4 PER PERSON for upcoming missions.  MAKE SURE YOU GET 4 or have GIL ready!! \n \n" ..
                        "Snow Lily's can also be purchased off the Auction House under: Materials -> Alchemy \n \n" ..
                        "Examine the ??? to enter battlefield 'Flames for the Dead'.\n \n" ..
                        "Buffs wear on entry. 30 minute limit. 1000 EXP on win.\n \n" ..
@@ -5939,8 +5939,6 @@ return {
                     name = "Rajas Ring",
                     type = "Ring",
                     races = "All Races",
-                    stats = { "STR+2~5", "DEX+2~5", "Store TP+5", "Subtle Blow+5" },
-                    level = "30",
                     jobs = "All Jobs",
                     note = "Choose this or Sattva/Tamas Ring",
                 },
@@ -5948,8 +5946,6 @@ return {
                     name = "Sattva Ring",
                     type = "Ring",
                     races = "All Races",
-                    stats = { "HP+15~30", "VIT+2~5", "AGI+2~5", "Enmity+3" },
-                    level = "30",
                     jobs = "All Jobs",
                     note = "Choose this or Rajas/Tamas Ring",
                 },
@@ -5957,8 +5953,6 @@ return {
                     name = "Tamas Ring",
                     type = "Ring",
                     races = "All Races",
-                    stats = { "MP+15~30", "INT+2~5", "MND+2~5", "Enmity-3" },
-                    level = "30",
                     jobs = "All Jobs",
                     note = "Choose this or Rajas/Sattva Ring",
                 },

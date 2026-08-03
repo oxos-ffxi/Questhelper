@@ -36,12 +36,33 @@ return {
         floor_id = 0,
         max_distance = 35,
     },
+    ["Babenn"] = {
+        target_pos = { x = 73.5, y = -2.2, z = 34.7 },
+        visual_mode = "arc",
+        zone = "Bastok Mines",
+        floor_id = 0,
+        max_distance = 30
+    },
     -- Bastok Markets
     ["Cleades"] = {
         target_pos = { x = -362.0, y = -12.0, z = -169.0 },
         trigger_npc = "Cleades",
         visual_mode = "arc",
         zone = "Bastok Markets",
+    },
+    ["Gwill"] = {
+        target_pos = { x = -317.8, y = -17.3, z = -177.4 },
+        visual_mode = "arc",
+        zone = "Bastok Markets",
+        floor_id = 0,
+        max_distance = 30
+    },
+    ["Brygid"] = {
+        target_pos = { x = -90.2, y = -5.4, z = -108.5 },
+        visual_mode = "arc",
+        zone = "Bastok Markets",
+        floor_id = 0,
+        max_distance = 35
     },
     -- Port Bastok
     ["Argus"] = {
@@ -52,15 +73,40 @@ return {
     },
     ["Hilda"] = {
         target_pos = { x = -161.8, y = -9, z = 10.3 },
+        dynamic_pos = true,
+        y_offset = -1.6,
         trigger_npc = "Hilda",
         visual_mode = "arc",
         zone = "Port Bastok",
+        floor_id = 0,
+        max_distance = 30
     },
     ["Jabbar"] = {
         target_pos = { x = -99.7, y = -3.8, z = 26.1 },
         trigger_npc = "Jabbar",
         visual_mode = "arc",
         zone = "Port Bastok",
+    },
+    ["Kaede"] = {
+        target_pos = { x = 48.3, y = -8.1, z = 69.2 },
+        visual_mode = "arc",
+        zone = "Port Bastok",
+        floor_id = 0,
+        max_distance = 20
+    },
+    ["Ensetsu"] = {
+        target_pos = { x = 32.0, y = -8.6, z = 68.8 },
+        visual_mode = "arc",
+        zone = "Port Bastok",
+        floor_id = 0,
+        max_distance = 20
+    },
+    ["Kagetora"] = {
+        target_pos = { x = -94.6, y = -4.1, z = 30.5 },
+        visual_mode = "arc",
+        zone = "Port Bastok",
+        floor_id = 0,
+        max_distance = 20
     },
     -- Metalworks
     ["Cid"] = {
@@ -123,6 +169,8 @@ return {
         trigger_npc = "Lucius",
         visual_mode = "arc",
         zone = "Metalworks",
+        floor_id = 0,
+        max_distance = 35
     },
      ["Ayame"] = {
         target_pos = { x = 134, y = -20.5, z = 33.3 },
@@ -157,6 +205,13 @@ return {
         zone = "Metalworks",
         floor_id = 0,
         max_distance = 20
+    },
+    ["Raibaht"] = {
+        target_pos = { x = -26.3, y = -12.3, z = -3.6 },
+        visual_mode = "arc",
+        zone = "Metalworks",
+        floor_id = 0,
+        max_distance = 30
     },
     --Zeruhn Mines
     ["Makarim"] = {
@@ -207,6 +262,13 @@ return {
         floor_id = 2,
         max_distance = 5
     },
+    ["palborough-mines-dock-lever-h8"] = {
+        target_pos = { x = 129.7, y = -30.4, z = 16.2 },
+        visual_mode = "arc",
+        zone = "Palborough Mines",
+        floor_id = 3,
+        max_distance = 15
+    },
     --Dangruf Wadi
     ["Geyser1"] = {
         target_pos = { x = -133, y= 3, z=133.3},
@@ -215,7 +277,7 @@ return {
     },
     --Selbina
     ["Mathilde"] = {
-        target_pos = { x = 12.6, y = -8.8, z = -7.6 },
+        target_pos = { x = 12.6, y = -8.9, z = -7.6 },
         visual_mode = "arc",
         zone = "Selbina",
         floor_id = 0,
@@ -227,6 +289,71 @@ return {
         zone = "Selbina",
         floor_id = 0,
         max_distance = 35
+    },
+    -- Support Job unlock: Elder Memories (Selbina)
+    ["Isacio"] = {
+        target_pos = { x = -58.1, y = -2.9, z = -46.4 },
+        visual_mode = "arc",
+        zone = "Selbina",
+        floor_id = 0,
+        max_distance = 35
+    },
+    ["Vera"] = {
+        target_pos = { x = -53.0, y = -5.6, z = 17.2 },
+        visual_mode = "arc",
+        zone = "Mhaura",
+        floor_id = 0,
+        max_distance = 35
+    },
+    ["Vobo"] = {
+        target_pos = { x = 37.9, y = -16.0, z = 81.2 },
+        visual_mode = "arc",
+        zone = "Selbina",
+        floor_id = 0,
+        max_distance = 30
+    },
+    ["Gabwaleid"] = {
+        target_pos = { x = -17.7, y = -8.7, z = 11.2 },
+        visual_mode = "arc",
+        zone = "Selbina",
+        floor_id = 0,
+        max_distance = 30
+    },
+    --Mhaura
+    ["Celestina"] = {
+        target_pos = { x = -37.6, y = -17.7, z = 75.7 },
+        visual_mode = "arc",
+        zone = "Mhaura",
+        floor_id = 0,
+        max_distance = 30
+    },
+    ["Ekokoko"] = {
+        target_pos = { x = -77.9, y = -25.1, z = 28.0 },
+        visual_mode = "arc",
+        zone = "Mhaura",
+        floor_id = 0,
+        max_distance = 30
+    },
+    ["Bihoro-Guhoro"] = {
+        target_pos = { x = -28.5, y = -9.1, z = 40.9 },
+        visual_mode = "arc",
+        zone = "Mhaura",
+        floor_id = 0,
+        max_distance = 30
+    },
+    ["Jikka-Abukka"] = {
+        target_pos = { x = -13.5, y = -16.7, z = 58.6 },
+        visual_mode = "arc",
+        zone = "Mhaura",
+        floor_id = 0,
+        max_distance = 30
+    },
+    ["Pikini-Mikini"] = {
+        target_pos = { x = -47.2, y = -5.0, z = 35.3 },
+        visual_mode = "arc",
+        zone = "Mhaura",
+        floor_id = 0,
+        max_distance = 10
     },
     --Gusgen Mines
     ["Blind Moby"] = {
@@ -250,6 +377,13 @@ return {
         floor_id = 1,
         max_distance = 45
     },
+    ["beadeaux-the-mute-k8"] = {
+        target_pos = { x = 180.1, y = 38.9, z = 16.0 },
+        visual_mode = "arc",
+        zone = "Beadeaux",
+        floor_id = 15,
+        max_distance = 20
+    },
     --Qulun Dome
     ["Qulun Door 1"] = {
         target_pos = { x = 59.9, y= 22, z=-6.7},
@@ -262,6 +396,13 @@ return {
         target_pos = { x = 9.5, y= 23, z=-84},
         visual_mode = "arc",
         zone = "Qulun Dome"
+    },
+    ["qulun-dome-quadav-crest-???"] = {
+        target_pos = { x = 259.9, y = 39.8, z = 79.5 },
+        visual_mode = "arc",
+        zone = "Qulun Dome",
+        floor_id = 0,
+        max_distance = 20
     },
     --Windurst
     -- Windurst Woods
@@ -299,6 +440,20 @@ return {
         zone = "Windurst Woods",
         floor_id = 0,
         max_distance = 20
+    },
+    ["Boizo-Naizo"] = {
+        target_pos = { x = -9.6, y = -3.6, z = -26.1 },
+        visual_mode = "arc",
+        zone = "Windurst Woods",
+        floor_id = 0,
+        max_distance = 35
+    },
+    ["Sola Jaab"] = {
+        target_pos = { x = 109.4, y = -6.5, z = -25.9 },
+        visual_mode = "arc",
+        zone = "Windurst Woods",
+        floor_id = 0,
+        max_distance = 35
     },
     --Port Windurst
     ["Melek"] = {
@@ -348,6 +503,13 @@ return {
         floor_id = 0,
         max_distance = 30
     },
+    ["Shanruru"] = {
+        target_pos = { x = -1.3, y = -6.8, z = 186.7 },
+        visual_mode = "arc",
+        zone = "Port Windurst",
+        floor_id = 0,
+        max_distance = 35
+    },
     -- Windurst Waters North
     ["Kyume-Romeh"] = {
         target_pos = { x = -54.5, y = -5.3, z = 23.2 },
@@ -384,6 +546,13 @@ return {
         floor_id = 1,
         max_distance = 25
     },
+    ["Koko Lihzeh"] = {
+        target_pos = { x = 132.9, y = -6.9, z = 162.5 },
+        visual_mode = "arc",
+        zone = "Windurst Waters North",
+        floor_id = 1,
+        max_distance = 30
+    },
     -- Windurst Waters South
     ["Ohbiru-Dohbiru"] = {
         target_pos = { x = 22.7, y = -6.2, z = -195.0 },
@@ -412,6 +581,13 @@ return {
         zone = "Windurst Waters South",
         floor_id = 2,
         max_distance = 30
+    },
+    ["Naiko-Paneiko"] = {
+        target_pos = { x = -246.9, y = -6.3, z = -308.1 },
+        visual_mode = "arc",
+        zone = "Windurst Waters South",
+        floor_id = 2,
+        max_distance = 35
     },
     -- Windurst Walls
     ["Yoran-Oran"] = {
@@ -442,12 +618,21 @@ return {
         floor_id = 0,
         max_distance = 25
     },
+    ["Koru-Moru"] = {
+        target_pos = { x = -121.7, y = -6.6, z = 122.4 },
+        visual_mode = "arc",
+        zone = "Windurst Walls",
+        floor_id = 0,
+        max_distance = 35
+    },
     --Heavens Tower
     ["Kupipi"] = {
         target_pos = { x = 2, y= -1, z=32.1},
         trigger_npc = "Kupipi",
         visual_mode = "arc",
-        zone = "Heavens Tower"
+        zone = "Heavens Tower",
+        floor_id = 0,
+        max_distance = 35
     },
     ["Door: Starway-Stairway"] = {
         target_pos = { x = -13.7, y = -1.5, z = 28.9 },
@@ -787,6 +972,13 @@ return {
         floor_id = 15,
         max_distance = 35
     },
+    ["castle-oztroja-yagudo-crest-???"] = {
+        target_pos = { x = -100.5, y = -63.2, z = 60.3 },
+        visual_mode = "arc",
+        zone = "Castle Oztroja",
+        floor_id = 4,
+        max_distance = 25
+    },
     -- Maze of Shakhrami
     ["maze-of-shakhrami-fossil-rock-h5-1"] = {
         target_pos = { x = 49.1, y = 18.9, z = 152.5 },
@@ -846,6 +1038,51 @@ return {
         floor_id = 0,
         max_distance = 50
     },
+    ["Raminel"] = {
+        target_pos = { x = -66.9, y = 0.8, z = -13.9 },
+        dynamic_pos = true,
+        y_offset = -1.2,
+        trigger_npc = "Raminel",
+        visual_mode = "arc",
+        zone = "Southern San d'Oria",
+        floor_id = 0,
+        max_distance = 100
+    },
+    ["Sobane"] = {
+        target_pos = { x = -189.0, y = -5.0, z = 99.2 },
+        visual_mode = "arc",
+        zone = "Southern San d'Oria",
+        floor_id = 0,
+        max_distance = 30
+    },
+    ["Ostalie"] = {
+        target_pos = { x = -143.4, y = -8.0, z = -11.8 },
+        visual_mode = "arc",
+        zone = "Southern San d'Oria",
+        floor_id = 0,
+        max_distance = 25
+    },
+    ["Balasiel"] = {
+        target_pos = { x = -138.3, y = -13.1, z = 65.8 },
+        visual_mode = "arc",
+        zone = "Southern San d'Oria",
+        floor_id = 0,
+        max_distance = 12
+    },
+    ["Baunise"] = {
+        target_pos = { x = -55.7, y = -10.6, z = -29.3 },
+        visual_mode = "arc",
+        zone = "Southern San d'Oria",
+        floor_id = 0,
+        max_distance = 15
+    },
+    ["Cahaurme"] = {
+        target_pos = { x = 55.7, y = -10.7, z = -29.4 },
+        visual_mode = "arc",
+        zone = "Southern San d'Oria",
+        floor_id = 0,
+        max_distance = 15
+    },
     --Northern San d'Oria
     ["Baraka"] = {
         target_pos = { x = 38.65, y= -3.5, z=-5.75},
@@ -900,6 +1137,73 @@ return {
         zone = "Northern San d'Oria",
         floor_id = 0,
         max_distance = 10
+    },
+    ["Taurette"] = {
+        target_pos = { x = -161.8, y = -1.2, z = 90.0 },
+        visual_mode = "arc",
+        zone = "Northern San d'Oria",
+        floor_id = 0,
+        max_distance = 35
+    },
+    ["Maloquedil"] = {
+        target_pos = { x = 35.1, y = -2.3, z = 60.4 },
+        visual_mode = "arc",
+        zone = "Northern San d'Oria",
+        floor_id = 0,
+        max_distance = 35
+    },
+    ["Morjean"] = {
+        target_pos = { x = 98.6, y = -2.1, z = 114.1 },
+        visual_mode = "arc",
+        zone = "Northern San d'Oria",
+        floor_id = 0,
+        max_distance = 10
+    },
+    -- Port San d'Oria
+    ["Brifalien"] = {
+        target_pos = { x = -19.4, y = -5.2, z = -74.1 },
+        dynamic_pos = true,
+        y_offset = -1.2,
+        trigger_npc = "Brifalien",
+        visual_mode = "arc",
+        zone = "Port San d'Oria",
+        floor_id = 0,
+        max_distance = 20
+    },
+    ["Fontoumant"] = {
+        target_pos = { x = -10.6, y = -10.2, z = -122.2 },
+        visual_mode = "arc",
+        zone = "Port San d'Oria",
+        floor_id = 0,
+        max_distance = 30,
+    },
+    ["Sheridan"] = {
+        target_pos = { x = -19.1, y = -9.8, z = -129.7 },
+        visual_mode = "arc",
+        zone = "Port San d'Oria",
+        floor_id = 0,
+        max_distance = 30
+    },
+    ["Rugiette"] = {
+        target_pos = { x = 71.4, y = -10.0, z = -73.7 },
+        visual_mode = "arc",
+        zone = "Port San d'Oria",
+        floor_id = 0,
+        max_distance = 50
+    },
+    ["Ceraulian"] = {
+        target_pos = { x = -0.9, y = -10.2, z = -120.9 },
+        visual_mode = "arc",
+        zone = "Port San d'Oria",
+        floor_id = 0,
+        max_distance = 7
+    },
+    ["Arminibit"] = {
+        target_pos = { x = -0.8, y = -10.2, z = -122.8 },
+        visual_mode = "arc",
+        zone = "Port San d'Oria",
+        floor_id = 0,
+        max_distance = 7
     },
     -- West Ronfaure
     ["west-ronfaure-???-e8"] = {
@@ -962,6 +1266,16 @@ return {
         zone = "Bostaunieux Oubliette",
         floor_id = 15,
         max_distance = 10
+    },
+    ["Novalmauge"] = {
+        target_pos = { x = 51.6, y = -23.9, z = 19.6 },
+        dynamic_pos = true,
+        y_offset = -2,
+        trigger_npc = "Novalmauge",
+        visual_mode = "arc",
+        zone = "Bostaunieux Oubliette",
+        floor_id = 15,
+        max_distance = 40
     },
     -- Ghelsba Outpost
     ["ghelsba-outpost-hut-door-f10"] = {
@@ -1045,6 +1359,22 @@ return {
         zone = "Ordelle's Caves",
         floor_id = 1,
         max_distance = 25
+    },
+    -- Paladin: A Squire's Test II. Click the pool, then reach the second within 30 seconds.
+    -- No floor_id: which map they sit on is unconfirmed, and omitting it draws on all.
+    ["ordelles-caves-stalactite-pool-qm2"] = {
+        target_pos = { x = -91.7, y = 1.0, z = 276.2 },
+        visual_mode = "arc",
+        zone = "Ordelle's Caves",
+        floor_id = 1,
+        max_distance = 30
+    },
+    ["ordelles-caves-stalactite-dew-qm3"] = {
+        target_pos = { x = -140.3, y = -0.2, z = 265.7 },
+        visual_mode = "arc",
+        zone = "Ordelle's Caves",
+        floor_id = 1,
+        max_distance = 50
     },
     -- Horlias Peak
     ["horlais-peak-burning-circle"] = {
@@ -1158,6 +1488,67 @@ return {
         visual_mode = "arc",
         zone = "Konschtat Highlands",
         max_distance = 60
+    },
+    -- Forger ??? (D-8 cave) - Samurai unlock, trade the lump of oriental steel here
+    ["konschtat-highlands-forger-qm-d8-???"] = {
+        target_pos = { x = -709.2, y = 2.7, z = 102.3 },
+        visual_mode = "arc",
+        zone = "Konschtat Highlands",
+        floor_id = 0,
+        max_distance = 25
+    },
+    -- Meriphataud Mountains
+    -- ??? on the east edge of Drogaroga's Spine (K-8) - Dragoon unlock, trade the wyvern egg
+    ["meriphataud-mountains-holy-creast-qm-k8"] = {
+        target_pos = { x = 640.0, y = -16.9, z = 10.7 },
+        visual_mode = "arc",
+        zone = "Meriphataud Mountains",
+        floor_id = 0,
+        max_distance = 45
+    },
+    -- Buburimu Peninsula
+    -- Song Runes on the old monument - the Bard lead-in chain, examine then trade parchment
+    ["buburimu-peninsula-song-runes-g9"] = {
+        target_pos = { x = -246.1, y = 15.0, z = -279.4 },
+        visual_mode = "arc",
+        zone = "Buburimu Peninsula",
+        floor_id = 0,
+        max_distance = 25
+    },
+    -- Valkurm Dunes
+    ["valkurm-dunes-song-runes-b7"] = {
+        target_pos = { x = -717.6, y = -8.6, z = 103.0 },
+        visual_mode = "arc",
+        zone = "Valkurm Dunes",
+        floor_id = 0,
+        max_distance = 20
+    },
+    -- Sauromugue Champaign
+    -- Tiger Bones in the cave at (L-10), up the cliff at (L-8) - Ranger unlock
+    ["sauromugue-champaign-tiger-bones-l10"] = {
+        target_pos = { x = 665.2, y = -8.5, z = -380.1 },
+        visual_mode = "arc",
+        zone = "Sauromugue Champaign",
+        floor_id = 0,
+        max_distance = 10
+    },
+    -- Qufim Island
+    ["qufim-island-nightflowers-f8"] = {
+        target_pos = { x = -264.8, y = -3.7, z = 28.8 },
+        visual_mode = "arc",
+        zone = "Qufim Island",
+        floor_id = 0,
+        max_distance = 15
+    },
+    -- Korroloka Tunnel
+    -- ??? that pops the three Korroloka Leeches - Ninja unlock
+    ["korroloka-tunnel-ninja-qm2-???"] = {
+        target_pos = { x = -206.8, y = -10.9, z = 176.2 },
+        visual_mode = "arc",
+        zone = "Korroloka Tunnel",
+        floor_id = 5,
+        max_distance = 15,
+        draw_in_combat = false,
     },
     -- Hall Of Transference
     ["hall-of-transference-dem-large-apparatus"] = {
@@ -1540,6 +1931,14 @@ return {
         floor_id = 0,
         max_distance = 20
     },
+    -- Paladin: A Knight's Test. Knight's Soul, needs both books first.
+    ["davoi-disused-well-e10"] = {
+        target_pos = { x = -221.6, y = 1.9, z = -295.4 },
+        visual_mode = "arc",
+        zone = "Davoi",
+        floor_id = 0,
+        max_distance = 20
+    },
     --Sandy 3-3
     ["Quemaricond"] = {
         target_pos = { x = 16, y = 0.12, z = -25.36 },
@@ -1631,6 +2030,13 @@ return {
         floor_id = 0,
         max_distance = 35
     },
+    ["Toji Mumosulah"] = {
+        target_pos = { x = 51.5, y = -13.1, z = -50.6 },
+        visual_mode = "arc",
+        zone = "Kazham",
+        floor_id = 0,
+        max_distance = 15
+    },
     -- Lower Jeuno
     ["Ghebi Damomohe"] = {
         target_pos = { x = 15.6, y= -1.7, z=-7.6},
@@ -1644,6 +2050,27 @@ return {
         zone = "Lower Jeuno",
         floor_id = 0,
         max_distance = 20
+    },
+    ["Door: Merchants House"] = {
+        target_pos = { x = -82.2, y = -7.7, z = -168.8 },
+        visual_mode = "arc",
+        zone = "Lower Jeuno",
+        floor_id = 0,
+        max_distance = 15
+    },
+    ["Bki Tbujhja"] = {
+        target_pos = { x = -23.4, y = -1.7, z = -57.8 },
+        visual_mode = "arc",
+        zone = "Lower Jeuno",
+        floor_id = 0,
+        max_distance = 10
+    },
+    ["Mertaire"] = {
+        target_pos = { x = -17.2, y = -1.9, z = -60.1 },
+        visual_mode = "arc",
+        zone = "Lower Jeuno",
+        floor_id = 0,
+        max_distance = 10
     },
     ["Muckvix"] = {
         target_pos = { x = -26.8, y= 3.5, z=-137.3},
@@ -1683,6 +2110,34 @@ return {
         max_distance = 35
     },
     -- Upper Jeuno
+    ["Brutus"] = {
+        target_pos = { x = -57.0, y = 6.4, z = 97.5 },
+        visual_mode = "arc",
+        zone = "Upper Jeuno",
+        floor_id = 0,
+        max_distance = 12
+    },
+    ["Osker"] = {
+        target_pos = { x = -61.4, y = 7.0, z = 94.2 },
+        visual_mode = "arc",
+        zone = "Upper Jeuno",
+        floor_id = 0,
+        max_distance = 12
+    },
+    ["Chocobo"] = {
+        target_pos = { x = -61.3, y = 6.0, z = 92.9 },
+        visual_mode = "arc",
+        zone = "Upper Jeuno",
+        floor_id = 0,
+        max_distance = 12
+    },
+    -- the wounded chocobo you feed the wildgrass to
+    ["upper-jeuno-wounded-chocobo"] = {
+        target_pos = { x = -61.4, y = 8.2, z = 93.0 },
+        visual_mode = "arc",
+        zone = "Upper Jeuno",
+        max_distance = 30
+    },
     ["Paya-Sabya"] = {
         target_pos = { x = 11.85, y= 1.5, z=70.9},
         trigger_npc = "Paya-Sabya",
@@ -1990,6 +2445,34 @@ return {
         trigger_npc = "Marilleune",
         zone = "Norg"
     },
+    ["Ryoma"] = {
+        target_pos = { x = -26.3, y = -1.3, z = -8.3 },
+        visual_mode = "arc",
+        zone = "Norg",
+        floor_id = 0,
+        max_distance = 35
+    },
+    ["Jaucribaix"] = {
+        target_pos = { x = 90.3, y = -9.3, z = -5.9 },
+        visual_mode = "arc",
+        zone = "Norg",
+        floor_id = 0,
+        max_distance = 15
+    },
+    ["Aeka"] = {
+        target_pos = { x = 6.3, y = -2.0, z = -4.7 },
+        visual_mode = "arc",
+        zone = "Norg",
+        floor_id = 0,
+        max_distance = 15
+    },
+    ["Ranemaud"] = {
+        target_pos = { x = 16.4, y = -2.0, z = 25.7 },
+        visual_mode = "arc",
+        zone = "Norg",
+        floor_id = 0,
+        max_distance = 15
+    },
     -- Ifrit's Caldroun
     ["ifrit-6-2-???"] = {
         target_pos = { x = 172.2, y = -0.5, z = -26.9},
@@ -2014,6 +2497,22 @@ return {
         floor_id = 2,
         max_distance = 10,
         draw_in_combat = false,
+    },
+    --Cloister of Tremors
+    ["cloister-of-tremors-tremorstone-???"] = {
+        target_pos = { x = -545.2, y = 1.9, z = -495.7 },
+        visual_mode = "arc",
+        zone = "Cloister of Tremors",
+        floor_id = 0,
+        max_distance = 12
+    },
+    --Chamber of Oracles
+    ["chamber-of-oracles-shimmering-circle"] = {
+        target_pos = { x = -220.1, y = -1.9, z = 23.0 },
+        visual_mode = "arc",
+        zone = "Chamber of Oracles",
+        floor_id = 0,
+        max_distance = 35
     },
     --Kuftal Tunnel
     ["kuftal1-8-2-???"] = {
@@ -2459,6 +2958,16 @@ return {
         target_pos = { x = 231.8, y = -1, z = 279.9},
         visual_mode = "arc",
         zone = "The Sanctuary of Zi'Tah"
+    },
+    -- Guardian Treant ??? (L-10, up the rocks at the base of the tree, unmapped area
+    -- east of K-10) - Samurai unlock, hatchet to pop, sacred sprig for the branch
+    ["sanctuary-of-zitah-guardian-treant-qm-l10"] = {
+        target_pos = { x = 642.3, y = -5.0, z = -149.6 },
+        visual_mode = "arc",
+        zone = "The Sanctuary of Zi'Tah",
+        floor_id = 0,
+        max_distance = 35,
+        draw_in_combat = false,
     },
     --delkfutts tower
     ["delkfutts-tower-zm8-lift-???"] = {

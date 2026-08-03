@@ -31,6 +31,8 @@ local map_renderer     = require('modules.map_renderer')
 local utils            = require('modules.utils')
 local inventory_cache  = require('modules.inventory_cache')
 local keyitem_module   = require('modules.keyitem')
+local quest_sync       = require('modules.quest_sync')
+local item_info        = require('modules.item_info')  -- item icons for onmob_target_icon
 -- local floor_debug      = require('debug_floor_state')  -- Commented out - file doesn't exist
 
 -- Validation
@@ -55,6 +57,7 @@ local currentTopCategory = nil
 local currentSubfile     = nil
 local current_mission    = nil
 local is_open            = false
+local sync_pending       = false  -- a 0x56 arrived; apply it on the next frame
 local showImagesDrawer   = true
 local lastMainX, lastMainY = 300, 200
 local lastMainW, lastMainH = 400, 600
@@ -71,6 +74,36 @@ local questIconTexture = nil
 local floor_mappings = T{}  -- Floor ID mappings for multi-floor zones
 local keyitems_db = require('data.keyitems')  -- Key items database
 
+-- Named markers for onmob_target_icon, checked BEFORE item names. WoW's vocabulary: "!" starts
+-- a quest, "?" hands one in, a bubble is talk-to-me with nothing changing hands. "!" is also the
+-- default when a step names no icon at all, so quest starts need not ask for it.
+-- No FFXI item is called "!", "?" or "speech", so these can never shadow a real item.
+local MARKER_ASSETS = {
+    ['!']      = 'assets/quest_icon.png',
+    ['?']      = 'assets/quest_question.png',
+    ['speech'] = 'assets/speech_bubble.png',
+    -- readable aliases for the same three
+    ['start']  = 'assets/quest_icon.png',
+    ['handin'] = 'assets/quest_question.png',
+    ['talk']   = 'assets/speech_bubble.png',
+}
+local marker_textures = {}  -- name -> texture, or false once a load has failed
+
+--- One onmob_target_icon name to a texture: named marker first, then the game's item icons.
+local function resolveMarkerTexture(name)
+    local asset = MARKER_ASSETS[name]
+    if not asset then
+        return item_info.getIconTexture(name)
+    end
+
+    local hit = marker_textures[name]
+    if hit == nil then
+        hit = helpers.getTexture(addon.path .. asset) or false
+        marker_textures[name] = hit
+    end
+    return hit or nil
+end
+
 --------------------------------------------------------------------------------
 -- Debug Settings
 --------------------------------------------------------------------------------
@@ -84,6 +117,12 @@ local lastFrameTime = os.clock()
 local lastInventoryTriggerCheck = 0
 local INVENTORY_TRIGGER_CHECK_INTERVAL = 3.0 -- Check every 3 seconds
 local lastZoneId = 0 -- Track zone changes to reset map
+
+-- Weather capture (weather_watch steps) is deferred a few seconds past the zone change.
+-- The weather value in client memory still holds the OLD zone's weather for a moment
+-- after the zone id flips, so reading it immediately banks the wrong element. 0 = idle.
+local pendingWeatherCheck = 0
+local WEATHER_SETTLE_DELAY = 4.0
 local lastCombatTime = 0
 local COMBAT_DEBOUNCE = 6.0
 local dismissed_targets = {}
@@ -176,6 +215,10 @@ ashita.events.register('d3d_present', 'present_callback', function()
                     end
                 end
             end
+
+            -- Arm the weather capture for weather_watch steps. Deferred, not immediate -
+            -- see WEATHER_SETTLE_DELAY.
+            pendingWeatherCheck = frameCurrentTime + WEATHER_SETTLE_DELAY
         end
     else
         if shouldPrintDebugNow then
@@ -199,6 +242,20 @@ ashita.events.register('d3d_present', 'present_callback', function()
                 quest_state.setCurrentMap(player_module.zoneId, currentFloor)
             end
             lastKnownFloor = currentFloor
+        end
+    end
+
+    -- Deferred weather capture for weather_watch steps (SMN "I Can Hear a Rainbow").
+    -- Fires once per zone change, once the client's weather value has settled.
+    if pendingWeatherCheck > 0 and frameCurrentTime >= pendingWeatherCheck then
+        pendingWeatherCheck = 0
+        if currentTopCategory and currentSubfile and current_mission then
+            local ok, err = pcall(triggers_module.handleWeatherCapture,
+                currentTopCategory, currentSubfile, current_mission,
+                quest_data, quest_state, player_module.zoneId)
+            if not ok and quest_state.settings.ui_settings.dev_mode then
+                ui_debug.addLine(string.format("[%s] Weather capture failed: %s", addon.name, tostring(err)))
+            end
         end
     end
 
@@ -429,12 +486,20 @@ ashita.events.register('d3d_present', 'present_callback', function()
     -- Resolve targets to draw beams to
     local targetsToDraw = {}
 
+    -- Per-step override for the marker icon floating over each target. nil = the default "!".
+    local stepIconTexture = nil
+
     if currentTopCategory and currentSubfile and current_mission then
         local missionData = quest_data[currentTopCategory][currentSubfile][current_mission]
         if missionData and missionData.steps then
             local step_idx = quest_state.getCurrentStep(currentTopCategory, currentSubfile, current_mission, quest_data)
             if missionData.steps[step_idx] then
                 local step_data = missionData.steps[step_idx]
+
+                -- Resolve a randomised objective (dynamic_target) so the NPC beam below
+                -- targets the captured pick rather than nothing. Passthrough for every
+                -- step that has no dynamic_target, which is all but a handful.
+                step_data = utils.resolveDynamicStep(step_data, currentTopCategory, currentSubfile, current_mission, quest_state)
 
                 -- Check zone entry trigger
                 if triggers_module.checkZoneTrigger(step_data, player_module.zoneId, zone_data,
@@ -452,6 +517,22 @@ ashita.events.register('d3d_present', 'present_callback', function()
                 end
 
                 if type(step_data) == 'table' then
+                    -- onmob_target_icon names a marker ("!", "?", "speech") or an ITEM, or a list
+                    -- mixing both, replacing the "!" over every target this step draws. Names
+                    -- that do not resolve are dropped, and an empty result leaves the default in
+                    -- place - so a typo costs that icon, never the marker.
+                    local icon_ref = step_data.onmob_target_icon
+                    if type(icon_ref) == 'string' then
+                        stepIconTexture = resolveMarkerTexture(icon_ref)
+                    elseif type(icon_ref) == 'table' then
+                        local list = {}
+                        for _, icon_name in ipairs(icon_ref) do
+                            local tex = resolveMarkerTexture(icon_name)
+                            if tex then list[#list + 1] = tex end
+                        end
+                        if #list > 0 then stepIconTexture = list end
+                    end
+
                     local target_ref = step_data.onmob_target
 
                     -- Reset dismissed targets when the step changes
@@ -647,8 +728,15 @@ ashita.events.register('d3d_present', 'present_callback', function()
                     end
 
                     -- Draw visual zones outside shouldDraw: shapes with their own zone_name
-                    -- draw in that zone; shapes without fall back to the step-level shouldDraw
-                    if step_data.visual_zones then
+                    -- draw in that zone; shapes without fall back to the step-level shouldDraw.
+                    -- Resolved, not raw: a route_choices group or zone may add its own chain,
+                    -- so an unpicked destination's arrows never draw.
+                    local visual_zones = quest_state.resolveVisualZones(step_data,
+                        currentTopCategory, currentSubfile, current_mission, step_idx)
+                    if visual_zones then
+                        -- Resolved the same way, so a choice's chain can carry its own radius
+                        local vz_max_distance = quest_state.resolveZoneMaxDistance(step_data,
+                            currentTopCategory, currentSubfile, current_mission, step_idx)
                         local player_floor = player_module.getFloorId(floor_mappings)
                         beam_drawing.calculateDynamicColor()
                         local playerRaceId
@@ -663,7 +751,7 @@ ashita.events.register('d3d_present', 'present_callback', function()
                         if step_data.daily_passwords then
                             pw_words = quest_state.getDailyPasswords(currentTopCategory, currentSubfile, current_mission, step_idx)
                         end
-                        for _, zone in ipairs(step_data.visual_zones) do
+                        for _, zone in ipairs(visual_zones) do
                             local shape_should_draw
                             if zone.zone_name then
                                 local zid = zone_data[zone.zone_name]
@@ -740,7 +828,7 @@ ashita.events.register('d3d_present', 'present_callback', function()
                                 end
 
                                 if should_draw_zone then
-                                    local max_dist = zone.max_distance or step_data.zone_max_distance
+                                    local max_dist = zone.max_distance or vz_max_distance
                                     local dist_ok = true
                                     if max_dist then
                                         local ref_x, ref_y, ref_z
@@ -879,7 +967,25 @@ ashita.events.register('d3d_present', 'present_callback', function()
     beam_drawing.updateBeamProgress(deltaTime)
     beam_drawing.drawBeamsToTargets(filteredTargets, player_module.posX, player_module.posZ_depth,
                                    player_module.posY_height, memManager, drawArcModule,
-                                   questIconTexture, helpers, shouldPrintDebugNow, addon.name)
+                                   stepIconTexture or questIconTexture, helpers, shouldPrintDebugNow, addon.name)
+
+    -- Apply anything the server's quest log told us. Runs whether or not the window
+    -- is open, so progress is right the moment it is opened.
+    if sync_pending and quest_data then
+        sync_pending = false
+        if quest_state.settings.ui_settings.auto_sync ~= false then
+            local applied, current = quest_sync.apply(quest_data, quest_state)
+            if applied > 0 then
+                print(string.format("\30\106[QH]\30\01 Synced %d completed quest/mission(s) from the server log.", applied))
+            end
+            -- Only ever a suggestion, and only when nothing is already open.
+            if current and not current_mission then
+                currentTopCategory = current.cat
+                currentSubfile     = current.sub
+                current_mission    = current.name
+            end
+        end
+    end
 
     -- Render UI
     if not is_open then return end
@@ -899,9 +1005,22 @@ ashita.events.register('d3d_present', 'present_callback', function()
         end
     end
 
+    -- Handheld Mode draws the map inside the main window's Map tab. The map needs a
+    -- pile of dependencies that live here, so hand ui_main a closure rather than them.
+    local handheld = quest_state.settings.ui_settings.handheld_mode
+    local map_fn = nil
+    if handheld and currentTopCategory and currentSubfile and current_mission then
+        map_fn = function()
+            ui_images.renderContent(currentTopCategory, currentSubfile, current_mission,
+                                    quest_state, quest_data, utils, image_loader, map_renderer,
+                                    player_module, zone_data, map_db, floor_mappings,
+                                    quest_state.settings.ui_settings)
+        end
+    end
+
     local window_open, mainX, mainY, mainW, mainH, newShowDrawer, newTopCat, newSubfile, newMission =
         ui_main.render(is_open, currentTopCategory, currentSubfile, current_mission, showImagesDrawer,
-                      quest_data, quest_state, utils, inventory_cache, keyitem_module, keyitems_db)
+                      quest_data, quest_state, utils, inventory_cache, keyitem_module, keyitems_db, map_fn)
 
     if mainW > 0 and mainH > 0 then
         lastMainX = mainX
@@ -915,13 +1034,22 @@ ashita.events.register('d3d_present', 'present_callback', function()
     currentSubfile = newSubfile
     current_mission = newMission
 
+    -- Title bar X on the main window
+    if ui_main.close_requested then
+        ui_main.close_requested = false
+        is_open = false
+        showImagesDrawer = false
+        return
+    end
+
     -- Render image drawer
     if not window_open then
         showImagesDrawer = false
         return
     end
 
-    if showImagesDrawer and currentTopCategory and currentSubfile and current_mission then
+    -- No floating drawer in Handheld Mode - the Map tab is the map
+    if showImagesDrawer and not handheld and currentTopCategory and currentSubfile and current_mission then
         ui_images.render(lastMainX, lastMainY, lastMainW, lastMainH,
                         currentTopCategory, currentSubfile, current_mission,
                         quest_state, quest_data, utils, image_loader, map_renderer,
@@ -1068,6 +1196,42 @@ ashita.events.register('command', 'command_callback', function(e)
         else
             print(string.format("\30\68[NOT FOUND]\30\01 Item '%s' not found in any storage.", itemName))
         end
+        e.blocked = true
+        return true
+    end
+
+    if command_base == 'qh_item' then
+        local itemName = table.concat(args, ' ', 2)
+        if itemName == "" then
+            print(string.format("[%s] Usage: /qh_item <item name>", addon.name))
+            print(string.format("[%s] Example: /qh_item Rajas Ring", addon.name))
+            e.blocked = true
+            return true
+        end
+
+        local game = item_info.getStats(itemName)
+
+        print(string.format("[%s] ========== Item Resource: %s ==========", addon.name, itemName))
+        if not game then
+            print(string.format("\30\68[NOT FOUND]\30\01 No resource matches that name exactly (case-insensitive)."))
+        else
+            print(string.format("[%s] Id=%s Level=%s Damage=%s Delay=%s", addon.name,
+                tostring(game.id), tostring(game.level), tostring(game.damage), tostring(game.delay)))
+            print(string.format("[%s] Jobs: %s", addon.name, tostring(game.jobs)))
+            print(string.format("[%s] Parsed stats: %s", addon.name,
+                game.stats and table.concat(game.stats, ", ") or "(none)"))
+
+            local raw = item_info.getRawDescription(itemName)
+            if raw then
+                print(string.format("[%s] Raw description:", addon.name))
+                for line in raw:gsub('\r\n', '\n'):gmatch('[^\n]+') do
+                    print(string.format("  |%s", line))
+                end
+            else
+                print(string.format("[%s] Raw description: (none)", addon.name))
+            end
+        end
+        print(string.format("[%s] ==========================================", addon.name))
         e.blocked = true
         return true
     end
@@ -1372,6 +1536,47 @@ ashita.events.register('command', 'command_callback', function(e)
         return true
     end
 
+    if command_base == 'qh_joblevels' then
+        print(string.format("[%s] ========== Job Levels ==========", addon.name))
+
+        -- Verifies the two assumptions behind skip_if_any_job_level (quest_state.lua):
+        --   1. GetJobLevel is indexed by the same job ids as GetMainJob (1 = WAR).
+        --   2. it returns the STORED job level, not a level-synced/restricted one.
+        -- Check the starred current job against your real level, and check that the
+        -- names line up with the levels you know you have.
+        local levels = player_module.getAllJobLevels()
+        if not levels then
+            print(string.format("[%s] ERROR: GetJobLevel unavailable - skip_if_any_job_level", addon.name))
+            print(string.format("[%s]        will never skip a step (safe fallback).", addon.name))
+            e.blocked = true
+            return true
+        end
+
+        local currentJob = player_module.getMainJob()
+        print(string.format("[%s] -----------------------------------------------", addon.name))
+        for job = 1, 22 do
+            local name = player_module.JOB_NAMES[job] or "?"
+            local marker = (job == currentJob) and " <== current main job" or ""
+            print(string.format("[%s] [%2d] %-13s Lv.%-3s%s",
+                addon.name, job, name, tostring(levels[job] or "nil"), marker))
+        end
+        print(string.format("[%s] -----------------------------------------------", addon.name))
+
+        local highest = player_module.getHighestJobLevel()
+        print(string.format("[%s] Highest job level: %s", addon.name, tostring(highest or "unknown")))
+        print(string.format("[%s] Main job level (live, may be synced): %s",
+            addon.name, tostring(player_module.getMainJobLevel() or "unknown")))
+        if highest and highest >= 71 then
+            print(string.format("[%s] Cap is broken -> Genkai 5 steps 1/3/5 read as done.", addon.name))
+        else
+            print(string.format("[%s] No job past 70 -> Genkai 5 steps 1/3/5 shown as normal.", addon.name))
+        end
+
+        print(string.format("[%s] ================================", addon.name))
+        e.blocked = true
+        return true
+    end
+
     if command_base == 'qh_findzone' then
         print(string.format("[%s] ========== Searching for Current Zone in Map Array ==========", addon.name))
 
@@ -1596,6 +1801,263 @@ ashita.events.register('command', 'command_callback', function(e)
         return true
     end
 
+    -- /qh_sync [log]  -> what the server's 0x56 actually said. log 0-3 is San d'Oria,
+    -- Bastok, Windurst, Zilart; omit it for all four. Lists every completed mission id
+    -- and the entry it maps to, so a missing tick can be pinned on the server not
+    -- sending the bit rather than on our id being wrong.
+    if command_base == 'qh_sync' then
+        if not quest_sync.hasData() then
+            print(string.format("[%s] No 0x56 seen yet - zone once.", addon.name))
+            e.blocked = true
+            return true
+        end
+
+        -- /qh_sync <text> -> why is this one not ticking. Works for quests too, which the
+        -- per-log dump below does not cover (a quest log has 256 ids and dumping them all
+        -- is unreadable).
+        local search = args[2]
+        if search and not tonumber(search) then
+            quest_sync.buildIndex(quest_data)
+            local rows, misses = quest_sync.explain(table.concat(args, ' ', 2))
+
+            for _, row in ipairs(rows) do
+                -- "no bit set" and "we never got this log" both used to print the same
+                -- thing, which made a missing packet look like a server answer.
+                local state
+                if row.set then
+                    state = "SERVER SAYS DONE  "
+                elseif row.no_data then
+                    state = "NO DATA - log never received  "
+                else
+                    state = "server has NOT set  "
+                end
+                print(string.format("\30\106[%s]\30\01 %s%s  %s log %d id %d",
+                    addon.name, state, row.name, row.kind, row.log, row.id))
+            end
+            for _, name in ipairs(misses) do
+                print(string.format("\30\106[%s]\30\01 NOT MAPPED  %s", addon.name, name))
+            end
+            if #rows == 0 and #misses == 0 then
+                print(string.format("[%s] Nothing matched '%s'.", addon.name, table.concat(args, ' ', 2)))
+            end
+
+            e.blocked = true
+            return true
+        end
+
+        local names = { [0] = "San d'Oria", [1] = "Bastok", [2] = "Windurst", [3] = "Zilart" }
+        local only  = tonumber(args[2])
+
+        for log = 0, 3 do
+            if not only or only == log then
+                local rows = quest_sync.dumpMissionLog(log)
+                print(string.format("\30\106[%s]\30\01 log %d (%s): %d complete", addon.name, log, names[log], #rows))
+                for _, row in ipairs(rows) do
+                    print(string.format("    %2d  %s", row.id, row.name or "(not one of ours)"))
+                end
+            end
+        end
+
+        local cur = quest_sync.currentRaw()
+        if cur then
+            print(string.format("\30\106[%s]\30\01 current: nation %s mission %s, CoP %s",
+                addon.name, tostring(cur.nation), tostring(cur.mission), tostring(cur.cop)))
+        end
+
+        e.blocked = true
+        return true
+    end
+
+    -- /qh_weather              -> show current weather + what the active mission has banked
+    -- /qh_weather test         -> force a capture NOW, ignoring the requires_item gate
+    -- /qh_weather set <name>   -> mark one weather as already seen (started before installing)
+    -- /qh_weather unset <name> -> undo one, for a mistyped set
+    -- /qh_weather clear        -> wipe the active mission's banked colours
+    -- /qh_weather clearall     -> wipe every mission's banked colours
+    if command_base == 'qh_weather' then
+        local arg = (args[2] or ''):lower()
+
+        if arg == 'set' or arg == 'unset' then
+            -- Manual override for a player who did some of the hunt before installing, or
+            -- who lost a capture to a bad read. Matches on the slot key first, then on the
+            -- label, so both "none" and "clear" find Clear / Sunshine.
+            local parts = {}
+            for k = 3, #args do table.insert(parts, args[k]) end
+            local wanted = table.concat(parts, ' '):lower()
+
+            local ww, step_idx
+            if currentTopCategory and currentSubfile and current_mission then
+                local mdata = quest_data[currentTopCategory][currentSubfile][current_mission]
+                step_idx = quest_state.getCurrentStep(currentTopCategory, currentSubfile, current_mission, quest_data)
+                local sdata = mdata and mdata.steps and mdata.steps[step_idx]
+                ww = type(sdata) == 'table' and sdata.weather_watch or nil
+            end
+
+            if not ww then
+                print(string.format('[%s] The current step does not track weather.', addon.name))
+            elseif wanted == '' then
+                local names = {}
+                for _, slot in ipairs(ww.slots or {}) do table.insert(names, slot.key) end
+                print(string.format('[%s] Usage: /qh_weather %s <name>. Valid: %s',
+                    addon.name, arg, table.concat(names, ', ')))
+            else
+                -- An exact key wins outright; otherwise collect partial hits so an
+                -- ambiguous fragment reports instead of guessing.
+                local matches = {}
+                for _, slot in ipairs(ww.slots or {}) do
+                    local key = slot.key:lower()
+                    local lbl = (slot.label or ''):lower()
+                    if key == wanted then
+                        matches = { slot }
+                        break
+                    elseif key:find(wanted, 1, true) or lbl:find(wanted, 1, true) then
+                        table.insert(matches, slot)
+                    end
+                end
+
+                if #matches == 0 then
+                    local names = {}
+                    for _, slot in ipairs(ww.slots or {}) do table.insert(names, slot.key) end
+                    print(string.format('[%s] No weather matching "%s". Valid: %s',
+                        addon.name, wanted, table.concat(names, ', ')))
+                elseif #matches > 1 then
+                    local names = {}
+                    for _, slot in ipairs(matches) do table.insert(names, slot.key) end
+                    print(string.format('[%s] "%s" is ambiguous - matches: %s',
+                        addon.name, wanted, table.concat(names, ', ')))
+                else
+                    local slot = matches[1]
+                    if arg == 'set' then
+                        if quest_state.setWeatherSeen(currentTopCategory, currentSubfile, current_mission, step_idx, slot.key) then
+                            print(string.format('[%s] Marked %s as seen.', addon.name, slot.label or slot.key))
+                        else
+                            print(string.format('[%s] %s was already banked.', addon.name, slot.label or slot.key))
+                        end
+                    else
+                        if quest_state.unsetWeatherSeen(currentTopCategory, currentSubfile, current_mission, step_idx, slot.key) then
+                            print(string.format('[%s] Cleared %s.', addon.name, slot.label or slot.key))
+                        else
+                            print(string.format('[%s] %s was not banked.', addon.name, slot.label or slot.key))
+                        end
+                    end
+
+                    -- Same completion rule the capture path uses, so filling the last slot
+                    -- by hand still ticks the step.
+                    local done, total = 0, 0
+                    for _, s in ipairs(ww.slots or {}) do
+                        total = total + 1
+                        if quest_state.hasWeatherSeen(currentTopCategory, currentSubfile, current_mission, step_idx, s.key) then
+                            done = done + 1
+                        end
+                    end
+                    print(string.format('[%s] %d/%d', addon.name, done, total))
+                    if done >= total and not ww.display_only then
+                        quest_state.setStepState(currentTopCategory, currentSubfile, current_mission, step_idx, true, nil)
+                        print(string.format('[%s] All %d recorded - step complete.', addon.name, total))
+                    end
+                end
+            end
+        elseif arg == 'test' then
+            if not currentTopCategory or not currentSubfile or not current_mission then
+                print(string.format('[%s] No mission selected.', addon.name))
+            else
+                local wname = utils.getWeather()
+                print(string.format('[%s] TEST capture (item gate bypassed), weather is %s...',
+                    addon.name, wname or 'unavailable'))
+                local ok, banked = pcall(triggers_module.handleWeatherCapture,
+                    currentTopCategory, currentSubfile, current_mission,
+                    quest_data, quest_state, player_module.zoneId, true)
+                if not ok then
+                    print(string.format('[%s] Capture errored: %s', addon.name, tostring(banked)))
+                elseif not banked then
+                    print(string.format('[%s] Nothing banked - wrong zone, weather is not a tracked colour, or already have it.', addon.name))
+                end
+            end
+        elseif arg == 'clearall' then
+            local n = quest_state.clearWeatherSeen()
+            print(string.format('[%s] Cleared ALL banked weather (%d entr%s).', addon.name, n, n == 1 and 'y' or 'ies'))
+        elseif arg == 'clear' then
+            if not currentTopCategory or not currentSubfile or not current_mission then
+                print(string.format('[%s] No mission selected - use /qh_weather clearall to wipe everything.', addon.name))
+            else
+                local n = quest_state.clearWeatherSeen(currentTopCategory, currentSubfile, current_mission)
+                print(string.format('[%s] Cleared %d banked colour%s for "%s".',
+                    addon.name, n, n == 1 and '' or 's', current_mission))
+            end
+        else
+            local wname, wid = utils.getWeather()
+            print(string.format('[%s] Current weather: %s (id %s)', addon.name, wname or 'unavailable', tostring(wid)))
+
+            if currentTopCategory and currentSubfile and current_mission then
+                local mdata = quest_data[currentTopCategory][currentSubfile][current_mission]
+                local step_idx = quest_state.getCurrentStep(currentTopCategory, currentSubfile, current_mission, quest_data)
+                local step_data = mdata and mdata.steps and mdata.steps[step_idx]
+                local ww = type(step_data) == 'table' and step_data.weather_watch or nil
+                if ww then
+                    for _, slot in ipairs(ww.slots or {}) do
+                        -- hasWeatherSeen, never seen[key] - see quest_state.hasWeatherSeen
+                        local done = quest_state.hasWeatherSeen(currentTopCategory, currentSubfile,
+                            current_mission, step_idx, slot.key)
+                        print(string.format('  %-36s %s', slot.label or slot.key, done and 'DONE' or '----'))
+                    end
+                    if ww.requires_item then
+                        -- Inventory only, matching the tracker and the server. See triggers.lua.
+                        local inv = require('modules.inventory')
+                        print(string.format('  (tracking %s: %s held in inventory)', ww.requires_item,
+                            inv.hasItem(ww.requires_item, false) and 'ACTIVE -' or 'INACTIVE - not'))
+                    end
+                else
+                    print(string.format('[%s] Step %d of "%s" does not track weather.', addon.name, step_idx, current_mission))
+                end
+            end
+        end
+
+        e.blocked = true
+        return true
+    end
+
+    -- /qh_clues            -> show what has been captured for the active mission
+    -- /qh_clues clear      -> wipe the active mission's captures (re-hear from the NPC)
+    -- /qh_clues clearall   -> wipe every mission's captures (test/retry path)
+    if command_base == 'qh_clues' then
+        local arg = (args[2] or ''):lower()
+
+        if arg == 'clearall' then
+            local n = quest_state.clearQuestChoices()
+            print(string.format('[%s] Cleared ALL captured clues (%d slot%s).', addon.name, n, n == 1 and '' or 's'))
+        elseif arg == 'clear' then
+            if not currentTopCategory or not currentSubfile or not current_mission then
+                print(string.format('[%s] No mission selected - use /qh_clues clearall to wipe everything.', addon.name))
+            else
+                local n = quest_state.clearQuestChoices(currentTopCategory, currentSubfile, current_mission)
+                print(string.format('[%s] Cleared %d captured clue%s for "%s". Re-speak to the NPC to capture again.',
+                    addon.name, n, n == 1 and '' or 's', current_mission))
+            end
+        else
+            if not currentTopCategory or not currentSubfile or not current_mission then
+                print(string.format('[%s] No mission selected.', addon.name))
+            else
+                local choices = quest_state.getQuestChoices(currentTopCategory, currentSubfile, current_mission)
+                local count = 0
+                for slot, c in pairs(choices) do
+                    count = count + 1
+                    print(string.format('[%s]   %-11s [%s] %s - %s%s', addon.name, slot,
+                        tostring(c.index), tostring(c.npc), tostring(c.zone),
+                        c.pos and (' (' .. c.pos .. ')') or ''))
+                end
+                if count == 0 then
+                    print(string.format('[%s] No clues captured yet for "%s".', addon.name, current_mission))
+                else
+                    print(string.format('[%s] %d clue%s captured for "%s".', addon.name, count,
+                        count == 1 and '' or 's', current_mission))
+                end
+            end
+        end
+
+        e.blocked = true
+        return true
+    end
+
     if command_base == 'qh_validate' then
         local mission_errors = {}
         local passing        = {}
@@ -1726,6 +2188,13 @@ ashita.events.register('packet_in', 'qh_packet_in_cb', function(e)
     -- Key item tracking (Packet 0x55)
     keyitem_module.handlePacket(e)
 
+    -- Quest/mission log (Packet 0x56). Arrives as a burst on zone-in, so record it
+    -- here and apply once on the next frame rather than per packet.
+    if e.id == 0x56 then
+        quest_sync.handlePacket(e)
+        sync_pending = true
+    end
+
     triggers_module.handlePacketIn(e, currentTopCategory, currentSubfile, current_mission,
                                   quest_data, quest_state, step_trigger_flags, player_module.zoneId)
 
@@ -1758,6 +2227,11 @@ ashita.events.register('text_in', 'text_in_callback', function(e)
         -- Daily password capture (e.g. Castle Oztroja statues)
         triggers_module.handleDailyPasswordText(e, incoming_text, currentTopCategory, currentSubfile, current_mission,
                                                quest_data, quest_state)
+
+        -- Randomised-objective capture (e.g. Genkai 4 clue NPCs). Mission-scoped, so
+        -- re-hearing the hints later in the quest still registers.
+        triggers_module.handleClueText(e, incoming_text, currentTopCategory, currentSubfile, current_mission,
+                                       quest_data, quest_state)
 
         -- Fame capture from reputation NPC dialogue (global - not tied to a mission/step)
         triggers_module.handleFameText(e, incoming_text, quest_state, player_module.zoneId)

@@ -126,6 +126,7 @@ return {
                        "This map uses AUTO-CALIBRATION from mapinfo. No manual calibration needed! \n" ..
                        "The red arrow should appear automatically.",
                 zone = "Dangruf Wadi",
+                onmob_target = {"Fontoumant","Sheridan","Sobane","Taurette","Maloquedil","Babenn","Gwill","Brygid","Kaede","Hilda"},
                 images = {
                     {
                         file     = "maps/dangruf_wadi.png",
@@ -144,7 +145,7 @@ return {
                 text = "Now, go obtain some stuff. You can get them outside.",
                 -- [NEW] This line turns the list below into a mandatory checklist
                 require_all_items = true,
-
+                onmob_target = "Brifalien",
                 -- I corrected "quadava" to "quadav" here to ensure it matches the game text
                 trigger_on_item_obtain = {
                     "copper ore",

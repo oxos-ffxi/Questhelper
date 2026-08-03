@@ -5,7 +5,7 @@ QuestHelper is an Ashita v4 addon for Final Fantasy XI that guides you through q
 
 Guides are written in a readable Lua format, so anyone can extend or add their own.
 
-**Current release: v0.1** — first public release. Mission content is authored end-to-end and is being verified server-by-server; expect some rough edges (see [Content](#content)).
+**Current release: v0.1** — first public release. Nation missions, Rise of the Zilart, Chains of Promathia, all nine advanced job unlocks and the Support Job quest are authored end-to-end and are being verified server-by-server; expect some rough edges (see [Content](#content)).
 
 ## Showcase
 
@@ -31,7 +31,9 @@ https://github.com/user-attachments/assets/a28e2438-a4f6-4489-b669-f720379a4330
 - Live map rendering pulled from the game's own DAT files, with per-floor maps for dungeons.
 - Routes, arrows, squares and lines drawn into the 3D world and onto the map to point you where to go.
 - Target beams to specific NPCs (via OnMob), resolved to the correct entity rather than fixed coordinates.
+- Marker icons that say what an NPC is *for* at a glance — `!` to start, `?` to hand in, a speech bubble for talk-only, or the **actual in-game icon of the item** you need to trade, several side by side when a step wants more than one.
 - Zone-to-zone **pathfinding** with floor awareness and death/backtrack recovery across split entrances.
+- **Route choices** for steps valid in several places, so the guide offers the options (rate vs. proximity, night-only vs. any-time) and lets you pick rather than deciding for you.
 
 **Automatic step triggers**
 - Dialogue text, event/cutscene IDs, item obtain, key-item obtain (single or "need all").
@@ -55,14 +57,27 @@ Included guide data (`data/`):
 - **Nation Missions** — San d'Oria, Bastok, and Windurst, full chains (Rank 1-1 through 9-2).
 - **Rise of the Zilart** — full chain.
 - **Chains of Promathia** — full chain.
+- **Jobs** — unlock quests for all nine advanced jobs: Bard, Beastmaster, Dark Knight, Dragoon, Ninja, Paladin, Ranger, Samurai and Summoner. Paladin also carries its full artifact chain through to Borghertz's Stalwart Hands.
+- **Support Job** — Elder Memories (Selbina) and The Old Lady (Mhaura), the two mutually exclusive halves of the subjob unlock.
 - **Quests** — a selection of key/enabler quests (Tenshodo membership, Kazham airship pass, and others).
 - **Custom** — sample entries and a feature-demo file for authors.
 
 Work in progress (not ready for v0.1):
-- **Jobs** — Dancer and Paladin unlock quests are on the current format but not yet verified; the remaining unlockable jobs are scaffolded stubs to be authored later.
 - **NMs** — sample entries (South Gustaberg) on the current format, not yet verified.
+- Advanced-job quests beyond the unlocks (artifact armour) exist only for Paladin so far.
 
 > v0.1 note: the mission chains are the focus of this release. They are authored end-to-end, and in-game sign-off is ongoing. The Rise of the Zilart chain was built on a live server without GM commands, so it may need the most polishing.
+>
+> Job unlocks were authored against the server's own quest scripts, so their triggers and event IDs are accurate; where a level requirement comes from a server *setting* rather than a hard-coded number (the advanced jobs use `ADVANCED_JOB_LEVEL`, the subjob quest `SUBJOB_QUEST_LEVEL`), the guide shows the retail default and a retuned server may differ. Notes on every quest live in `data/ref/`.
+
+---
+
+## Roadmap
+
+**v0.2**
+- **Artifact armour quests** for the remaining advanced jobs, following the Paladin chain already in v0.1.
+- **Common enabler quests for Chains of Promathia and Zilart** — the quests those two mission chains depend on, and nothing wider.
+- **Quest marker icons rolled out across all existing content.** The vocabulary shipped in v0.1 but is only applied to the newest entries; everything else still draws the default `!`.
 
 ---
 
@@ -84,6 +99,7 @@ Player commands:
 | --- | --- |
 | `/questhelper` | Toggle the main window. |
 | `/qh_find <item>` | Locate an item across your inventory and storage. |
+| `/qh_item <item>` | Show what the game's own resources hold for an item — level, jobs, stats, icon. Useful when authoring reward entries or marker icons. |
 | `/qh_validate` | Validate the loaded guide data for broken zone/map references. |
 | `/qh_pos [x] [y]` | Reset the map window position (defaults to 100, 100). |
 | `/qh_day` | Show the current Vana'diel day (used by password-gated steps). |
@@ -97,7 +113,7 @@ A wider debug suite is also available (`/qh_debug`, `/qh_verbose`, `/qh_trigger`
 Guides are plain Lua tables describing steps and their triggers. Each step can carry text, map images, in-world `visual_zones`, an NPC target, and one or more completion triggers.
 
 See:
-- `data/ref/step_authoring_guide.md` — rules for turning a walkthrough + server Lua into steps.
+- `data/ref/Contrib/step_authoring_guide.md` — rules for turning a walkthrough + server Lua into steps.
 - `modules/README.md` — module architecture and the addon's internals.
 - `data/Custom/FeatureDemo.lua` — a worked example covering the common fields.
 
@@ -124,6 +140,7 @@ This addon wouldn't have been possible without the incredible work and support f
 
 ### Content Sources
 
+- **[LandSandBoat](https://github.com/LandSandBoat/server)** - For the sandbox to test in, and for the mission and quest scripts to read. Nearly every trigger in this addon - event IDs, key item IDs, trade orders, the level gates - was taken from those scripts rather than guessed at, which is the only reason steps advance when they should. Thank you.
 - **[FFXIclopedia](https://ffxiclopedia.fandom.com/)** - Mission and quest walkthrough content adapted from FFXIclopedia, licensed under [CC-BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/)
 
 ---

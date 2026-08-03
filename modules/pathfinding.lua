@@ -54,6 +54,33 @@ local function getBaseZoneName(zone_name)
 end
 pathfinding.getBaseZoneName = getBaseZoneName
 
+-- Inverse of subzone_to_base. zone_connections keys split zones by SUB-zone name only
+-- ("Korroloka Tunnel 1"), so findPath can never reach a destination named for the base
+-- zone ("Korroloka Tunnel") - it is not a node. Steps that author images against the base
+-- name are the common case, since one step covers several of the zone's maps.
+local base_to_subzones = {}
+for sub, base in pairs(subzone_to_base) do
+    base_to_subzones[base] = base_to_subzones[base] or {}
+    table.insert(base_to_subzones[base], sub)
+end
+for _, subs in pairs(base_to_subzones) do
+    table.sort(subs)
+end
+
+-- Names worth trying as a findPath destination for zone_name: the name itself first (it may
+-- be a node in its own right), then its sub-zones. Callers keep their original name for
+-- anything else - this is only about which node the route lands on.
+function pathfinding.getRoutableZoneNames(zone_name)
+    if not zone_name then return {} end
+
+    local names = { zone_name }
+    for _, sub in ipairs(base_to_subzones[zone_name] or {}) do
+        table.insert(names, sub)
+    end
+
+    return names
+end
+
 -- Map zone_id + floor_id to specific zone names (inverse of zone_name_to_floor)
 -- Used for detecting which "sub-zone" the player is in based on their floor
 local zone_floor_to_name = {

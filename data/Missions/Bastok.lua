@@ -414,7 +414,7 @@ return {
         }
     },
 
-    ["2-3: The Emissary - Introduction"] = {
+    ["2-3a: The Emissary - Introduction"] = {
         steps = {
             {
                 text = "Step 1: Receive the mission from any Bastok Gate Guard. They can be found at the entrance gates to the city. \n" ..
@@ -467,7 +467,7 @@ return {
             text = "Nothing. . . wamp wamp!"
         }
     },
-    ["2-3: The Emissary - San d'Oria -> Windurst"] = {
+    ["2-3b: The Emissary - San d'Oria -> Windurst"] = {
         choice_group = "2-3: The Emissary",
         steps = {
             {
@@ -687,7 +687,7 @@ return {
         }
     },
 
-    ["2-3: The Emissary - Windurst -> San d'Oria"] = {
+    ["2-3b: The Emissary - Windurst -> San d'Oria"] = {
         choice_group = "2-3: The Emissary",
         steps = {
             {
@@ -2290,21 +2290,21 @@ return {
                     { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -175.0, y = -16.0, z = 157.9 }, size = 4, direction = "up", floor_id = 6, colour = "yellow" },
 
                     --map 7
-                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -169.9, y = -15.8, z = 219.2 }, size = 4, direction = "right", floor_id = 7, colour = "yellow" },
-                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -124.7, y = -15.8, z = 219.6 }, size = 4, direction = "right", floor_id = 7, colour = "yellow" },
-                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -99.6, y = -12.0, z = 219.1 }, size = 4, direction = "down", floor_id = 7, colour = "yellow" },
-                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -99.7, y = -1.0, z = 167.1 }, size = 4, direction = "down", floor_id = 7, colour = "yellow" },
-                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -99.0, y = 4.0, z = 139.4 }, size = 4, direction = "right", floor_id = 7, colour = "yellow" },
-                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -59.9, y = 12.0, z = 138.8 }, size = 4, direction = "down", floor_id = 7, colour = "yellow" },
-                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -59.0, y = 24.3, z = 72.1 }, size = 4, direction = "down", floor_id = 7, colour = "yellow" },
-                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -63.2, y = 24.3, z = 23.9 }, size = 4, direction = "left", floor_id = 7, colour = "yellow" },
-                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -123.2, y = 24.3, z = 20.6 }, size = 4, direction = "left", floor_id = 7, colour = "yellow" },
-                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -175.9, y = 24.3, z = 20.2 }, size = 4, direction = "down", floor_id = 7, colour = "yellow" },
-                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -179.1, y = 24.3, z = -24.9 }, size = 4, direction = "down", floor_id = 7, colour = "yellow" },
-                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -181.4, y = 24.3, z = -60.8 }, size = 4, direction = "down", floor_id = 7, colour = "yellow" },
-                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -172.4, y = 24.3, z = -98.7 }, size = 4, direction = "right", floor_id = 7, colour = "yellow" },
-                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -119.9, y = 24.3, z = -99.1 }, size = 4, direction = "right", floor_id = 7, colour = "yellow" },
-                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -99.7, y = 24.3, z = -99.8 }, size = 4, direction = "down", floor_id = 7, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -169.9, y = -15.8, z = 219.2 }, size = 4, direction = "right", floor_id = 15, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -124.7, y = -15.8, z = 219.6 }, size = 4, direction = "right", floor_id = 15, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -99.6, y = -12.0, z = 219.1 }, size = 4, direction = "down", floor_id = 15, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -99.7, y = -1.0, z = 167.1 }, size = 4, direction = "down", floor_id = 15, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -99.0, y = 4.0, z = 139.4 }, size = 4, direction = "right", floor_id = 15, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -59.9, y = 12.0, z = 138.8 }, size = 4, direction = "down", floor_id = 15, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -59.0, y = 24.3, z = 72.1 }, size = 4, direction = "down", floor_id = 15, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -63.2, y = 24.3, z = 23.9 }, size = 4, direction = "left", floor_id = 15, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -123.2, y = 24.3, z = 20.6 }, size = 4, direction = "left", floor_id = 15, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -175.9, y = 24.3, z = 20.2 }, size = 4, direction = "down", floor_id = 15, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -179.1, y = 24.3, z = -24.9 }, size = 4, direction = "down", floor_id = 15, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -181.4, y = 24.3, z = -60.8 }, size = 4, direction = "down", floor_id = 15, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -172.4, y = 24.3, z = -98.7 }, size = 4, direction = "right", floor_id = 15, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -119.9, y = 24.3, z = -99.1 }, size = 4, direction = "right", floor_id = 15, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -99.7, y = 24.3, z = -99.8 }, size = 4, direction = "down", floor_id = 15, colour = "yellow" },
 
                     --map 7 torches
                     {
@@ -2382,14 +2382,14 @@ return {
                 zone_trigger = "Altar Room",
                 zone_max_distance = 35,
                 visual_zones = {
-                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -102.3, y = 24.3, z = -137.3 }, size = 4, direction = "left", floor_id = 7, colour = "yellow" },
-                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -147.9, y = 24.3, z = -139.7 }, size = 4, direction = "left", floor_id = 7, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -102.3, y = 24.3, z = -137.3 }, size = 4, direction = "left", floor_id = 15, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -147.9, y = 24.3, z = -139.7 }, size = 4, direction = "left", floor_id = 15, colour = "yellow" },
 
                     --brass door
-                    { zone_name = "Castle Oztroja", type = 'rect', center = { x = -155.2, y = 20.4, z = -140.0 }, width = 6.25, height = 7.75, floor_id = 7, colour = "cyan", vertical_axis = 'z' },
+                    { zone_name = "Castle Oztroja", type = 'rect', center = { x = -155.2, y = 20.4, z = -140.0 }, width = 6.25, height = 7.75, floor_id = 15, colour = "cyan", vertical_axis = 'z' },
 
                     -- keep runnin
-                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -160.6, y = 24.3, z = -140.2 }, size = 4, direction = "left", floor_id = 7, colour = "yellow" },
+                    { zone_name = "Castle Oztroja", type = 'arrow', center = { x = -160.6, y = 24.3, z = -140.2 }, size = 4, direction = "left", floor_id = 15, colour = "yellow" },
                 },
                 images = {
                     {
@@ -3153,6 +3153,31 @@ return {
                     { type = 'arrow', center = { x = -264.3, y = 13.5, z = -376.8 }, size = 4, direction = 'left',floor_id = 0 },
                     { type = 'arrow', center = { x = -390.2, y = 17, z = -366.3 }, size = 4, direction = 'left',floor_id = 0 },
                     { type = 'arrow', center = { x = -477.6, y = 16.3, z = -378.9 }, size = 4, direction = 'left',floor_id = 0 },
+
+                    -- Through the grotto to the Norg door. These carry their own zone_name, which
+                    -- overrides the step-level "Yuhtunga Jungle" below for these shapes only.
+                    { zone_name = "Sea Serpent Grotto", type = 'square', center = { x = 223.0, y = -23.7, z = 335.0 }, size = 1, floor_id = 1, colour = "green" },
+                    { zone_name = "Sea Serpent Grotto", type = 'arrow', center = { x = 222.1, y = -20.0, z = 320.1 }, size = 3, direction = "down", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Sea Serpent Grotto", type = 'arrow', center = { x = 219.0, y = -16.8, z = 271.3 }, size = 3, direction = "sw", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Sea Serpent Grotto", type = 'arrow', center = { x = 188.0, y = -9.7, z = 260.6 }, size = 3, direction = "left", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Sea Serpent Grotto", type = 'arrow', center = { x = 123.9, y = -8.9, z = 261.0 }, size = 3, direction = "left", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Sea Serpent Grotto", type = 'arrow', center = { x = 83.4, y = -9.8, z = 260.1 }, size = 3, direction = "left", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Sea Serpent Grotto", type = 'arrow', center = { x = 67.2, y = -4.8, z = 253.0 }, size = 3, direction = "sw", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Sea Serpent Grotto", type = 'arrow', center = { x = 43.8, y = 9.2, z = 222.0 }, size = 3, direction = "left", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Sea Serpent Grotto", type = 'arrow', center = { x = 21.2, y = 9.8, z = 216.1 }, size = 3, direction = "up", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Sea Serpent Grotto", type = 'arrow', center = { x = 20.5, y = 10.0, z = 236.7 }, size = 3, direction = "up", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Sea Serpent Grotto", type = 'rect', center = { x = 20.0, y = 8.5, z = 239.6 }, width = 4.00, height = 3.00, floor_id = 1, colour = "cyan", vertical_axis = 'ns' },
+                    { zone_name = "Sea Serpent Grotto", type = 'arrow', center = { x = 19.4, y = 10.1, z = 249.7 }, size = 3, direction = "nw", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Sea Serpent Grotto", type = 'arrow', center = { x = 3.9, y = 11.2, z = 261.6 }, size = 3, direction = "left", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Sea Serpent Grotto", type = 'arrow', center = { x = -15.3, y = 10.9, z = 264.5 }, size = 3, direction = "up", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Sea Serpent Grotto", type = 'arrow', center = { x = -16.2, y = 10.8, z = 292.1 }, size = 3, direction = "ne", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Sea Serpent Grotto", type = 'arrow', center = { x = -8.6, y = 10.1, z = 306.3 }, size = 3, direction = "nw", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Sea Serpent Grotto", type = 'arrow', center = { x = -25.5, y = 5.9, z = 330.4 }, size = 3, direction = "nw", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Sea Serpent Grotto", type = 'arrow', center = { x = -42.0, y = 0.0, z = 339.7 }, size = 3, direction = "left", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Sea Serpent Grotto", type = 'arrow', center = { x = -61.0, y = -2.0, z = 344.2 }, size = 3, direction = "up", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Sea Serpent Grotto", type = 'arrow', center = { x = -61.1, y = -0.5, z = 374.1 }, size = 3, direction = "up", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Sea Serpent Grotto", type = 'arrow', center = { x = -61.0, y = 1.3, z = 398.9 }, size = 3, direction = "up", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Sea Serpent Grotto", type = 'arrow', center = { x = -60.6, y = -0.6, z = 414.9 }, size = 3, direction = "up", floor_id = 1, colour = "yellow" },
                 },
                 zone_name = "Yuhtunga Jungle",
                 onmob_target = "Gilgamesh",
@@ -3293,6 +3318,48 @@ return {
                 text = "Step 9: Once everyone has a Frag Rock, return to Norg and trade your Frag Rock to Gilgamesh at (K-8) for a cutscene.",
                 onmob_target = "Gilgamesh",
                 route_to = "Norg",
+                visual_zones = {
+                    -- Kazham exit south-west through Yuhtunga to the Sea Serpent Grotto entrance
+                    { zone_name = "Yuhtunga Jungle", type = 'arrow', center = { x = -206.8, y = 0.0, z = 435.6 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yuhtunga Jungle", type = 'arrow', center = { x = -229.7, y = 0.4, z = 364.3 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yuhtunga Jungle", type = 'arrow', center = { x = -296.8, y = 3.2, z = 182.1 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yuhtunga Jungle", type = 'arrow', center = { x = -262.1, y = 4.5, z = 61.3 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yuhtunga Jungle", type = 'arrow', center = { x = -294.4, y = 0.9, z = 26.1 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yuhtunga Jungle", type = 'arrow', center = { x = -271.1, y = 0.0, z = -17.8 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yuhtunga Jungle", type = 'arrow', center = { x = -296.9, y = 4.5, z = -99.7 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yuhtunga Jungle", type = 'arrow', center = { x = -255.7, y = 0.9, z = -105.6 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yuhtunga Jungle", type = 'arrow', center = { x = -221.6, y = 1.4, z = -135.3 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yuhtunga Jungle", type = 'arrow', center = { x = -219.6, y = 4.6, z = -220.7 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yuhtunga Jungle", type = 'arrow', center = { x = -201.5, y = 0.0, z = -322.9 }, size = 4, direction = "sw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yuhtunga Jungle", type = 'square', center = { x = -261.8, y = 0.2, z = -374.2 }, size = 6, floor_id = 0 },
+                    { zone_name = "Yuhtunga Jungle", type = 'arrow', center = { x = -264.3, y = 13.5, z = -376.8 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yuhtunga Jungle", type = 'arrow', center = { x = -390.2, y = 17.0, z = -366.3 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Yuhtunga Jungle", type = 'arrow', center = { x = -477.6, y = 16.3, z = -378.9 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+
+                    -- Through the grotto to the Norg door
+                    { zone_name = "Sea Serpent Grotto", type = 'square', center = { x = 223.0, y = -23.7, z = 335.0 }, size = 1, floor_id = 1, colour = "green" },
+                    { zone_name = "Sea Serpent Grotto", type = 'arrow', center = { x = 222.1, y = -20.0, z = 320.1 }, size = 3, direction = "down", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Sea Serpent Grotto", type = 'arrow', center = { x = 219.0, y = -16.8, z = 271.3 }, size = 3, direction = "sw", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Sea Serpent Grotto", type = 'arrow', center = { x = 188.0, y = -9.7, z = 260.6 }, size = 3, direction = "left", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Sea Serpent Grotto", type = 'arrow', center = { x = 123.9, y = -8.9, z = 261.0 }, size = 3, direction = "left", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Sea Serpent Grotto", type = 'arrow', center = { x = 83.4, y = -9.8, z = 260.1 }, size = 3, direction = "left", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Sea Serpent Grotto", type = 'arrow', center = { x = 67.2, y = -4.8, z = 253.0 }, size = 3, direction = "sw", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Sea Serpent Grotto", type = 'arrow', center = { x = 43.8, y = 9.2, z = 222.0 }, size = 3, direction = "left", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Sea Serpent Grotto", type = 'arrow', center = { x = 21.2, y = 9.8, z = 216.1 }, size = 3, direction = "up", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Sea Serpent Grotto", type = 'arrow', center = { x = 20.5, y = 10.0, z = 236.7 }, size = 3, direction = "up", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Sea Serpent Grotto", type = 'rect', center = { x = 20.0, y = 8.5, z = 239.6 }, width = 4.00, height = 3.00, floor_id = 1, colour = "cyan", vertical_axis = 'ns' },
+                    { zone_name = "Sea Serpent Grotto", type = 'arrow', center = { x = 19.4, y = 10.1, z = 249.7 }, size = 3, direction = "nw", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Sea Serpent Grotto", type = 'arrow', center = { x = 3.9, y = 11.2, z = 261.6 }, size = 3, direction = "left", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Sea Serpent Grotto", type = 'arrow', center = { x = -15.3, y = 10.9, z = 264.5 }, size = 3, direction = "up", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Sea Serpent Grotto", type = 'arrow', center = { x = -16.2, y = 10.8, z = 292.1 }, size = 3, direction = "ne", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Sea Serpent Grotto", type = 'arrow', center = { x = -8.6, y = 10.1, z = 306.3 }, size = 3, direction = "nw", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Sea Serpent Grotto", type = 'arrow', center = { x = -25.5, y = 5.9, z = 330.4 }, size = 3, direction = "nw", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Sea Serpent Grotto", type = 'arrow', center = { x = -42.0, y = 0.0, z = 339.7 }, size = 3, direction = "left", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Sea Serpent Grotto", type = 'arrow', center = { x = -61.0, y = -2.0, z = 344.2 }, size = 3, direction = "up", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Sea Serpent Grotto", type = 'arrow', center = { x = -61.1, y = -0.5, z = 374.1 }, size = 3, direction = "up", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Sea Serpent Grotto", type = 'arrow', center = { x = -61.0, y = 1.3, z = 398.9 }, size = 3, direction = "up", floor_id = 1, colour = "yellow" },
+                    { zone_name = "Sea Serpent Grotto", type = 'arrow', center = { x = -60.6, y = -0.6, z = 414.9 }, size = 3, direction = "up", floor_id = 1, colour = "yellow" },
+                },
                 destination_highlight = {position = "K-8", offsetX = 16, offsetY = 16},
                 trigger_on_event_id = { 99 },
             },
@@ -3525,7 +3592,19 @@ return {
                        "Talk to Gumbah at (J-7) inside an upper-level house in Bastok Mines. Gumbah also starts several quests, so be sure the cutscene relates to Werei's letter.",
                 onmob_target = "Gumbah",
                 route_to = "Bastok Mines",
-                destination_highlight = {position = "J-7", offsetX = 16, offsetY = 16},
+                destination_highlight = { position = "J-7", offsetX = 16, offsetY = 16 },
+                zone_max_distance = 20,
+                visual_zones = {
+                        { zone_name = "Bastok Mines", type = 'arrow', center = { x = 34.1, y = 0.0, z = -57.2 }, size = 3, direction = "up", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Bastok Mines", type = 'arrow', center = { x = 28.4, y = 0.0, z = -24.1 }, size = 3, direction = "left", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Bastok Mines", type = 'arrow', center = { x = -3.9, y = 0.0, z = -23.0 }, size = 3, direction = "up", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Bastok Mines", type = 'arrow', center = { x = -3.5, y = 0.0, z = 10.1 }, size = 3, direction = "right", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Bastok Mines", type = 'arrow', center = { x = 36.9, y = 0.0, z = 8.7 }, size = 3, direction = "right", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Bastok Mines", type = 'arrow', center = { x = 58.7, y = 0.0, z = 7.4 }, size = 3, direction = "down", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Bastok Mines", type = 'arrow', center = { x = 59.7, y = 0.0, z = -12.8 }, size = 3, direction = "left", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Bastok Mines", type = 'arrow', center = { x = 50.4, y = -0.0, z = -13.6 }, size = 3, direction = "down", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Bastok Mines", type = 'rect', center = { x = 49.9, y = -1.4, z = -16.8 }, width = 2.25, height = 2.75, floor_id = 0, colour = "cyan", vertical_axis = 'ns' },
+                },
                 trigger_on_event_id = { 175,177 },
             },
             {

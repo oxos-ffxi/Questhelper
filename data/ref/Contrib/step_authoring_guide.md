@@ -1,0 +1,471 @@
+# QuestHelper Step Authoring Guide
+
+Derived from the mature Windurst chain (`data/Missions/Windurst.lua`) and the engine in
+`modules/triggers.lua`, `modules/utils.lua`, `modules/pathfinding.lua`, `questhelper.lua`.
+Use this when turning a wiki walkthrough + server mission Lua into QuestHelper steps.
+
+The one rule that matters most: **triggers must be correct; visuals (arrows/`visual_zones`) are
+icing and can be filled in later.** A step with the right trigger but no arrows still works.
+
+---
+
+## 1. How to break a mission into steps
+
+Read the **server mission script** first, not the wiki. The server is the source of truth for
+progression. Work from `setMissionStatus` transitions and `onEventFinish` handlers.
+
+Rules:
+
+1. **One step per status-advancing event / NPC interaction.** Each server event that calls
+   `setMissionStatus` (or gives the key item / completes the mission) is a step boundary. The
+   event ID that causes that transition is that step's trigger.
+2. **Never collapse a chain of distinct events into one step keyed on the last event.** If you
+   talk to 6 knights in sequence (6 different event IDs), that's 6 steps. A single trigger leaves
+   the highlight/arrow stuck on the first NPC while the player has moved on. (See Rescue Drill 2-1.)
+3. **Optional / flavor dialogue = not a step.** Events with no `setMissionStatus` handler are
+   just talk. Mention them in the step text (`(NPC nearby has optional dialogue.)`), don't gate on them.
+   The quickest tell in an LSB quest file is the call itself: **`quest:progressEvent(id)` is a step
+   boundary, plain `quest:event(id)` is flavour.** Confirm by checking whether that id appears in the
+   section's `onEventFinish` - if it does not, nothing happens when the cutscene ends. Chocobo's
+   Wounds is the clean example: Osker returns `quest:event(...)` with a different id per progress
+   stage, so he reads the state back to the player but advances nothing.
+4. **Random branches → one step, list every possibility.** When the server rolls a var and routes
+   to one of several NPCs/events (e.g. a random knight gives the item), put all the event IDs in
+   one `trigger_on_event_id` and all NPCs in `onmob_target`. (See Rescue Drill step 9: `{112,113,114}`.)
+5. **Accept step trigger depends on the server:** if `handleAcceptMission` calls
+   `player:messageSpecial(...YOU_ACCEPT_THE_MISSION)` use `trigger_on_talk`; if it does NOT
+   (common), use `trigger_on_event_id` on the accept cutscene IDs (San d'Oria = `{1009, 2009}`).
+6. **Turn-in / completion:** trigger on the `onEventFinish` IDs, and include BOTH the first-time
+   and repeat IDs (San d'Oria trades are typically `{1003,1023,2003,2023}`-style sets).
+7. Note oddities in a `-- comment` or the step text: status numbers that skip (0→2), repeat paths
+   that diverge from first-time, inventory-slot requirements.
+
+---
+
+## 2. Which trigger to use
+
+| Situation | Field | Notes |
+|---|---|---|
+| Talk to NPC / watch cutscene / trade turn-in | `trigger_on_event_id = {id,...}` | Pull IDs from server `onEventFinish`. Most common + most reliable. |
+| ...scoped to a zone | `trigger_on_event_id = {id, "Zone Name"}` | A string in the list is a zone filter. Use it for any low id. |
+| Accept with an accept-message | `trigger_on_talk = {"You have accepted the mission"}` | Only if server sends that `messageSpecial`. Verify first. |
+| Obtain a normal item (mob drop / NPC gives) | `trigger_on_item_obtain = {"Item Name"}` | Pair with `items_needed = {"Item Name"}`. `require_all_items = true` for a set. |
+| Obtain N of an item | `trigger_on_item_obtain = {{item = "Name", quantity = 4}}` | Fires on the obtain/buy message, then verifies the real inventory count. |
+| Skip a gather step the player has already done | `skip_if_have = {item = "name", quantity = 4}` | Periodic inventory check, OR semantics. Catches AH purchases and stock on hand. |
+| Obtain a key item | `trigger_on_keyitem_obtain = {id,...}` | Pair with `keyitems_needed = {id,...}`. `require_all_keyitems = true` for a set. |
+| Enter a zone / battlefield / area cutscene | `zone_trigger = "Zone Name"` | Matches by `zones.lua` ID. Name must exist there. |
+| Kill N mobs in the open world | `kill_requirement = {...}` | See below. Add a `trigger_on_event_id` too if a CS follows the kills. |
+| Gain a status effect | `trigger_on_buff = <id>` | Rare (e.g. Beadeaux Silence). |
+| Witness weather types | `weather_watch = {...}` | Banks elements seen on ZONE-IN. See below. |
+
+`weather_watch` shape (SMN "I Can Hear a Rainbow" is the only user so far):
+```lua
+weather_watch = {
+    label = "Colours shown to the ruby",
+    slots = {                                    -- valid keys: clear fire water earth wind ice thunder
+        { key = "fire", label = "Fire (Hot Spell / Heat Wave)" },
+    },
+    zones = { "Valkurm Dunes", ... },            -- optional: only these zones credit
+    requires_item = "Carbuncle's Ruby",          -- optional but usually essential, see below
+    display_only = true,                         -- optional: track but never auto-complete
+},
+```
+Completes the step once every declared slot has been seen, unless `display_only`.
+
+**Always give it a `requires_item` if the quest has one.** `current_mission` is whatever the player
+has *selected in the UI*, not what they are actually on - so merely browsing a weather quest would
+otherwise bank colours for a quest they have never started. `requires_item` mirrors the server's own
+precondition (SMN's section check is `hasItem(CARBUNCLES_RUBY)`), which makes the addon inactive in
+exactly the cases the server would refuse credit. The handler also skips missions already marked
+complete.
+
+Debug with `/qh_weather` (current weather, banked list, whether tracking is ACTIVE), `test` to force
+a capture past the item gate, `set <name>` / `unset <name>` to correct a slot by hand, and
+`clear` / `clearall` to wipe. `set` matters for players who were part-way through the quest before
+installing the addon - without it their only option is re-hunting weather the server already
+credited.
+
+**It fires on ZONE CHANGE only, and that is deliberate** - the server grants credit in each
+zone's `onZoneIn`, so weather that rolls over while the player stands still earns nothing.
+Polling every frame would show colours as banked that were never credited. The check is also
+deferred ~4s past the zone change (`WEATHER_SETTLE_DELAY` in `questhelper.lua`) because the
+weather value in client memory still holds the previous zone's reading for a moment after the
+zone id flips.
+
+**Never name a slot key after a table operation** - `clear`, `copy`, `map`, `keys`. These keys are
+table indexes, and the state tables are Ashita `T{}`s whose metatable exposes the table library
+through `__index`, so `seen['clear']` returns that *function* and reads as true forever. The SMN
+tracker shipped with exactly that bug: its Clear slot showed DONE regardless of weather and
+survived every wipe. Reads go through `quest_state.hasWeatherSeen`, which uses `rawget`; the key
+itself is `none`, matching `xi.weather.NONE`.
+
+Only the seven elemental buckets exist. Clouds and Fog are not elemental, and Light/Dark
+(Auroras/Gloom) are not in the quest's table - `WEATHER_ELEMENT` in `triggers.lua` leaves all of
+them unmapped on purpose, so they can never tick a slot. Sunshine folds into `clear`, matching the
+server. State is stored in `weather_progress`, persistent like `quest_choices` (**not** day-stamped
+like `daily_progress`) since these sightings hold across days and relogs.
+
+**Item name matching differs by mechanism, and this catches people out.** The *message* match in
+`trigger_on_item_obtain` is a case-sensitive plain `find` against chat text, so the casing has to
+match the log line. The *inventory* checks - `skip_if_have`, and the quantity verification inside
+`trigger_on_item_obtain` - go through `inventory.hasItem`, which is **case-insensitive substring**
+across the item's Name, LogNameSingular and LogNamePlural. So a short lowercase fragment
+(`"gausebit"`) is the robust choice for anything inventory-backed, while message triggers may need
+both casings listed. See `data/Quests/Upper Jeuno.lua` for the pattern.
+
+**Scope low event ids to a zone.** Put the zone name as a string anywhere in the
+`trigger_on_event_id` list and the trigger only fires in that zone:
+
+```lua
+trigger_on_event_id = { 0, "Buburimu Peninsula" },
+```
+
+Server event ids restart per zone, so single-digit ids like 0, 2 and 5 are common everywhere.
+Without a filter, a step waiting on event 2 can be completed by an unrelated cutscene somewhere
+else - and event 0 doubles as the "text interaction" case (`event_id == 0 and param0 == target`),
+making it the most collision-prone value there is. Anything below ~10 should carry a zone.
+Handled in `triggers.handlePacketIn`.
+
+`kill_requirement` shape:
+```lua
+kill_requirement = {
+    count = 2,
+    enemies = {"Dark Dragon","Seeker"},   -- or zone = "Tahrongi Canyon" for "any mob in zone"
+    count_party_kills = true,              -- credit party/alliance kills
+    reset_on_zone_entry = true,            -- reset counter on zone-in (BCNM)
+    display_only = true,                   -- show progress but DON'T auto-advance (advance via 32001)
+},
+trigger_on_event_id = {32001},             -- BCNM win
+```
+
+---
+
+## 3. Which map/visual to use
+
+| Goal | Field | When |
+|---|---|---|
+| Guide to a town / outpost / open zone target | `route_to = "Zone"` + `destination_highlight = {position="G-10", offsetX=16, offsetY=16}` | Default for simple/open zones. Auto-paths; when already in-zone it just shows that zone's map + highlight. |
+| Specific rooms in a multi-floor dungeon | `images = {...}` with `floor_id` + `state` | Only when you need a particular floor's map. |
+| In-world directional arrows through a dungeon/zone | `visual_zones = {...}` + `zone_max_distance` | Progressive arrows; markers only draw within `zone_max_distance`. |
+| Highlight a roaming enemy to kill | `onmob_enemy = {"Mob"}` (`onmob_enemy_colour`, `onmob_enemy_size`) | No coords needed — radar-highlights the mob live. |
+| Highlight a clickable NPC/object | `onmob_target = {"Name"}` | Display or internal names both work (`"Door: Vestal-chamber"`, `"qm_windy_9_2"`). |
+| Swap the marker icon over those targets | `onmob_target_icon = "Hatchet"` | Names an ITEM; its in-game icon replaces the default "!". See below. |
+
+### `onmob_target_icon` - the marker floating over a target
+
+By default every `onmob_target` draws the "!" from `assets/quest_icon.png`. This field swaps it,
+and takes either a **named marker** or an **item name**.
+
+**Named markers** borrow WoW's vocabulary, so the shape tells the player what kind of interaction
+this is before they read a word:
+
+| Name | Alias | Asset | Means |
+|---|---|---|---|
+| `"!"` | `"start"` | `quest_icon.png` | Accept / begin a quest. **The default**, so a quest-start step need not ask for it. |
+| `"?"` | `"handin"` | `quest_question.png` | Hand in, collect, complete. |
+| `"speech"` | `"talk"` | `speech_bubble.png` | Just talk to them; nothing changes hands. |
+
+**Item names** draw that item's own 32x32 in-game icon, pulled from the game's resources by
+`item_info.getIconTexture` - the same lookup the reward panel uses, so no asset is added. Use it
+whenever something is being traded, so the marker shows *what* to hand over:
+
+```lua
+onmob_target = "Toji Mumosulah",
+onmob_target_icon = "Hatchet",     -- the NPC who sells it gets a hatchet over his head
+```
+
+Named markers are checked first, then item names. No FFXI item is called `!`, `?` or `speech`, so
+the two namespaces cannot collide. `data/Jobs/Samurai.lua` uses the whole vocabulary end to end if
+you want a worked example - bubbles on the two pupils who only talk, item icons on all four
+trades, `?` on the final collect.
+
+A **list** draws several icons side by side, centred on the target - for a step that trades more
+than one thing:
+
+```lua
+onmob_target_icon = { "Bomb Steel", "Sacred Branch" },   -- both items over the NPC's head
+```
+
+Any number works; they lay out horizontally at 32px with a 4px gap, so keep it to two or three
+before it starts covering the NPC.
+
+It applies to **every** target the step draws, not one of them - the icons are resolved once for
+the whole `drawBeamsToTargets` pass. Per-target icons would need them threaded into
+`targetsToDraw`, which they are not.
+
+Each name must match an item exactly (case-insensitive, no substring), same rule as `reward.items`.
+Names that do not resolve are **dropped from the list**, and a step whose names all fail falls back
+to the default "!" - so a typo costs you that one icon, never the marker. The tell is an icon
+silently missing from a pair: check the exact item name with `/qh_item <name>`, remembering that
+`Bomb Steel` and `lump of bomb steel` are the item's Name and its log name respectively, and only
+the former resolves here.
+
+**This does not overload `onmob_target`.** That field is already a *list of target names*
+(`{"pool-qm2", "dew-qm3"}`), so a second string in it means another target, not an icon.
+
+Only item icons work today. Speech bubbles, fight icons and similar would each need a PNG in
+`assets/` plus a name-to-texture table - the draw path itself takes any texture, so that is the
+easy half.
+
+### `route_choices` - let the player pick the destination
+When a step is valid in many zones (the SMN weather hunt has 25), drawing every route is
+useless. List them instead and the player clicks one:
+
+```lua
+route_choices_label = "Route to (click one):",   -- optional
+route_choices_per_row = 3,                       -- optional, default 3
+
+-- Either a flat list...
+route_choices = { "Valkurm Dunes", "Konschtat Highlands", ... },
+
+-- ...or grouped, when the zones need explaining:
+route_choices = {
+    { group = "Fire",  zones = { "Valkurm Dunes", "Cape Teriggan" } },
+    { group = "Ice",   zones = { "Beaucedine Glacier", "Xarcabard" } },
+},
+```
+
+**A default destination.** A group may declare `default = true` (its first zone) or
+`default = "<zone>"` (one of its own), and the step routes there before the player clicks
+anything - maps, the Route panel and the active button all follow it:
+
+```lua
+route_choices = {
+    { group = "Gusgen Mines - best rate", zones = { "Gusgen Mines" }, default = true,
+      destination_highlight = { position = "H-7", offsetX = 16, offsetY = 16, label = "Bandersnatch" } },
+    { group = "West Ronfaure - closest",  zones = { "West Ronfaure" },
+      destination_highlight = { position = "H-9", offsetX = 16, offsetY = 16, label = "Tainted Hound" } },
+},
+```
+
+`default` may sit on the group, or on a single zone entry when you want to name one precisely -
+both are checked, zone entry first.
+
+It is opt-in, **not** "just use the first choice". The SMN weather step offers 25 zones across 7
+groups; auto-routing to one of them would be a guess dressed up as help.
+
+**Precedence, when a step carries both `route_to` and `route_choices`** (which is allowed):
+
+1. the player's pick, if it is still one of the offered zones
+2. the step's own `route_to`
+3. a group marked `default`
+
+`route_to` beats the group default deliberately - a step with both is saying "start here, and here
+are the alternatives", and an explicit destination should not be silently overridden by a group
+flag. `default` exists for steps that offer *only* choices and would otherwise sit unrouted until
+clicked. Clearing a pick lands back on whichever of those applies rather than on nothing, so
+clicking the active button on such a step reads as a no-op - that is the point, the step is never
+left unrouted. A destination that is not one of the listed zones lights no button at all.
+
+**Per-zone and per-group `destination_highlight`.** Without one, a multi-destination step carries
+a single highlight that draws on *whichever* zone was picked - a Gusgen Mines grid ref pinned on
+the West Ronfaure map. A `zones` entry may be a bare name or a table carrying its own fields, so
+destinations that share a pin and destinations that need their own can sit in the same group:
+
+```lua
+{
+    group = "Ronfaure - closest, night only",
+    zones = {
+        { zone = "West Ronfaure", destination_highlight = { position = "H-9", offsetX = 16, offsetY = 16 } },
+        "East Ronfaure",   -- no known spot: routes with no pin
+    },
+},
+```
+
+Most specific wins: the zone's own entry, then its group's, then the step's. Anything with none
+of those routes without a pin, which is the right answer when the spot is unknown - do not borrow
+a neighbour's coordinate to fill the field. A zone listed in two groups takes the first one's.
+
+Resolution is `quest_state.resolveDestinationHighlight`, and `quest_state.routeChoiceZone(entry)`
+normalises an entry to `name, table`. Never read `step_data.destination_highlight` directly in new
+code, same rule as `resolveRouteTo`.
+
+**Per-zone and per-group `visual_zones`.** Same two levels, but **additive** rather than
+most-specific-wins: the step's markers, plus the resolved group's, plus the resolved zone's. A
+highlight is one pin so two of them fight; arrow chains compose, letting a group hold the shared
+approach and a zone its own final leg.
+
+Scope a chain to its choice whenever the step offers several destinations. `zone_name` already
+stops chains colliding *inside* a zone, but it does not stop an unpicked destination's chain
+drawing when you happen to be in that zone - a King Ranperre's chain lighting up while you cross
+East Ronfaure heading for Gusgen Mines. Resolution is `quest_state.resolveVisualZones`, read by
+`questhelper.lua`; it returns the author's own list unchanged when no choice contributes, so the
+per-frame draw path allocates nothing in the common case.
+
+**Collapsing finished groups.** `route_choices` knows nothing about *why* a group might be done -
+keep it that way, it is meant to be reusable by any step with several valid destinations. The
+coupling belongs on the feature that owns the progress. For weather, a `weather_watch` slot names
+the group it satisfies:
+
+```lua
+slots = { { key = "fire", label = "Fire (...)", route_group = "Fire" } },
+```
+
+Once that colour is banked the matching group is **hidden**, and when every group is done the whole
+block disappears rather than leaving an empty header. Hiding is safe here precisely because the
+tracker itself is on screen listing every colour as DONE / ____ - leaving a "Fire - DONE" line in
+the route block as well was just duplication. `/qh_weather clear` is the recovery path if a tick is
+ever wrong. Any future tracker can do the same by pointing at a group label.
+
+Group when a bare list of 20+ zones would mean nothing to the player. The group label carries
+the "why", which usually lets you delete the same information from the step text - the SMN
+weather step dropped its whole per-colour table this way. A zone may appear in several groups
+(Valkurm Dunes gets both fire and earth weather); picking it from either routes to the same
+place, so both buttons show as active.
+
+The pick becomes that step's effective `route_to` (maps and the Route panel both follow it),
+persists per step, and clicking the active one clears it. A pick that is no longer in the list -
+because the data file changed - is ignored rather than routing somewhere the step no longer
+mentions. Resolution lives in `quest_state.resolveRouteTo`; never read `step_data.route_to`
+directly in new code.
+
+### `route_to` and `images` are mutually exclusive - never both on one step
+
+Pick one per step:
+
+- **`route_to` + `destination_highlight`** - cities, towns, outposts, open zones. Anywhere the
+  player just needs to *get there*. Maps are generated for you.
+- **`images`** - specific dungeons where you must pinpoint a spot the router cannot express
+  (a particular floor, a lever, a coffer room).
+
+This is not a style preference, it is how the code branches. In `utils.lua` the `images` check
+comes first and **returns unconditionally** (`return matched`, ~line 174), so the `route_to` map
+branch below it is **unreachable whenever `images` is present**. Putting both on a step does not
+give you both - the `images` win and the route maps you thought you were getting never render.
+
+Two consequences worth knowing:
+
+- `images` does its **own** routing. If the player is not in one of the `zone_name` zones, it paths
+  them to the nearest one and uses that image's `highlights` as the destination highlights. So a
+  dungeon step with `images` and no `route_to` still guides the player there.
+- If **no** `images` entry matches the current `state`, `matched` is empty and it *still* returns -
+  so a mis-synced `state` does not merely hide one map, it leaves the step with **no maps at all**.
+
+Need several marked spots without a dungeon map? Use the **array form of `destination_highlight`**
+rather than reaching for `images`:
+
+```lua
+route_to = "Sauromugue Champaign",
+destination_highlight = {
+    { position = "L-8",  label = "Cliff" },
+    { position = "L-10", label = "Cave"  },
+},
+```
+
+`generateRouteImages` accepts that array and supports per-entry `floor_id` and `label`
+(`pathfinding.lua:340-344`).
+
+Note `route_to` still drives the textual **Route** panel in `ui_main.lua` independently of all
+this - that panel reads `step_data.route_to` directly. It is only the *maps* that short-circuit.
+
+`images` entry shape:
+```lua
+{ zone_name = "Quicksand Caves", floor_id = 4, width = 512, height = 512, state = 5,
+  highlights = { { position = "I-9", offsetX = 16, offsetY = 16, label = "1" } } }
+```
+
+`visual_zones` marker shape (world coords, drawn in 3D):
+```lua
+{ zone_name = "East Sarutabaruta", type = 'arrow', center = { x=260.0, y=-17.3, z=-457.3 },
+  size = 4, direction = "down", floor_id = 0, colour = "yellow" }
+```
+- `type`: `'arrow'` (needs `direction`: up/down/left/right/nw/ne/se/sw), `'square'`, `'rect'` (needs `width`/`height`, optional `vertical`/`rotation`/`vertical_axis`).
+- **Colour convention:** `yellow` = path/direction arrows, `cyan` = target location, `green` =
+  survival guide / warp / start point, `red` = enemy.
+
+---
+
+## 3b. Reward items
+
+`reward.items` renders one collapsible entry per item, above `reward.text`:
+
+```lua
+reward = {
+    text  = "Title: Knight in Training\n \n",
+    items = {
+        { name = "Spatha", type = "Sword", races = "All Races" },
+    },
+},
+```
+
+Fields: `name` (required), `type`, `races`, `stats` (a list of strings), `level`, `jobs`, `note`.
+
+**Only `name` is really required.** `modules/item_info.lua` looks the name up in the game's own
+resources - exact, case-insensitive, so `Spatha` will not match `Spatha +1` - and fills in
+`level`, `jobs` and `stats`. Anything the data file states wins; the game only fills gaps.
+
+`stats` comes from the item's own **description** field, the same text the in-game help window
+shows, so `Ranged Accuracy +5 Ranged Attack +5` arrives without anyone typing it. The trailing
+`Lv.14 RNG` line is stripped, since level and jobs already have their own rows. `DMG: n, Delay: n`
+built from the integer fields remains as a fallback for records whose description does not come
+through.
+
+**Do not hand-write `stats` just to fill the row** - if it is blank, the lookup failed and that is
+the bug to chase. Author it only to say something the game does not, e.g. narrowing a range or
+adding a caveat. Description reading is gated on the item decoding a job mask, i.e. on it being
+equipment: furnishings and materials keep flavour prose in that same field, and `Steam Clock`
+would otherwise render a paragraph of it as its stat line.
+
+Not pulled from the game: `type`, `races` and `note`. `races` is deliberate - the race bitmask
+layout was never confirmed, and a wrong race line is worse than none. The job list IS decoded
+from a mask (`JOBS` in `item_info.lua`) and is **unverified against a live client** - if a
+reward's jobs read wrong, that table is the first thing to check, and authoring `jobs` on the
+item overrides it.
+
+The item's **in-game icon** is drawn next to the name automatically, also from the name alone -
+`item.Bitmap` is already a standard in-memory bitmap, so D3DX detects the format with no header
+handling. Approach lifted from `oxos-ffxi/ffxi-tcg` `modules/textures.lua`.
+
+Lookups are cached per name. The first miss triggers one sweep of the item resources to build a
+name index, so the cost lands once rather than per frame. Icon textures are cached by item id and
+**deliberately never released** - `d3d8.gc_safe_release` frees the underlying D3D texture when the
+cdata is collected, so dropping that reference while ImGui still holds the id is a use-after-free,
+not a leak. Icons are 32x32 and reward items are few.
+
+---
+
+## 4. Non-obvious conventions (get these wrong and maps silently break)
+
+- **`state` = the step's 1-based index.** An `images` entry only renders when `state` equals the
+  step's position in the `steps` array (`utils.lua`); `state = nil` always renders. **When you
+  insert or renumber a step, re-sync every `state` in the steps after it**, or their maps vanish.
+- **`floor_id` is overloaded** — in `images` it selects which floor's map; in a `highlights` entry
+  it filters that highlight to a floor; in `zone_connections` it's the floor an exit sits on (or,
+  on an edge into the destination, the destination entrance floor). See `pathfinding.lua`.
+- **`backtrack_floor_id`** on a step picks which entrance a multi-entrance dungeon routes to (e.g.
+  Outer Horutoto from West Sarutabaruta: `1` = F-4, `4` = F-11).
+- **`zone_max_distance`** is a proximity threshold in yalms for drawing `visual_zones` markers;
+  a per-marker `max_distance` overrides it. Typical value 35–40.
+- Zone names in `route_to`, `zone_trigger`, and `images.zone_name` must exist in `data/zones.lua`
+  / `data/zone_connections.lua`. Run `/qh_validate` (or the debug Validate tab) after edits.
+
+---
+
+## 5. Text style
+
+**See `step_text_style_guide.md` for the full rules.** That document owns the prose layer and is
+derived from the renderer in `modules/ui_theme.lua`, which *parses* step text - the conventions
+below are load-bearing, not cosmetic. The short version:
+
+- Prefix every step: `"Step N: ..."`.
+- Paragraph break is `" \n \n"` (space-newline-space-newline); single line break is `" \n"`.
+- Section headers inside a step: `"===== Header ====="`.
+- Callout prefixes: `WARNING:` (aggro/danger), `CRITICAL:` (do-or-fail), `NOTE:` (caveat),
+  `TIP:` (shortcut/optional). Wrap purely-optional info in `( ... )`.
+  These are matched EXACTLY and case-sensitively at the start of a line - `Note:` renders grey, a
+  leading `- ` kills the colour, and a callout hard-wrapped across `\n` loses its colour on the
+  second line. One callout = one source line; let the renderer wrap it.
+- Put grid coords inline: `Galaihaurat at (E-6)`. For fights, include level/job/family and any
+  immunities (Sleep/Silence/etc.).
+
+---
+
+## 6. New-step checklist
+
+1. Found the server `setMissionStatus`/`onEventFinish` for this objective → correct trigger + IDs?
+2. One step per event (no collapsing, optional dialogue not gated)?
+3. `state` on every `images` entry equals the step index?
+4. Map field chosen per §3 (route_to for open, images for multi-floor dungeon)?
+5. Enemy kills use `onmob_enemy` (roaming) or `kill_requirement` (count)?
+6. Zone names exist in `zones.lua` / `zone_connections.lua`? (`/qh_validate`)
+7. Text has the `Step N:` prefix, coords, and any WARNING/CRITICAL callouts?

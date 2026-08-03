@@ -18,6 +18,12 @@ local default_settings = T{
     partial_progress = T{},
     kill_counts = T{},
     daily_progress = T{},  -- Day-stamped scratch state (e.g. Castle Oztroja passwords); resets each Vana'diel day
+    quest_choices = T{},   -- Server-randomised objectives captured from NPC dialogue (e.g. Genkai 4 clues).
+                           -- NOT day-stamped: these hold until the quest is finished or cleared by hand.
+    route_choice = T{},    -- Player's chosen destination for steps offering several (route_choices).
+    weather_progress = T{},-- Weather types witnessed on zone-in (e.g. SMN "I Can Hear a Rainbow").
+                           -- NOT day-stamped, same reasoning as quest_choices: the server remembers
+                           -- which colours the ruby has been shown across days, zoning and relogs.
     current_map = T{},  -- Tracks active map number per zone ID
     keyitem_cache = T{},  -- Cached list of owned key item IDs (array of numbers)
     fame_cache = T{},     -- [area] = {level = n, day = vana_day_stamp}; last value seen from a reputation NPC
@@ -34,6 +40,8 @@ local default_settings = T{
         prerequisites_section_expanded = true, -- Prerequisites section expanded state
         requirements_section_expanded = true,  -- Requirements section (level/fame) expanded state
         route_section_expanded = true,     -- Route section expanded state
+        handheld_mode = false,      -- Small screens: map becomes a tab instead of a second window
+        auto_sync = true,           -- Mark quests/missions complete from the server's 0x56 log
         dev_mode = false            -- Developer mode - enables debug output
     }
 }
@@ -60,14 +68,57 @@ local function ensure_key_path(t, ...)
     return current
 end
 
--- Gets the completion state of a specific step
-function quest_state.getStepState(topCat, subfile, mission, step)
+-- Lazy, memoised require of modules.player. Lazy because a top-level require risks a
+-- cycle (see utils.get_images_for_step); memoised because isStepSkipped runs per step
+-- per frame. `false` records a failed require so it is not retried every call.
+local player_module_memo = nil
+local function get_player_module()
+    if player_module_memo == nil then
+        local ok, mod = pcall(require, 'modules.player')
+        player_module_memo = (ok and mod) or false
+    end
+    return player_module_memo or nil
+end
+
+-- True when a step does not apply to this character and should read as done.
+--
+--   skip_if_any_job_level = 71  -- skip once ANY job has reached this level
+--
+-- The Genkai 5 use case: steps 1/3/5 are the Maat conversations, whose events only
+-- fire while the quest is QUEST_ACCEPTED. No job can pass 70 until the cap is broken,
+-- so a job at 71+ proves those events are already spent - even though the job you are
+-- fighting on may only be 66.
+--
+-- Deliberately one-directional: an unknown level (nil) never skips. The worst case is
+-- showing a step the player has to tick by hand, never hiding one they still need.
+function quest_state.isStepSkipped(step_data)
+    if type(step_data) ~= 'table' then return false end
+
+    local threshold = step_data.skip_if_any_job_level
+    if type(threshold) ~= 'number' then return false end
+
+    local player_module = get_player_module()
+    if not player_module then return false end
+
+    local highest = player_module.getHighestJobLevel()
+    return highest ~= nil and highest >= threshold
+end
+
+-- Gets the completion state of a specific step.
+-- Pass step_data (the step's table) to honour skip_if_* fields; omitting it returns
+-- the raw stored tick, which is what the manual checkbox writes.
+function quest_state.getStepState(topCat, subfile, mission, step, step_data)
+    if step_data and quest_state.isStepSkipped(step_data) then
+        return true
+    end
     local path = ensure_key_path(quest_state.settings.step_states, topCat, subfile, mission)
     return path[step] or false
 end
 
--- Sets the completion state of a specific step
-function quest_state.setStepState(topCat, subfile, mission, step, state, step_trigger_flags)
+-- Sets the completion state of a specific step.
+-- defer_save skips the write to disk, for callers ticking many steps at once (the
+-- server sync); they are responsible for saving once at the end.
+function quest_state.setStepState(topCat, subfile, mission, step, state, step_trigger_flags, defer_save)
     -- Clear any existing trigger flags for this specific step to ensure a clean state
     if step_trigger_flags and step_trigger_flags[topCat] and
        step_trigger_flags[topCat][subfile] and
@@ -79,7 +130,9 @@ function quest_state.setStepState(topCat, subfile, mission, step, state, step_tr
     path[step] = state
     debug_print(string.format("Saving step: %s -> %s -> %s -> Step %d = %s",
         topCat, subfile, mission, step, tostring(state)))
-    settings.save(QUESTHELPER_ALIAS, quest_state.settings)
+    if not defer_save then
+        settings.save(QUESTHELPER_ALIAS, quest_state.settings)
+    end
 end
 
 -- Gets the partial completion state for a checklist item
@@ -161,6 +214,449 @@ function quest_state.setDailyPassword(cat, sub, mis, step, slot, word)
     settings.save(QUESTHELPER_ALIAS, quest_state.settings)
 end
 
+-- Quest choice cache (server-randomised objectives, e.g. Genkai 4's four clue NPCs).
+--
+-- Deliberately NOT day-stamped, unlike daily_progress: Maat's picks are fixed for the
+-- life of the quest, so they must survive Vana'diel day rollovers, zoning and addon
+-- reloads. Cleared explicitly via clearQuestChoices (/qh_clearclues) or when the
+-- quest is completed.
+--
+-- Shape: quest_choices[cat][sub][mis][slot] = { index = n, npc = "...", zone = "...", pos = "..." }
+
+--- Returns the captured choice table for a mission, keyed by slot name (may be empty).
+function quest_state.getQuestChoices(cat, sub, mis)
+    if not quest_state.settings.quest_choices then
+        quest_state.settings.quest_choices = T{}
+    end
+    return ensure_key_path(quest_state.settings.quest_choices, cat, sub, mis)
+end
+
+--- Returns a single captured choice, or nil if that slot has not been seen yet.
+function quest_state.getQuestChoice(cat, sub, mis, slot)
+    return quest_state.getQuestChoices(cat, sub, mis)[slot]
+end
+
+--- Records one resolved choice. `entry` is the matched row from data/clue_tables.lua.
+function quest_state.setQuestChoice(cat, sub, mis, slot, index, entry)
+    local choices = quest_state.getQuestChoices(cat, sub, mis)
+    choices[slot] = T{
+        index = index,
+        npc   = entry.npc,
+        zone  = entry.zone,
+        pos   = entry.pos,
+        clue  = entry.clue,
+    }
+    debug_print(string.format("[QuestHelper] Choice %s = [%d] %s (%s)",
+        tostring(slot), index, tostring(entry.npc), tostring(entry.zone)))
+    settings.save(QUESTHELPER_ALIAS, quest_state.settings)
+end
+
+--- Wipes captured choices. Omit `mis` to clear every mission's choices.
+--- Returns how many slots were removed.
+function quest_state.clearQuestChoices(cat, sub, mis)
+    if not quest_state.settings.quest_choices then return 0 end
+
+    local removed = 0
+    if cat and sub and mis then
+        local path = ensure_key_path(quest_state.settings.quest_choices, cat, sub)
+        if type(path[mis]) == 'table' then
+            for _ in pairs(path[mis]) do removed = removed + 1 end
+            path[mis] = nil
+        end
+    else
+        -- Full wipe (test/retry path)
+        for _, subs in pairs(quest_state.settings.quest_choices) do
+            for _, miss in pairs(subs) do
+                for _, slots in pairs(miss) do
+                    for _ in pairs(slots) do removed = removed + 1 end
+                end
+            end
+        end
+        quest_state.settings.quest_choices = T{}
+    end
+
+    settings.save(QUESTHELPER_ALIAS, quest_state.settings)
+    return removed
+end
+
+-- Weather cache (weather types witnessed on zone-in).
+--
+-- Same persistence rules as quest_choices and for the same reason: the server records
+-- these in a bitmask that survives day rollovers, zoning and relogs, so a day-stamped
+-- reset like daily_progress would lie to the player. Cleared when the mission completes.
+--
+-- Shape: weather_progress[cat][sub][mis][step][element_key] = true
+
+--- Returns the table of witnessed weather keys for a step (may be empty).
+function quest_state.getWeatherSeen(cat, sub, mis, step)
+    if not quest_state.settings.weather_progress then
+        quest_state.settings.weather_progress = T{}
+    end
+    local path = ensure_key_path(quest_state.settings.weather_progress, cat, sub, mis)
+    if type(path[step]) ~= 'table' then
+        path[step] = T{}
+    end
+    return path[step]
+end
+
+--- True if this element has been banked.
+---
+--- MUST use rawget. These tables are Ashita `T{}`s, whose metatable exposes the table
+--- library helpers through __index - so a plain `seen[key]` lookup for a key that happens
+--- to share a helper's name (`clear`, `copy`, `map`, ...) returns that FUNCTION and reads
+--- as true forever. That is exactly what happened to the SMN tracker's `clear` slot: it
+--- showed DONE regardless of weather and survived every wipe. Never index these directly.
+function quest_state.hasWeatherSeen(cat, sub, mis, step, key)
+    return rawget(quest_state.getWeatherSeen(cat, sub, mis, step), key) ~= nil
+end
+
+--- Records one witnessed weather element. Returns true if this was new (first sighting),
+--- false if it was already banked - the caller uses that to avoid re-announcing.
+function quest_state.setWeatherSeen(cat, sub, mis, step, key)
+    local seen = quest_state.getWeatherSeen(cat, sub, mis, step)
+    if rawget(seen, key) ~= nil then return false end
+
+    seen[key] = true
+    debug_print(string.format("[QuestHelper] Weather captured: %s", tostring(key)))
+    settings.save(QUESTHELPER_ALIAS, quest_state.settings)
+    return true
+end
+
+-- Route choice (steps that offer several valid destinations).
+--
+-- Some steps name a lot of possible zones - the SMN weather hunt has 25. Rather than
+-- draw every route at once, the step lists them in `route_choices` and the player picks
+-- one; that pick becomes the step's effective route_to. Persistent, per step.
+--
+-- Shape: route_choice[cat][sub][mis][step] = "Zone Name"
+
+--- Returns the zone the player picked for this step, or nil.
+function quest_state.getRouteChoice(cat, sub, mis, step)
+    if not quest_state.settings.route_choice then
+        quest_state.settings.route_choice = T{}
+    end
+    local path = ensure_key_path(quest_state.settings.route_choice, cat, sub, mis)
+    return rawget(path, step)
+end
+
+--- Records the player's pick. Pass nil to clear it.
+function quest_state.setRouteChoice(cat, sub, mis, step, zone)
+    if not quest_state.settings.route_choice then
+        quest_state.settings.route_choice = T{}
+    end
+    local path = ensure_key_path(quest_state.settings.route_choice, cat, sub, mis)
+    path[step] = zone
+    settings.save(QUESTHELPER_ALIAS, quest_state.settings)
+end
+
+--- Flattens route_choices to a plain list of zone names.
+---
+--- Entries are either a bare zone string, or a group:
+---   { group = "Fire", zones = { "Valkurm Dunes", ... } }
+--- Groups exist so the buttons can be labelled by what they are FOR (which weather each
+--- zone gets, say) instead of being one undifferentiated wall of zone names. A zone may
+--- appear in several groups - Valkurm Dunes gets both fire and earth weather - and that
+--- is fine: picking it from either routes to the same place.
+--- A `zones` entry is either a bare zone name, or a table naming one plus its own fields:
+---   zones = { "East Ronfaure", { zone = "West Ronfaure", destination_highlight = {...} } }
+--- Returns the zone name, and the entry table (nil for bare names).
+function quest_state.routeChoiceZone(entry)
+    if type(entry) == 'string' then return entry, nil end
+    if type(entry) == 'table' and type(entry.zone) == 'string' then return entry.zone, entry end
+    return nil, nil
+end
+
+function quest_state.routeChoiceZones(step_data)
+    local out = {}
+    if type(step_data) ~= 'table' or type(step_data.route_choices) ~= 'table' then
+        return out
+    end
+
+    for _, entry in ipairs(step_data.route_choices) do
+        if type(entry) == 'string' then
+            table.insert(out, entry)
+        elseif type(entry) == 'table' and type(entry.zones) == 'table' then
+            for _, z in ipairs(entry.zones) do
+                local name = quest_state.routeChoiceZone(z)
+                if name then table.insert(out, name) end
+            end
+        end
+    end
+
+    return out
+end
+
+--- The zone a route_choices step falls back to when the player has not picked one, so the
+--- step arrives already routed somewhere instead of showing no maps until it is clicked.
+---
+--- Opt-in per group: `default = true` takes that group's first zone, `default = "<zone>"`
+--- names one of its own. Deliberately NOT "just use the first choice" - the SMN weather
+--- step offers 25 zones across 7 groups and auto-routing to one of them would be a guess
+--- dressed up as help. A step that wants a default says so.
+function quest_state.routeChoiceDefault(step_data)
+    if type(step_data) ~= 'table' or type(step_data.route_choices) ~= 'table' then
+        return nil
+    end
+
+    for _, entry in ipairs(step_data.route_choices) do
+        if type(entry) == 'table' and type(entry.zones) == 'table' then
+            -- A zone entry may claim it directly, which is the precise form
+            for _, z in ipairs(entry.zones) do
+                local name, zdata = quest_state.routeChoiceZone(z)
+                if name and zdata and zdata.default then return name end
+            end
+
+            if entry.default then
+                if type(entry.default) == 'string' then
+                    for _, z in ipairs(entry.zones) do
+                        local name = quest_state.routeChoiceZone(z)
+                        if name == entry.default then return name end
+                    end
+                else
+                    return (quest_state.routeChoiceZone(entry.zones[1]))
+                end
+            end
+        end
+    end
+
+    return nil
+end
+
+--- The destination a step should actually route to, in precedence order:
+---
+---   1. the player's pick, when it is still one of the step's offered choices
+---   2. the step's own route_to
+---   3. a route_choices group marked `default`
+---
+--- Validating the pick against the current list means one left over from an edited data
+--- file is ignored rather than routing somewhere the step no longer mentions.
+---
+--- route_to sits ABOVE the group default on purpose. A step carrying both is saying "start
+--- here, and here are the alternatives" - the author's explicit destination should not be
+--- silently overridden by a group flag. `default` is for steps that offer only choices, and
+--- would otherwise sit unrouted until clicked. A step may carry either, both or neither.
+---
+--- Clearing a pick lands back on whichever of those applies rather than on nothing, so on a
+--- step that has one, clicking the active button reads as a no-op. That is intended: the
+--- point is that the step is never left unrouted.
+function quest_state.resolveRouteTo(step_data, cat, sub, mis, step)
+    if type(step_data) ~= 'table' then return nil end
+
+    if type(step_data.route_choices) == 'table' then
+        local choice = quest_state.getRouteChoice(cat, sub, mis, step)
+        if choice then
+            for _, zone in ipairs(quest_state.routeChoiceZones(step_data)) do
+                if zone == choice then return choice end
+            end
+        end
+
+        if step_data.route_to then return step_data.route_to end
+
+        local default = quest_state.routeChoiceDefault(step_data)
+        if default then return default end
+    end
+
+    return step_data.route_to
+end
+
+--- The destination_highlight a step should draw, most specific first:
+---
+---   1. the resolved zone's own entry, when it is a table carrying one
+---   2. the group that zone belongs to
+---   3. the step's own destination_highlight
+---
+--- Without this a step offering several destinations can only carry one highlight, which
+--- then draws on whichever zone was picked - a Gusgen Mines grid ref pinned on the West
+--- Ronfaure map. Per-zone means a group can hold several destinations that each mark their
+--- own spot; per-group still covers the common case where they share one. Anything with
+--- neither falls through and simply routes without a pin.
+---
+--- A zone listed in two groups takes the first one's highlight, matching the order
+--- routeChoiceZones reports.
+function quest_state.resolveDestinationHighlight(step_data, cat, sub, mis, step)
+    if type(step_data) ~= 'table' then return nil end
+
+    if type(step_data.route_choices) == 'table' then
+        local zone = quest_state.resolveRouteTo(step_data, cat, sub, mis, step)
+        if zone then
+            for _, entry in ipairs(step_data.route_choices) do
+                if type(entry) == 'table' and type(entry.zones) == 'table' then
+                    for _, z in ipairs(entry.zones) do
+                        local name, zdata = quest_state.routeChoiceZone(z)
+                        if name == zone then
+                            return (zdata and zdata.destination_highlight)
+                                or entry.destination_highlight
+                                or step_data.destination_highlight
+                        end
+                    end
+                end
+            end
+        end
+    end
+
+    return step_data.destination_highlight
+end
+
+--- Concatenates marker lists, avoiding a new table whenever it can - this runs every frame
+--- in the draw loop, so returning the author's own list unchanged is the common path.
+local function mergeMarkers(a, b, c)
+    local lists, kept = {}, nil
+    for _, l in ipairs({ a or false, b or false, c or false }) do
+        if type(l) == 'table' and #l > 0 then
+            table.insert(lists, l)
+            kept = l
+        end
+    end
+
+    if #lists == 0 then return a end
+    if #lists == 1 then return kept end
+
+    local out = {}
+    for _, l in ipairs(lists) do
+        for _, marker in ipairs(l) do table.insert(out, marker) end
+    end
+    return out
+end
+
+--- The visual_zones a step should draw: its own, plus any carried by the resolved
+--- route_choices group and zone.
+---
+--- ADDITIVE, unlike resolveDestinationHighlight where the most specific wins. A highlight is
+--- one pin, so two of them fight; arrow chains compose - a group can hold the shared approach
+--- and a zone its own final leg.
+---
+--- The point is that a chain belonging to an unpicked destination never draws. zone_name
+--- already stops chains colliding *inside* a zone, but not a Tomb chain lighting up while you
+--- pass through East Ronfaure on your way to Gusgen. Scoping by choice does.
+function quest_state.resolveVisualZones(step_data, cat, sub, mis, step)
+    if type(step_data) ~= 'table' then return nil end
+
+    local own = step_data.visual_zones
+    if type(step_data.route_choices) ~= 'table' then return own end
+
+    local zone = quest_state.resolveRouteTo(step_data, cat, sub, mis, step)
+    if not zone then return own end
+
+    for _, entry in ipairs(step_data.route_choices) do
+        if type(entry) == 'table' and type(entry.zones) == 'table' then
+            for _, z in ipairs(entry.zones) do
+                local name, zdata = quest_state.routeChoiceZone(z)
+                if name == zone then
+                    return mergeMarkers(own, entry.visual_zones, zdata and zdata.visual_zones)
+                end
+            end
+        end
+    end
+
+    return own
+end
+
+--- The draw radius a step's markers fall back to: the resolved route_choices zone's, then its
+--- group's, then the step's zone_max_distance. A per-marker `max_distance` still beats all of
+--- it. Pairs with resolveVisualZones - a choice carrying its own chain can carry the radius
+--- that suits it, so a tight dungeon route and an open-field one can live on one step.
+function quest_state.resolveZoneMaxDistance(step_data, cat, sub, mis, step)
+    if type(step_data) ~= 'table' then return nil end
+
+    local own = step_data.zone_max_distance
+    if type(step_data.route_choices) ~= 'table' then return own end
+
+    local zone = quest_state.resolveRouteTo(step_data, cat, sub, mis, step)
+    if not zone then return own end
+
+    for _, entry in ipairs(step_data.route_choices) do
+        if type(entry) == 'table' and type(entry.zones) == 'table' then
+            for _, z in ipairs(entry.zones) do
+                local name, zdata = quest_state.routeChoiceZone(z)
+                if name == zone then
+                    return (zdata and zdata.zone_max_distance)
+                        or entry.zone_max_distance
+                        or own
+                end
+            end
+        end
+    end
+
+    return own
+end
+
+--- Forgets one witnessed element. Returns true if it was actually banked.
+--- Manual correction path for /qh_weather unset - lets a mistyped `set` be undone without
+--- wiping the whole quest's progress.
+function quest_state.unsetWeatherSeen(cat, sub, mis, step, key)
+    local seen = quest_state.getWeatherSeen(cat, sub, mis, step)
+    if rawget(seen, key) == nil then return false end
+
+    seen[key] = nil
+    settings.save(QUESTHELPER_ALIAS, quest_state.settings)
+    return true
+end
+
+--- Wipes witnessed weather. Omit `mis` to clear every mission's. Returns how many
+--- element slots were removed.
+function quest_state.clearWeatherSeen(cat, sub, mis)
+    if not quest_state.settings.weather_progress then return 0 end
+
+    local removed = 0
+    local function countSteps(steps)
+        for _, keys in pairs(steps) do
+            if type(keys) == 'table' then
+                for _ in pairs(keys) do removed = removed + 1 end
+            end
+        end
+    end
+
+    if cat and sub and mis then
+        local path = ensure_key_path(quest_state.settings.weather_progress, cat, sub)
+        if type(path[mis]) == 'table' then
+            countSteps(path[mis])
+            path[mis] = nil
+        end
+    else
+        for _, subs in pairs(quest_state.settings.weather_progress) do
+            for _, miss in pairs(subs) do
+                for _, steps in pairs(miss) do
+                    if type(steps) == 'table' then countSteps({steps}) end
+                end
+            end
+        end
+        quest_state.settings.weather_progress = T{}
+    end
+
+    settings.save(QUESTHELPER_ALIAS, quest_state.settings)
+    return removed
+end
+
+--- Drops every bit of in-progress scratch state for one mission: checklist ticks, kill
+--- counts, daily passwords, captured choices and witnessed weather. Only for a mission
+--- that is finished -
+--- half-killed counts and half-ticked checklists under a completed mission are noise,
+--- and worse, a trigger can still act on them. Leaves step_states alone; the caller
+--- owns those.
+--- defer_save skips the write to disk, as setStepState does.
+function quest_state.clearMissionProgress(cat, sub, mis, defer_save)
+    local tables = {
+        quest_state.settings.partial_progress,
+        quest_state.settings.kill_counts,
+        quest_state.settings.daily_progress,
+        quest_state.settings.quest_choices,
+        quest_state.settings.weather_progress,
+    }
+
+    local cleared = false
+    for _, t in ipairs(tables) do
+        if t and t[cat] and t[cat][sub] and t[cat][sub][mis] then
+            t[cat][sub][mis] = nil
+            cleared = true
+        end
+    end
+
+    if cleared and not defer_save then
+        settings.save(QUESTHELPER_ALIAS, quest_state.settings)
+    end
+    return cleared
+end
+
 -- Returns the last fame level seen for an area, plus how many Vana'diel days ago it
 -- was seen (nil age if the clock was unavailable at capture). Returns nil if never
 -- checked. NOTE: fame rises silently on any quest turn-in, so this is a historical
@@ -206,17 +702,38 @@ function quest_state.getCurrentStep(topCat, subfile, mission, quest_data)
         return 1
     end
     for i = 1, #mdata.steps do
-        if not quest_state.getStepState(topCat, subfile, mission, i) then
+        if not quest_state.getStepState(topCat, subfile, mission, i, mdata.steps[i]) then
             return i
         end
     end
     return #mdata.steps + 1
 end
 
+-- Counts how many members of a progress_group are complete.
+-- Returns done, total. Used for the "3/15" caption in the mission list.
+function quest_state.getGroupProgress(topCat, subfile, group, quest_data)
+    local fileData = quest_data[topCat] and quest_data[topCat][subfile]
+    if not fileData or not group then return 0, 0 end
+
+    local done, total = 0, 0
+    for mission_name, mission_data in pairs(fileData) do
+        if mission_data.progress_group == group then
+            total = total + 1
+            if quest_state.isMissionComplete(topCat, subfile, mission_name, quest_data) then
+                done = done + 1
+            end
+        end
+    end
+
+    return done, total
+end
+
 -- Checks if an entire subfile is complete.
--- Missions sharing a choice_group are alternate routes the player picks between,
--- so the group counts as done once any one of its members is done - requiring all
--- of them would make such a subfile impossible to complete.
+-- Both group fields settle once any one member is done, for different reasons:
+--   choice_group   - alternate routes; the player only ever does one.
+--   progress_group - one is enough to progress, but the rest stay worth doing
+--                    (Genkai 5: any one Maat win caps you at 75, all 15 = Maat's Cap).
+-- They differ only in presentation (ui_main.lua). Do not use a name as both.
 function quest_state.isSubfileComplete(topCat, subfile, quest_data)
     local fileData = quest_data[topCat] and quest_data[topCat][subfile]
     if not fileData then return false end
@@ -226,7 +743,7 @@ function quest_state.isSubfileComplete(topCat, subfile, quest_data)
 
     for mission_name, mission_data in pairs(fileData) do
         local complete = quest_state.isMissionComplete(topCat, subfile, mission_name, quest_data)
-        local group = mission_data.choice_group
+        local group = mission_data.choice_group or mission_data.progress_group
 
         if group then
             groupSeen[group] = true
@@ -253,7 +770,7 @@ function quest_state.isMissionComplete(topCat, subfile, mission, quest_data)
     if not mission_data then return false end
     local steps = mission_data.steps or {}
     for i = 1, #steps do
-        if not quest_state.getStepState(topCat, subfile, mission, i) then
+        if not quest_state.getStepState(topCat, subfile, mission, i, steps[i]) then
             return false
         end
     end
@@ -266,7 +783,7 @@ function quest_state.calculateProgress(topCat, subfile, mission, quest_data)
     local steps = mdata.steps or {}
     local completed = 0
     for i = 1, #steps do
-        if quest_state.getStepState(topCat, subfile, mission, i) then
+        if quest_state.getStepState(topCat, subfile, mission, i, steps[i]) then
             completed = completed + 1
         end
     end

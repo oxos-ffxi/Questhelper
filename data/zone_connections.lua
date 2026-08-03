@@ -442,7 +442,7 @@ return {
     ["Waughroon Shrine"] = {
     },
     ["Gusgen Mines"] = {
-        {zone = "Konschtat Highlands", exit = "D-6"}
+        {zone = "Konschtat Highlands", exit = "H-10"}
     },
     ["Beadeaux"] = {
         {zone = "Pashhow Marshlands", exit = "E-7"}
@@ -478,7 +478,7 @@ return {
         {zone = "Jugner Forest", exit = "H-12", floor_id = 1}
     },
     ["Bostaunieux Oubliette"] = {
-        {zone = "Chateau d'Oraguille", exit = "I-8"}
+        {zone = "Chateau d'Oraguille", exit = "H-6"}
     },
     ["King Ranperre's Tomb"] = {
         {zone = "East Ronfaure", exit = "G-5"}

@@ -2,12 +2,17 @@
 -- Tab 1 "Log"      : redirected QH debug messages (no chat spam)
 -- Tab 2 "Position" : live coords + visual_zone entry builder
 -- Tab 3 "Target"   : live target NPC coords + locations.lua entry builder
+-- Tab 4 "Validate" : data integrity checks
+-- Tab 5 "Sync"     : what the server's 0x56 linked, and what it did not
 --
 -- Coordinate note: posY_height = horizontal Z (depth), posZ_depth = elevation Y.
 -- Data format:  x = posX,  y = posZ_depth (elev),  z = posY_height (horiz).
 local ui_debug = {}
 
 local imgui = require('imgui')
+local theme = require('modules.ui_theme')
+-- Safe: modules.player only pulls in ffi, so it cannot require its way back here.
+local player_module = require('modules.player')
 
 local ImGuiCond_FirstUseEver = 2
 
@@ -499,110 +504,8 @@ local function render_zone_beams(quest_state_mod)
     end
 end
 
--- ── Step jump (Validate tab) ─────────────────────────────────────────────────
--- Drill down category > subfile > mission > step and force the tracker onto it.
--- "Current step" is not stored anywhere - quest_state.getCurrentStep derives it as
--- the first step whose state is false. So jumping to step N means marking 1..N-1
--- complete and N onward incomplete. Selecting the mission itself has to happen in
--- questhelper.lua, which owns currentTopCategory/Subfile/mission, so we leave the
--- request in ui_debug.pending_jump for it to pick up on the next frame.
-local jump = { cat = nil, sub = nil, mission = nil }
-
-local function sorted_keys(t)
-    local out = {}
-    for k in pairs(t or {}) do table.insert(out, k) end
-    table.sort(out)
-    return out
-end
-
-local function render_jump_tab(quest_state_mod)
-    if not val.quest_data then
-        imgui.TextColored({ 1.0, 0.4, 0.4, 1.0 }, "Quest data not loaded - reload the addon.")
-        return
-    end
-    if not quest_state_mod then
-        imgui.TextColored({ 1.0, 0.4, 0.4, 1.0 }, "Quest state not available.")
-        return
-    end
-
-    imgui.TextColored({ 0.6, 0.6, 0.6, 1.0 },
-        "Navigation only - selects a mission and scrolls the panel to a step so you can read it.")
-    imgui.TextColored({ 0.6, 0.6, 0.6, 1.0 },
-        "Changes NO progress and saves nothing. Beams and arrows keep following real progress,")
-    imgui.TextColored({ 0.6, 0.6, 0.6, 1.0 },
-        "so tick the steps yourself if you want a later step to become active.")
-    imgui.Separator()
-
-    -- breadcrumb + back
-    if jump.cat then
-        if imgui.SmallButton("< back##jb") then
-            if jump.mission then jump.mission = nil
-            elseif jump.sub then jump.sub = nil
-            else jump.cat = nil end
-        end
-        imgui.SameLine()
-        imgui.Text(string.format("%s%s%s",
-            jump.cat,
-            jump.sub and (" > " .. jump.sub) or "",
-            jump.mission and (" > " .. jump.mission) or ""))
-        imgui.Separator()
-    end
-
-    if not jump.cat then
-        imgui.Text("Category:")
-        for _, c in ipairs(sorted_keys(val.quest_data)) do
-            if imgui.SmallButton(c .. "##jc") then jump.cat = c end
-            imgui.SameLine()
-        end
-        imgui.Text("")
-        return
-    end
-
-    if not jump.sub then
-        imgui.Text("Subfile:")
-        for _, s in ipairs(sorted_keys(val.quest_data[jump.cat])) do
-            if imgui.SmallButton(s .. "##js") then jump.sub = s end
-            imgui.SameLine()
-        end
-        imgui.Text("")
-        return
-    end
-
-    if not jump.mission then
-        imgui.Text("Mission:")
-        for _, m in ipairs(sorted_keys(val.quest_data[jump.cat][jump.sub])) do
-            if imgui.SmallButton(m .. "##jm") then jump.mission = m end
-        end
-        return
-    end
-
-    local mdata = val.quest_data[jump.cat][jump.sub][jump.mission]
-    local steps = mdata and mdata.steps or {}
-    if #steps == 0 then
-        imgui.Text("This mission has no steps.")
-        return
-    end
-
-    local cur = quest_state_mod.getCurrentStep(jump.cat, jump.sub, jump.mission, val.quest_data)
-    imgui.Text(string.format("%d steps - real progress is on step %d", #steps, cur))
-    imgui.Text("Go to step:")
-
-    for i = 1, #steps do
-        if imgui.SmallButton(tostring(i) .. "##jstep") then
-            -- Navigation only. Nothing is written to quest_state, nothing is saved.
-            -- This selects the mission and scrolls the panel to the step so it can be
-            -- read; beams/arrows still follow real progress until you complete steps
-            -- normally.
-            ui_debug.pending_jump = {
-                cat = jump.cat, sub = jump.sub, mission = jump.mission, step = i,
-            }
-            ui_debug.addLine(string.format("[QH] viewing %s step %d (progress unchanged)",
-                jump.mission, i))
-        end
-        if i % 12 ~= 0 then imgui.SameLine() end
-    end
-    imgui.Text("")
-end
+-- ui_debug.pending_jump: set by the Beam Targets "go" button above, consumed in questhelper.lua.
+-- It asks questhelper to select that mission next frame, since it owns currentTopCategory/Subfile/mission.
 
 -- ── Line builder (Position tab) ───────────────────────────────────────────────
 local lin = {
@@ -664,16 +567,10 @@ local function get_target_entity()
     return ok and result or nil
 end
 
--- Push a highlighted (active) button style.
-local function push_active_style()
-    imgui.PushStyleColor(ImGuiCol_Button,        { 0.15, 0.50, 0.85, 1.0 })
-    imgui.PushStyleColor(ImGuiCol_ButtonHovered, { 0.20, 0.60, 0.95, 1.0 })
-end
-
 local function toggle_btn(label, active)
-    if active then push_active_style() end
+    local pushed = active and theme.pushButton('accent') or 0
     local clicked = imgui.Button(label)
-    if active then imgui.PopStyleColor(2) end
+    if pushed > 0 then imgui.PopStyleColor(pushed) end
     return clicked
 end
 
@@ -1005,6 +902,57 @@ local function render_findings(list, empty_msg, hints)
     end
 end
 
+-- Live job levels. Verifies the two assumptions behind skip_if_any_job_level:
+-- that GetJobLevel is indexed by the same job ids as GetMainJob (1 = WAR), and that
+-- it reads the STORED job level rather than a level-synced one. Lv.0 = job not
+-- unlocked, Lv.1 = unlocked but unlevelled.
+local function render_jobs_tab()
+    imgui.TextColored({ 0.6, 0.6, 0.6, 1.0 },
+        "Nothing passes 70 until the level cap is broken, so a job at 71+ means the")
+    imgui.TextColored({ 0.6, 0.6, 0.6, 1.0 },
+        "Maat conversations are spent - steps with skip_if_any_job_level read as done.")
+    imgui.Separator()
+
+    local levels = player_module.getAllJobLevels()
+    if not levels then
+        imgui.TextColored({ 1.0, 0.4, 0.4, 1.0 }, "GetJobLevel unavailable.")
+        imgui.Text("skip_if_any_job_level will never skip a step (safe fallback).")
+        return
+    end
+
+    local currentJob = player_module.getMainJob()
+    local highest    = player_module.getHighestJobLevel()
+
+    if highest and highest >= 71 then
+        imgui.TextColored({ 0.4, 1.0, 0.4, 1.0 },
+            string.format("Highest job level: %d - cap is broken, those steps read as done.", highest))
+    else
+        imgui.TextColored({ 1.0, 0.75, 0.4, 1.0 },
+            string.format("Highest job level: %s - no job past 70, those steps show as normal.",
+                tostring(highest or "unknown")))
+    end
+    imgui.Text(string.format("Main job: %s (live level %s - may be synced)",
+        player_module.getMainJobName() or "unknown",
+        tostring(player_module.getMainJobLevel() or "unknown")))
+
+    imgui.Separator()
+    imgui.BeginChild("QHVJobsList", { 0, 0 }, false, 0)
+    for job = 1, 22 do
+        local level = levels[job] or 0
+        local line  = string.format("[%2d] %-13s Lv.%-3d", job, player_module.JOB_NAMES[job] or "?", level)
+        if job == currentJob then
+            imgui.TextColored({ 0.4, 0.7, 1.0, 1.0 }, line .. "  <== current main job")
+        elseif level >= 71 then
+            imgui.TextColored({ 0.4, 1.0, 0.4, 1.0 }, line)
+        elseif level == 0 then
+            imgui.TextColored({ 0.5, 0.5, 0.5, 1.0 }, line .. "  (not unlocked)")
+        else
+            imgui.Text(line)
+        end
+    end
+    imgui.EndChild()
+end
+
 local function render_validate_tab(quest_state_mod)
     if imgui.Button("Run Validation") then run_validate() end
     imgui.SameLine()
@@ -1102,16 +1050,143 @@ local function render_validate_tab(quest_state_mod)
             imgui.EndTabItem()
         end
 
-        -- 6: jump straight to a mission step
-        if imgui.BeginTabItem("Jump##vj") then
-            imgui.BeginChild("QHVJump", { 0, 0 }, false, 0)
-            render_jump_tab(quest_state_mod)
+        -- 6: live job levels behind skip_if_any_job_level
+        if imgui.BeginTabItem("Jobs##vjl") then
+            imgui.BeginChild("QHVJobs", { 0, 0 }, false, 0)
+            render_jobs_tab()
             imgui.EndChild()
             imgui.EndTabItem()
         end
 
         imgui.EndTabBar()
     end
+end
+
+-- ── Tab: Server sync ─────────────────────────────────────────────────────────
+-- Type a name, see whether it is linked to a server id and whether the server has
+-- actually set that bit. Those are the only two failure modes and they need opposite
+-- fixes: an unlinked entry wants a line in sync_ids.lua, an unset bit cannot be fixed
+-- by any mapping at all.
+local sync_ui = { search = { "" }, built = false }
+
+local function render_sync_tab()
+    -- Required here rather than at the top: quest_state pulls in this module, so a
+    -- top-level require risks the load order biting back.
+    local quest_sync = require('modules.quest_sync')
+    local stats = quest_sync.stats()
+
+    if not stats.has_packet then
+        imgui.TextColored({ 1.0, 0.75, 0.2, 1.0 }, "No 0x56 seen yet - zone once.")
+        return
+    end
+
+    imgui.TextColored({ 0.6, 0.6, 0.6, 1.0 }, string.format(
+        "%d missions and %d quests linked   %d not linked",
+        stats.mapped_missions, stats.mapped_quests, #stats.unmatched + #stats.ambiguous))
+
+    imgui.Spacing()
+    imgui.Text("Find:")
+    imgui.SameLine()
+    imgui.InputText("##qhsyncsearch", sync_ui.search, 128)
+    imgui.SameLine()
+    if imgui.SmallButton("clear##qhsyncclear") then sync_ui.search[1] = "" end
+
+    imgui.TextColored({ 0.6, 0.6, 0.6, 1.0 },
+        "linked = we know its server id (same on every character)    done = the server says THIS character finished it")
+
+    imgui.Separator()
+    imgui.BeginChild("QHSyncResults", { 0, 0 }, false, 0)
+
+    local text = sync_ui.search[1] or ""
+    if text == "" then
+        -- No search: one collapsible row per data file, so a glance says which are fully
+        -- wired up. Grouped rather than tabbed - the category count is whatever is in
+        -- data/, and a tab bar stops being glanceable past about six.
+        if not sync_ui.built and val.quest_data then
+            quest_sync.buildIndex(val.quest_data)
+            sync_ui.built = true
+        end
+
+        local cover = quest_sync.coverage()
+        local cats = {}
+        for cat in pairs(cover) do table.insert(cats, cat) end
+        table.sort(cats)
+
+        for _, cat in ipairs(cats) do
+            local subs, linked, unlinked, done = {}, 0, 0, 0
+            for sub, c in pairs(cover[cat]) do
+                table.insert(subs, sub)
+                linked, unlinked, done = linked + c.linked, unlinked + c.unlinked, done + c.done
+            end
+            table.sort(subs)
+
+            local header = string.format("%s  -  %d linked, %d done, %d NOT linked###qhcov%s",
+                cat, linked, done, unlinked, cat)
+            if imgui.CollapsingHeader(header, 0) then
+                for _, sub in ipairs(subs) do
+                    local c = cover[cat][sub]
+                    local sub_header = string.format("    %s  -  %d linked, %d done%s###qhcov%s%s",
+                        sub, c.linked, c.done,
+                        c.unlinked > 0 and string.format(", %d NOT linked", c.unlinked) or "",
+                        cat, sub)
+
+                    if imgui.CollapsingHeader(sub_header, 0) then
+                        for _, row in ipairs(quest_sync.entriesFor(cat, sub)) do
+                            if not row.linked then
+                                imgui.TextColored({ 1.0, 0.4, 0.4, 1.0 }, "      NOT LINKED   " .. row.name)
+                            elseif row.done then
+                                imgui.TextColored({ 0.3, 0.85, 0.3, 1.0 }, "      done         " .. row.name)
+                            elseif row.no_data then
+                                -- The server never sent this log, so "not done" would be a
+                                -- guess dressed up as an answer.
+                                imgui.TextColored({ 0.9, 0.75, 0.3, 1.0 },
+                                    string.format("      NO DATA      %s  (log %d never received)", row.name, row.log))
+                            else
+                                imgui.TextColored({ 0.6, 0.6, 0.6, 1.0 }, "      not done     " .. row.name)
+                            end
+                        end
+                    end
+                end
+            end
+        end
+
+        if #stats.unmatched > 0 or #stats.ambiguous > 0 then
+            imgui.Spacing()
+            if imgui.CollapsingHeader(string.format("Not linked (%d)###qhcovun", #stats.unmatched + #stats.ambiguous), 0) then
+                imgui.TextColored({ 0.6, 0.6, 0.6, 1.0 }, "These need a line in data/sync_ids.lua:")
+                for _, m in ipairs(stats.unmatched) do
+                    imgui.TextColored({ 1.0, 0.4, 0.4, 1.0 }, m.label)
+                end
+                for _, name in ipairs(stats.ambiguous) do
+                    imgui.TextColored({ 1.0, 0.75, 0.2, 1.0 }, name .. "   (name is in more than one log)")
+                end
+            end
+        end
+    else
+        if not sync_ui.built and val.quest_data then
+            quest_sync.buildIndex(val.quest_data)
+            sync_ui.built = true
+        end
+        local rows, misses = quest_sync.explain(text)
+
+        if #rows == 0 and #misses == 0 then
+            imgui.TextColored({ 0.6, 0.6, 0.6, 1.0 }, "Nothing matched.")
+        end
+        for _, row in ipairs(rows) do
+            if row.set then
+                imgui.TextColored({ 0.3, 0.85, 0.3, 1.0 }, "server says DONE")
+            else
+                imgui.TextColored({ 1.0, 0.75, 0.2, 1.0 }, "server has NOT set")
+            end
+            imgui.SameLine()
+            imgui.Text(string.format("   %s      [%s log %d id %d]", row.name, row.kind, row.log, row.id))
+        end
+        for _, name in ipairs(misses) do
+            imgui.TextColored({ 1.0, 0.4, 0.4, 1.0 }, "NOT LINKED         " .. name)
+        end
+    end
+
+    imgui.EndChild()
 end
 
 -- ── Tab 3: Target + locations.lua builder ────────────────────────────────────
@@ -1280,7 +1355,12 @@ function ui_debug.render(player_mod, floor_mappings, quest_state_mod, zone_data)
     end
 
     imgui.SetNextWindowSize({ 740, 500 }, ImGuiCond_FirstUseEver)
-    local win_open = imgui.Begin("QH Debug", nil, 0)
+
+    local theme_colors, theme_vars = theme.push()
+    -- Table ref so the title bar's X reports back; it turns Developer Mode off,
+    -- which is the flag that gates this whole window.
+    local dbg_open = { true }
+    local win_open = imgui.Begin("QH Debug", dbg_open, 0)
     if win_open then
         if imgui.BeginTabBar("QHTabs") then
             if imgui.BeginTabItem("Log") then
@@ -1303,10 +1383,22 @@ function ui_debug.render(player_mod, floor_mappings, quest_state_mod, zone_data)
                 render_validate_tab(quest_state_mod)
                 imgui.EndTabItem()
             end
+            if imgui.BeginTabItem("Sync") then
+                active_tab = 'sync'
+                render_sync_tab()
+                imgui.EndTabItem()
+            end
             imgui.EndTabBar()
         end
     end
     imgui.End()
+    theme.pop(theme_colors, theme_vars)
+
+    if not dbg_open[1] then
+        quest_state_mod.settings.ui_settings.dev_mode = false
+        require('settings').save('QuestHelper_settings', quest_state_mod.settings)
+        print("\30\106[QH]\30\01 Developer mode disabled - Debug output hidden")
+    end
 
     -- Locked shapes — always visible regardless of active tab
     if #viz.preview_shapes > 0 then
