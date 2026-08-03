@@ -95,7 +95,22 @@ Work in progress (not ready for v0.1):
 
 ## Installation
 
-1. Place the `QuestHelper` folder in the `addons` directory of your Ashita v4 installation.
+**Recommended — clone it.** The folder gets the right name automatically, and updating later is just `git pull`:
+
+```
+cd "<your Ashita folder>/addons"
+git clone https://github.com/oxos-ffxi/QuestHelper.git
+```
+
+**Or download the ZIP** from the green **Code** button. GitHub names the archive after the branch, so rename the extracted folder before using it:
+
+> `QuestHelper-main` → `QuestHelper`
+
+Ashita loads an addon from `addons/<name>/<name>.lua`, so the folder name has to match the `.lua` inside it. That applies to every Ashita addon, not just this one — it is why cloning is the easier route.
+
+Then:
+
+1. Check the folder sits at `<Ashita>/addons/QuestHelper/`.
 2. Load it in-game with `/addon load questhelper` (or add it to your startup script).
 3. Toggle the window with `/questhelper`.
 
