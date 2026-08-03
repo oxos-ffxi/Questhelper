@@ -2,6 +2,13 @@
 -- Handles loading of quest data, locations, zones, and maps
 local quest_data_module = {}
 
+-- Counts all keys. Ashita's table.count reports 0 for string-keyed tables.
+local function count_keys(t)
+    local n = 0
+    for _ in pairs(t or {}) do n = n + 1 end
+    return n
+end
+
 -- JSON/Data Loading
 local function decode_json(json_str)
     local status, result = pcall(function()
@@ -24,7 +31,7 @@ function quest_data_module.loadZones(addon_name)
         local ok, result = pcall(chunk)
         if ok and type(result) == 'table' then
             zone_data = T(result)
-            print(string.format("[%s] Loaded %d zones from data/zones.lua.", addon_name, table.count(zone_data)))
+            print(string.format("[%s] Loaded %d zones from data/zones.lua.", addon_name, count_keys(zone_data)))
         else
             print(string.format('Error running file: %s -> %s', filepath, err or "unknown"))
         end
@@ -43,7 +50,7 @@ function quest_data_module.loadLocations(addon_name)
         local ok, result = pcall(chunk)
         if ok and type(result) == 'table' then
             location_data = T(result)
-            print(string.format("[%s] Loaded %d locations from data/locations.lua.", addon_name, table.count(location_data)))
+            print(string.format("[%s] Loaded %d locations from data/locations.lua.", addon_name, count_keys(location_data)))
         else
             print(string.format('Error running file: %s -> %s', filepath, err or "unknown"))
         end
@@ -62,7 +69,7 @@ function quest_data_module.loadMaps(addon_name)
         local ok, res = pcall(chunk)
         if ok then
             map_db = T(res)
-            print(string.format("[%s] Loaded %d map calibrations.", addon_name, table.count(map_db)))
+            --print(string.format("[%s] Loaded %d map calibrations.", addon_name, count_keys(map_db)))
         end
     end
     return map_db
@@ -86,12 +93,10 @@ function quest_data_module.loadQuestData(addon_name)
         end
         pCategories:close()
         if #dynamic_directories_list == 0 then
-            print("QuestHelper: WARNING - No category subdirectories found in " .. baseFolder)
-        else
-            print("QuestHelper: Discovered categories: " .. table.concat(dynamic_directories_list, ", "))
+            print(string.format("[%s] WARNING - No category subdirectories found in %s", addon_name, baseFolder))
         end
     else
-        print("QuestHelper: ERROR - Could not execute 'dir' command to find categories in " .. baseFolder)
+        print(string.format("[%s] ERROR - Could not execute 'dir' command to find categories in %s", addon_name, baseFolder))
         return quest_data
     end
 
@@ -99,6 +104,7 @@ function quest_data_module.loadQuestData(addon_name)
     for _, subdir in ipairs(dynamic_directories_list) do
         local folderPath = baseFolder .. subdir .. '/'
         local dirCmd = 'dir "' .. folderPath .. '" /b'
+        local entry_count = 0
         local p = io.popen(dirCmd)
         if p then
             for file_name in p:lines() do
@@ -114,6 +120,7 @@ function quest_data_module.loadQuestData(addon_name)
                                 quest_data[subdir] = T{}
                             end
                             quest_data[subdir][shortName] = T(result)
+                            entry_count = entry_count + count_keys(result)
                         else
                             print(string.format('Error running file: %s -> %s', filepath, err or "unknown"))
                         end
@@ -134,6 +141,7 @@ function quest_data_module.loadQuestData(addon_name)
                                 quest_data[subdir] = T{}
                             end
                             quest_data[subdir][shortName] = T(data)
+                            entry_count = entry_count + count_keys(data)
                         else
                             print(string.format('Error parsing JSON data: %s', filepath))
                         end
@@ -142,6 +150,8 @@ function quest_data_module.loadQuestData(addon_name)
             end
             p:close()
         end
+
+        print(string.format("[%s] Loaded %s %d", addon_name, subdir, entry_count))
     end
 
     return quest_data

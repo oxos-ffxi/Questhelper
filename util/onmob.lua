@@ -59,6 +59,13 @@ local ARGB_BEAM_COLOR
 -- Player position (updated each frame)
 local playerPosX, playerPosY_height, playerPosZ_depth = 0,0,0
 
+-- Counts all keys. Ashita's table.count reports 0 for string-keyed tables.
+local function count_keys(t)
+    local n = 0
+    for _ in pairs(t or {}) do n = n + 1 end
+    return n
+end
+
 -- Hardcoded Data for NPC/Target positions and settings
 local npc_target_data = {
     ["Conrad"] = { 
@@ -153,7 +160,7 @@ end
 -- Addon Load
 ----------------------------------------------------------------------------------------------------
 ashita.events.register('load', 'load_cb', function()
-    print(string.format("[%s] v%s loaded. %d targets defined in script. Current active target: %s", addon.name, addon.version, table.count(npc_target_data), currentActiveTargetKey or "None"))
+    print(string.format("[%s] v%s loaded. %d targets defined in script. Current active target: %s", addon.name, addon.version, count_keys(npc_target_data), currentActiveTargetKey or "None"))
     if ENABLE_VERBOSE_DEBUG then
         print(string.format("[%s] Global Defaults: BeaconMode=%s, BeaconHeight=%.1f", addon.name, tostring(DEFAULT_USE_VERTICAL_BEACON), DEFAULT_BEACON_HEIGHT))
     end
@@ -318,7 +325,7 @@ ashita.events.register('command', 'command_cb', function(e)
         return true
 
     elseif command_base == 'onmob_list' then
-        if table.count(npc_target_data) == 0 then
+        if count_keys(npc_target_data) == 0 then
             print(string.format("[%s] No targets defined in script.", addon.name))
         else
             print(string.format("[%s] Defined Targets:", addon.name))

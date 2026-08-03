@@ -1054,6 +1054,20 @@ return {
         floor_id = 0,
         max_distance = 12
     },
+    ["Baunise"] = {
+        target_pos = { x = -55.7, y = -10.6, z = -29.3 },
+        visual_mode = "arc",
+        zone = "Southern San d'Oria",
+        floor_id = 0,
+        max_distance = 15
+    },
+    ["Cahaurme"] = {
+        target_pos = { x = 55.7, y = -10.7, z = -29.4 },
+        visual_mode = "arc",
+        zone = "Southern San d'Oria",
+        floor_id = 0,
+        max_distance = 15
+    },
     --Northern San d'Oria
     ["Baraka"] = {
         target_pos = { x = 38.65, y= -3.5, z=-5.75},
@@ -1334,16 +1348,18 @@ return {
     -- Paladin: A Squire's Test II. Click the pool, then reach the second within 30 seconds.
     -- No floor_id: which map they sit on is unconfirmed, and omitting it draws on all.
     ["ordelles-caves-stalactite-pool-qm2"] = {
-        target_pos = { x = -94.0, y = 1.0, z = 273.0 },
+        target_pos = { x = -91.7, y = 1.0, z = 276.2 },
         visual_mode = "arc",
         zone = "Ordelle's Caves",
+        floor_id = 1,
         max_distance = 30
     },
     ["ordelles-caves-stalactite-dew-qm3"] = {
-        target_pos = { x = -139.0, y = 0.1, z = 264.0 },
+        target_pos = { x = -140.3, y = -0.2, z = 265.7 },
         visual_mode = "arc",
         zone = "Ordelle's Caves",
-        max_distance = 30
+        floor_id = 1,
+        max_distance = 50
     },
     -- Horlias Peak
     ["horlais-peak-burning-circle"] = {
@@ -1893,6 +1909,14 @@ return {
     },
     ["davoi-howling-pond-h10"] = {
         target_pos = { x = 22.2, y = 1.2, z = -254.8 },
+        visual_mode = "arc",
+        zone = "Davoi",
+        floor_id = 0,
+        max_distance = 20
+    },
+    -- Paladin: A Knight's Test. Knight's Soul, needs both books first.
+    ["davoi-disused-well-e10"] = {
+        target_pos = { x = -221.6, y = 1.9, z = -295.4 },
         visual_mode = "arc",
         zone = "Davoi",
         floor_id = 0,

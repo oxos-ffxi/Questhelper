@@ -182,19 +182,97 @@ return {
                 },
             },
             {
-                text = "Step 2: Travel to La Theine Plateau (F-6), drop into the ravine near Equesobillot and enter Ordelle's Caves.\n \n" ..
-                       "- There is a Survival Guide at the entrance.\n \n",
+                text = "Step 2: Travel to La Theine Plateau (F-6), drop into the ravine near Equesobillot and enter Ordelle's Caves.\n \n",
                 route_to = "La Theine Plateau",
-                destination_highlight = { position = "F-6", offsetX = 16, offsetY = 16 },
+                destination_highlight = { position = "F-7", offsetX = 16, offsetY = 16 },
+                zone_trigger = "Ordelle's Caves",
+                zone_max_distance = 35,
+                visual_zones = {
+                    -- Zone-in from West Ronfaure, east then north around the top of the canyon
+                    { zone_name = "La Theine Plateau", type = 'arrow', center = { x = -477.3, y = -7.1, z = 221.6 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "La Theine Plateau", type = 'arrow', center = { x = -454.5, y = -0.6, z = 221.3 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "La Theine Plateau", type = 'arrow', center = { x = -435.9, y = 6.4, z = 221.4 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "La Theine Plateau", type = 'arrow', center = { x = -404.1, y = 8.5, z = 221.7 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "La Theine Plateau", type = 'arrow', center = { x = -400.4, y = 8.6, z = 254.1 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "La Theine Plateau", type = 'arrow', center = { x = -396.4, y = 8.0, z = 277.2 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "La Theine Plateau", type = 'arrow', center = { x = -387.9, y = 10.0, z = 305.9 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "La Theine Plateau", type = 'arrow', center = { x = -357.9, y = 8.4, z = 332.5 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "La Theine Plateau", type = 'arrow', center = { x = -324.8, y = 8.1, z = 365.8 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "La Theine Plateau", type = 'arrow', center = { x = -284.6, y = 8.4, z = 393.1 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "La Theine Plateau", type = 'arrow', center = { x = -280.3, y = 8.2, z = 351.7 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "La Theine Plateau", type = 'arrow', center = { x = -280.2, y = 8.0, z = 318.1 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "La Theine Plateau", type = 'arrow', center = { x = -280.3, y = 8.7, z = 294.7 }, size = 4, direction = "sw", floor_id = 0, colour = "yellow" },
+
+                    -- Down the ramp into the ravine (Equesobillot is at the top of it)
+                    { zone_name = "La Theine Plateau", type = 'arrow', center = { x = -290.7, y = 12.0, z = 294.0 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "La Theine Plateau", type = 'arrow', center = { x = -294.1, y = 17.0, z = 314.8 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "La Theine Plateau", type = 'arrow', center = { x = -291.5, y = 23.4, z = 342.1 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "La Theine Plateau", type = 'arrow', center = { x = -306.0, y = 28.9, z = 336.6 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "La Theine Plateau", type = 'arrow', center = { x = -311.0, y = 31.7, z = 312.1 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "La Theine Plateau", type = 'arrow', center = { x = -322.2, y = 38.8, z = 284.0 }, size = 4, direction = "sw", floor_id = 0, colour = "yellow" },
+
+                    -- Along the ravine floor south-east to the cave mouth at (F-7)
+                    { zone_name = "La Theine Plateau", type = 'arrow', center = { x = -347.7, y = 37.8, z = 259.4 }, size = 4, direction = "sw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "La Theine Plateau", type = 'arrow', center = { x = -360.8, y = 38.8, z = 235.0 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "La Theine Plateau", type = 'arrow', center = { x = -357.5, y = 38.8, z = 205.1 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "La Theine Plateau", type = 'arrow', center = { x = -335.2, y = 37.5, z = 181.1 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "La Theine Plateau", type = 'arrow', center = { x = -315.9, y = 38.4, z = 154.2 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "La Theine Plateau", type = 'arrow', center = { x = -289.0, y = 27.3, z = 141.2 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "La Theine Plateau", type = 'arrow', center = { x = -275.8, y = 24.1, z = 142.1 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "La Theine Plateau", type = 'arrow', center = { x = -261.7, y = 23.9, z = 117.7 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                },
             },
             {
-                text = "Step 3: In Ordelle's Caves, take the B route from Map 1 (I-6) to the room on Map 2 (G-7) holding two ??? points.\n \n" ..
+                text = "Step 3: In Ordelle's Caves travel to the holding two ??? points.\n \n" ..
                        "- Click the ??? in the pool of water first, then the second ??? about 45 yalms away, for\n" ..
                        "  the Key Item: Stalactite Dew.\n" ..
                        "- Aggro: Shriekers, bats and jellies are sound. Will-o'-the-Wisp near the water is sight\n" ..
                        "  and magic.\n \n" ..
                        "CRITICAL: You have 30 seconds between the two. Miss it and the dew slips through your fingers - re-click the pool and run it again, as many times as you like.\n \n",
                 onmob_target = { "ordelles-caves-stalactite-pool-qm2", "ordelles-caves-stalactite-dew-qm3" },
+                keyitems_needed = { 141 },
+                trigger_on_keyitem_obtain = {141},
+                zone_max_distance = 25,
+                visual_zones = {
+                        -- Stalactite Dew
+                        { zone_name = "Ordelle's Caves", type = 'square', center = { x = -104.0, y = 0.5, z = 633.0 }, size = 1, floor_id = 1, colour = "green" },
+                        { zone_name = "Ordelle's Caves", type = 'arrow', center = { x = -100.4, y = 0.4, z = 632.3 }, size = 3, direction = "down", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Ordelle's Caves", type = 'arrow', center = { x = -101.5, y = -0.0, z = 613.0 }, size = 3, direction = "sw", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Ordelle's Caves", type = 'arrow', center = { x = -127.7, y = 0.7, z = 593.1 }, size = 3, direction = "sw", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Ordelle's Caves", type = 'arrow', center = { x = -146.9, y = 0.5, z = 580.9 }, size = 3, direction = "left", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Ordelle's Caves", type = 'arrow', center = { x = -195.1, y = 0.6, z = 579.1 }, size = 3, direction = "left", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Ordelle's Caves", type = 'arrow', center = { x = -219.9, y = 0.9, z = 577.0 }, size = 3, direction = "down", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Ordelle's Caves", type = 'arrow', center = { x = -216.7, y = 0.4, z = 537.9 }, size = 3, direction = "right", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Ordelle's Caves", type = 'arrow', center = { x = -178.2, y = 0.4, z = 534.1 }, size = 3, direction = "down", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Ordelle's Caves", type = 'arrow', center = { x = -175.6, y = 0.8, z = 499.9 }, size = 3, direction = "right", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Ordelle's Caves", type = 'arrow', center = { x = -118.5, y = 0.5, z = 499.1 }, size = 3, direction = "right", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Ordelle's Caves", type = 'arrow', center = { x = -99.8, y = 0.5, z = 485.2 }, size = 3, direction = "down", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Ordelle's Caves", type = 'arrow', center = { x = -94.9, y = 0.6, z = 459.8 }, size = 3, direction = "right", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Ordelle's Caves", type = 'arrow', center = { x = -47.7, y = 0.3, z = 460.8 }, size = 3, direction = "right", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Ordelle's Caves", type = 'arrow', center = { x = -22.3, y = 0.9, z = 460.9 }, size = 3, direction = "up", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Ordelle's Caves", type = 'arrow', center = { x = -20.5, y = 0.7, z = 501.5 }, size = 3, direction = "up", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Ordelle's Caves", type = 'arrow', center = { x = -24.0, y = 0.8, z = 540.2 }, size = 3, direction = "left", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Ordelle's Caves", type = 'arrow', center = { x = -71.4, y = 0.7, z = 539.9 }, size = 3, direction = "left", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Ordelle's Caves", type = 'arrow', center = { x = -98.4, y = 4.6, z = 535.2 }, size = 3, direction = "down", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Ordelle's Caves", type = 'arrow', center = { x = -94.5, y = 12.1, z = 502.3 }, size = 3, direction = "right", floor_id = 15, colour = "yellow" },
+                        { zone_name = "Ordelle's Caves", type = 'arrow', center = { x = -60.2, y = 19.1, z = 490.2 }, size = 3, direction = "down", floor_id = 15, colour = "yellow" },
+                        { zone_name = "Ordelle's Caves", type = 'arrow', center = { x = -67.0, y = 22.6, z = 461.2 }, size = 3, direction = "left", floor_id = 15, colour = "yellow" },
+                        { zone_name = "Ordelle's Caves", type = 'arrow', center = { x = -98.2, y = 28.6, z = 454.3 }, size = 3, direction = "down", floor_id = 15, colour = "yellow" },
+                        { zone_name = "Ordelle's Caves", type = 'arrow', center = { x = -94.9, y = 32.1, z = 421.1 }, size = 3, direction = "right", floor_id = 15, colour = "yellow" },
+                        { zone_name = "Ordelle's Caves", type = 'arrow', center = { x = -38.6, y = 32.5, z = 420.7 }, size = 3, direction = "right", floor_id = 15, colour = "yellow" },
+                        { zone_name = "Ordelle's Caves", type = 'arrow', center = { x = -21.0, y = 32.1, z = 426.1 }, size = 3, direction = "up", floor_id = 15, colour = "yellow" },
+                        { zone_name = "Ordelle's Caves", type = 'arrow', center = { x = -7.5, y = 32.5, z = 460.9 }, size = 3, direction = "right", floor_id = 15, colour = "yellow" },
+                        { zone_name = "Ordelle's Caves", type = 'arrow', center = { x = 26.5, y = 32.5, z = 453.7 }, size = 3, direction = "se", floor_id = 15, colour = "yellow" },
+                        { zone_name = "Ordelle's Caves", type = 'arrow', center = { x = 36.2, y = 33.0, z = 435.2 }, size = 3, direction = "sw", floor_id = 15, colour = "yellow" },
+                        { zone_name = "Ordelle's Caves", type = 'arrow', center = { x = 20.9, y = 32.5, z = 414.1 }, size = 3, direction = "down", floor_id = 15, colour = "yellow" },
+                        { zone_name = "Ordelle's Caves", type = 'arrow', center = { x = 12.6, y = 29.1, z = 380.9 }, size = 3, direction = "left", floor_id = 15, colour = "yellow" },
+                        { zone_name = "Ordelle's Caves", type = 'arrow', center = { x = -31.1, y = 25.2, z = 379.5 }, size = 3, direction = "left", floor_id = 15, colour = "yellow" },
+                        { zone_name = "Ordelle's Caves", type = 'arrow', center = { x = -60.0, y = 18.5, z = 372.4 }, size = 3, direction = "down", floor_id = 15, colour = "yellow" },
+                        { zone_name = "Ordelle's Caves", type = 'arrow', center = { x = -68.1, y = 10.4, z = 340.6 }, size = 3, direction = "left", floor_id = 15, colour = "yellow" },
+                        { zone_name = "Ordelle's Caves", type = 'arrow', center = { x = -93.5, y = 4.7, z = 338.9 }, size = 3, direction = "sw", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Ordelle's Caves", type = 'arrow', center = { x = -100.6, y = 0.5, z = 319.5 }, size = 3, direction = "down", floor_id = 1, colour = "yellow" },
+                        { zone_name = "Ordelle's Caves", type = 'arrow', center = { x = -98.9, y = 0.1, z = 295.8 }, size = 3, direction = "down", floor_id = 1, colour = "yellow" },
+                },
                 images = {
                     {
                         zone_name = "Ordelle's Caves",
@@ -203,25 +281,26 @@ return {
                         height    = 512,
                         state     = 3,
                         highlights = {
-                            { position = "I-6", offsetX = 16, offsetY = 16, label = "B route" },
+                            { position = "G-4", offsetX = 16, offsetY = 16, label = "1" },
+                            { position = "G-7", offsetX = 16, offsetY = 16, label = "1" },
                         },
                     },
                     -- Map 2's raw floor id is unconfirmed - see data/ref/Jobs/paladin_reference.md.
                     {
                         zone_name = "Ordelle's Caves",
-                        floor_id  = 2,
+                        floor_id  = 15,
                         width     = 512,
                         height    = 512,
                         state     = 3,
                         highlights = {
-                            { position = "G-7", offsetX = 16, offsetY = 16, label = "???" },
+                            { position = "G-6", offsetX = 16, offsetY = 16, label = "2" },
                         },
                     },
                 },
             },
             {
                 text = "Step 4: Take the Stalactite Dew back to Balasiel in Southern San d'Oria (F-7).\n \n" ..
-                       "- A Knight's Test can be started straight away if you meet its requirements.\n \n",
+                       "- A Knight's Test starts from the same NPC, so stay put if you are already Lv30.\n \n",
                 route_to = "Southern San d'Oria",
                 destination_highlight = { position = "F-7", offsetX = 16, offsetY = 16 },
                 onmob_target = "Balasiel",
@@ -252,6 +331,9 @@ return {
     -- 3) A Knight's Test
     -- =========================================================================================
     ["3.Paladin Quest - A Knight's Test"] = {
+        requirements = {
+            level = 30,
+        },
         prerequisites = {
             { category = "Jobs", subfile = "Paladin", name = "2.Paladin Quest - A Squire's Test II" },
         },
@@ -260,33 +342,158 @@ return {
                 text = "Step 1: Speak with Balasiel in Southern San d'Oria (F-7) for the Key Item: Book of Tasks.\n \n",
                 route_to = "Southern San d'Oria",
                 destination_highlight = { position = "F-7", offsetX = 16, offsetY = 16 },
-            },
-            {
-                text = "Step 2: Still in Southern San d'Oria, talk to Baunise on the Westgate parapet (H-9) and Cahaurme on the Eastgate parapet (J-9).\n \n" ..
-                       "- Baunise gives the Key Item: Book of the West.\n" ..
-                       "- Cahaurme gives the Key Item: Book of the East.\n \n",
-                route_to = "Southern San d'Oria",
-                destination_highlight = {
-                    { position = "H-9", offsetX = 16, offsetY = 16, label = "West" },
-                    { position = "J-9", offsetX = 16, offsetY = 16, label = "East" },
+                onmob_target = "Balasiel",
+                -- 627 first time, 635 once you have declined him before, 670 the under-level
+                -- brush-off. Both accept ids branch on the dialogue option and trigger_on_event_id
+                -- cannot see the option, so this waits on the key item instead - declining does
+                -- not tick the step.
+                keyitems_needed = { 143 },
+                trigger_on_keyitem_obtain = { 143 },
+                zone_max_distance = 15,
+                visual_zones = {
+                    { zone_name = "Southern San d'Oria", type = 'arrow', center = { x = -86.1, y = 2.0, z = 5.5 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Southern San d'Oria", type = 'arrow', center = { x = -105.5, y = -2.0, z = 28.3 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Southern San d'Oria", type = 'arrow', center = { x = -91.7, y = -4.0, z = 48.8 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Southern San d'Oria", type = 'arrow', center = { x = -91.4, y = -6.0, z = 71.8 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Southern San d'Oria", type = 'arrow', center = { x = -104.8, y = -6.0, z = 88.5 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Southern San d'Oria", type = 'arrow', center = { x = -133.4, y = -6.0, z = 89.6 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Southern San d'Oria", type = 'arrow', center = { x = -151.7, y = -6.0, z = 89.5 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Southern San d'Oria", type = 'arrow', center = { x = -151.5, y = -8.8, z = 77.9 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Southern San d'Oria", type = 'arrow', center = { x = -133.0, y = -12.8, z = 78.0 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Southern San d'Oria", type = 'arrow', center = { x = -124.9, y = -10.8, z = 68.0 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Southern San d'Oria", type = 'arrow', center = { x = -131.4, y = -10.8, z = 58.5 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
                 },
             },
             {
-                text = "Step 3: In Davoi, examine the Disused Well at (E-10) for the Key Item: Knight's Soul.\n \n" ..
-                       "- Route: drop into the water at the broken bridge (I-8), follow it west to (D-8), climb\n" ..
-                       "  out at (D-9) and cross the camp to (E-10).\n \n" ..
-                       "WARNING: Orcs in Davoi aggro and hit hard for this level. Sneak and Invisible both.\n \n",
-                route_to = "Davoi",
-                destination_highlight = { position = "E-10", offsetX = 16, offsetY = 16 },
+                text = "Step 2: Talk to Baunise on the Westgate parapet (H-9) for the Key Item: Book of the West.\n \n",
+                route_to = "Southern San d'Oria",
+                destination_highlight = { position = "H-9", offsetX = 16, offsetY = 16},
+                onmob_target = "Baunise",
+                zone_max_distance = 20,
+                visual_zones = {
+                    { zone_name = "Southern San d'Oria", type = 'arrow', center = { x = -133.9, y = -10.8, z = 62.1 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Southern San d'Oria", type = 'arrow', center = { x = -127.7, y = -12.8, z = 78.3 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Southern San d'Oria", type = 'arrow', center = { x = -152.3, y = -8.8, z = 77.3 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Southern San d'Oria", type = 'arrow', center = { x = -148.4, y = -6.0, z = 90.0 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Southern San d'Oria", type = 'arrow', center = { x = -130.8, y = -6.0, z = 87.6 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Southern San d'Oria", type = 'arrow', center = { x = -107.2, y = -6.0, z = 85.8 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Southern San d'Oria", type = 'arrow', center = { x = -92.6, y = -6.0, z = 71.6 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Southern San d'Oria", type = 'arrow', center = { x = -93.9, y = -4.0, z = 42.9 }, size = 4, direction = "sw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Southern San d'Oria", type = 'arrow', center = { x = -110.2, y = -2.0, z = 12.9 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Southern San d'Oria", type = 'arrow', center = { x = -92.7, y = -6.2, z = -9.1 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Southern San d'Oria", type = 'arrow', center = { x = -62.4, y = -6.6, z = -37.3 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                },
+                -- 634. Once you hold it he switches to a DO_NOT_FRET message with no cutscene.
+                keyitems_needed = { 145 },
+                trigger_on_keyitem_obtain = { 145 },
             },
             {
-                text = "Step 4: Return to Balasiel in Southern San d'Oria (F-7) with the Knight's Soul.\n \n",
+                text = "Step 3: Talk to Cahaurme on the Eastgate parapet (J-9) for the Key Item: Book of the East.\n \n" ..
+                       "- Same again on the other gate: up the stairs onto the wall.\n \n",
+                route_to = "Southern San d'Oria",
+                destination_highlight = { position = "J-9", offsetX = 16, offsetY = 16 },
+                onmob_target = "Cahaurme",
+                zone_max_distance = 20,
+                visual_zones = {
+                        { zone_name = "Southern San d'Oria", type = 'arrow', center = { x = -56.3, y = -8.6, z = -33.9 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Southern San d'Oria", type = 'arrow', center = { x = -68.3, y = -6.2, z = -33.0 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Southern San d'Oria", type = 'arrow', center = { x = -90.3, y = -6.2, z = -11.9 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Southern San d'Oria", type = 'arrow', center = { x = -109.9, y = -2.2, z = 5.1 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Southern San d'Oria", type = 'arrow', center = { x = -101.9, y = -2.0, z = 17.1 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Southern San d'Oria", type = 'arrow', center = { x = -77.3, y = 2.0, z = -5.5 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Southern San d'Oria", type = 'arrow', center = { x = -53.3, y = 2.0, z = -21.2 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Southern San d'Oria", type = 'arrow', center = { x = -21.3, y = 2.0, z = -21.4 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Southern San d'Oria", type = 'arrow', center = { x = 5.1, y = 2.0, z = -21.6 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Southern San d'Oria", type = 'arrow', center = { x = 40.8, y = 2.0, z = -22.7 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Southern San d'Oria", type = 'arrow', center = { x = 72.7, y = 2.0, z = -13.1 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Southern San d'Oria", type = 'arrow', center = { x = 87.6, y = 2.0, z = 4.4 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Southern San d'Oria", type = 'arrow', center = { x = 102.1, y = 4.0, z = 14.1 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Southern San d'Oria", type = 'arrow', center = { x = 132.6, y = 0.0, z = 13.0 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Southern San d'Oria", type = 'arrow', center = { x = 129.6, y = 0.0, z = 3.2 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Southern San d'Oria", type = 'arrow', center = { x = 103.8, y = -3.0, z = 2.3 }, size = 4, direction = "sw", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Southern San d'Oria", type = 'arrow', center = { x = 82.9, y = -7.4, z = -18.3 }, size = 4, direction = "sw", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Southern San d'Oria", type = 'arrow', center = { x = 63.2, y = -6.6, z = -37.5 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                },
+                -- 633. Once you hold it he switches to a TRIAL_IS_DIFFICULT message.
+                keyitems_needed = { 144 },
+                trigger_on_keyitem_obtain = { 144 },
+            },
+            {
+                text = "Step 4: In Davoi, examine the Disused Well at (E-10) for the Key Item: Knight's Soul.\n \n" ..
+                       "- Route: drop into the water at the broken bridge (I-8), follow it west to (D-8), climb\n" ..
+                       "  out at (D-9) and cross the camp south to (E-10).\n \n" ..
+                       "WARNING: Orcs in Davoi aggro and hit hard at this level. Bring Sneak and Invisible both.\n \n" ..
+                       "NOTE: The well does nothing at all until you hold both books - no message, no cutscene.\n \n",
+                route_to = "Davoi",
+                destination_highlight = { position = "E-10", offsetX = 16, offsetY = 16 },
+                onmob_target = "davoi-disused-well-e10",
+                zone_max_distance = 20,
+                visual_zones = {
+                        { zone_name = "Davoi", type = 'square', center = { x = 223.0, y = -0.4, z = -10.0 }, size = 1, floor_id = 0, colour = "green" },
+                        { zone_name = "Davoi", type = 'arrow', center = { x = 216.6, y = -0.4, z = -9.9 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Davoi", type = 'arrow', center = { x = 218.7, y = 2.7, z = -59.7 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Davoi", type = 'arrow', center = { x = 218.1, y = 3.9, z = -74.9 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Davoi", type = 'arrow', center = { x = 164.4, y = 4.0, z = -80.1 }, size = 4, direction = "sw", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Davoi", type = 'arrow', center = { x = 148.1, y = 3.8, z = -99.2 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Davoi", type = 'arrow', center = { x = 100.2, y = -2.6, z = -102.2 }, size = 4, direction = "sw", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Davoi", type = 'line', start = { x = 100.2, y = -2.6, z = -102.2 }, stop = { x = 92.9, y = 3.6, z = -104.8 }, floor_id = 0, colour = "yellow" },
+                        { zone_name = "Davoi", type = 'arrow', center = { x = 90.1, y = 3.9, z = -106.5 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Davoi", type = 'arrow', center = { x = 64.0, y = 3.8, z = -95.5 }, size = 4, direction = "sw", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Davoi", type = 'arrow', center = { x = 54.1, y = 2.2, z = -108.3 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Davoi", type = 'arrow', center = { x = 36.7, y = 2.6, z = -108.0 }, size = 4, direction = "sw", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Davoi", type = 'arrow', center = { x = 17.9, y = 3.9, z = -140.9 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Davoi", type = 'arrow', center = { x = -30.5, y = 3.6, z = -139.8 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Davoi", type = 'arrow', center = { x = -82.3, y = 3.8, z = -137.3 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Davoi", type = 'arrow', center = { x = -126.2, y = 3.7, z = -135.7 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Davoi", type = 'arrow', center = { x = -168.4, y = 3.9, z = -135.4 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Davoi", type = 'arrow', center = { x = -205.5, y = 3.8, z = -139.1 }, size = 4, direction = "sw", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Davoi", type = 'arrow', center = { x = -224.3, y = 3.4, z = -148.8 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Davoi", type = 'arrow', center = { x = -257.9, y = 3.8, z = -135.1 }, size = 4, direction = "sw", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Davoi", type = 'arrow', center = { x = -260.9, y = 0.2, z = -155.9 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Davoi", type = 'arrow', center = { x = -257.8, y = 3.6, z = -187.8 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Davoi", type = 'arrow', center = { x = -233.9, y = 3.8, z = -207.4 }, size = 4, direction = "se", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Davoi", type = 'arrow', center = { x = -219.1, y = 2.2, z = -226.5 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                        { zone_name = "Davoi", type = 'arrow', center = { x = -219.1, y = -0.8, z = -268.7 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                },
+                keyitems_needed = { 146 },
+                trigger_on_keyitem_obtain = { 146 },
+            },
+            {
+                text = "Step 5: Return to Balasiel in Southern San d'Oria (F-7) with the Knight's Soul to unlock Paladin.\n \n" ..
+                       "- All four key items are taken off you here.\n" ..
+                       "- Sharpening the Sword is next, but it will not start until Father and Son is done.\n \n",
                 route_to = "Southern San d'Oria",
                 destination_highlight = { position = "F-7", offsetX = 16, offsetY = 16 },
+                onmob_target = "Balasiel",
+                -- 628 hands in. 669 is the "still looking?" line when you turn up without the soul.
+                trigger_on_event_id = { 628 },
+                zone_max_distance = 15,
+                visual_zones = {
+                    { zone_name = "Southern San d'Oria", type = 'arrow', center = { x = -86.1, y = 2.0, z = 5.5 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Southern San d'Oria", type = 'arrow', center = { x = -105.5, y = -2.0, z = 28.3 }, size = 4, direction = "ne", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Southern San d'Oria", type = 'arrow', center = { x = -91.7, y = -4.0, z = 48.8 }, size = 4, direction = "up", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Southern San d'Oria", type = 'arrow', center = { x = -91.4, y = -6.0, z = 71.8 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Southern San d'Oria", type = 'arrow', center = { x = -104.8, y = -6.0, z = 88.5 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Southern San d'Oria", type = 'arrow', center = { x = -133.4, y = -6.0, z = 89.6 }, size = 4, direction = "left", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Southern San d'Oria", type = 'arrow', center = { x = -151.7, y = -6.0, z = 89.5 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Southern San d'Oria", type = 'arrow', center = { x = -151.5, y = -8.8, z = 77.9 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Southern San d'Oria", type = 'arrow', center = { x = -133.0, y = -12.8, z = 78.0 }, size = 4, direction = "right", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Southern San d'Oria", type = 'arrow', center = { x = -124.9, y = -10.8, z = 68.0 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
+                    { zone_name = "Southern San d'Oria", type = 'arrow', center = { x = -131.4, y = -10.8, z = 58.5 }, size = 4, direction = "nw", floor_id = 0, colour = "yellow" },
+                },
             },
         },
         reward = {
-            text = "Completes A Knight's Test.\n \n",
+            text = "Unlocks the Paladin job!\n \n" ..
+                   "Title: Tried and Tested Knight\n" ..
+                   "Job gesture: paladin\n",
+            items = {
+                {
+                    name  = "Kite Shield",
+                    type  = "Shield",
+                    races = "All Races",
+                },
+            },
         },
     },
 

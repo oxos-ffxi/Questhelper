@@ -1,6 +1,6 @@
 # Paladin
-[Tests]  A Squire's Test / II / A Knight's Test - text reformatted, triggers TODO
-[Chain]  Father and Son -> Sharpening the Sword -> A Boy's Dream -> Under Oath - same
+[Tests]  A Squire's Test / II / A Knight's Test - DONE, triggers from the server files
+[Chain]  Father and Son -> Sharpening the Sword -> A Boy's Dream -> Under Oath - text only, triggers TODO
 [Hands]  Borghertz's Stalwart Hands - same
 
 No LSB quest files were read for any of this. The 2025 pass was prose, structure and map fields
@@ -36,36 +36,74 @@ DONE - A Squire's Test II, Log 0 / Quest 19:
     ordelles-caves-stalactite-dew-qm3   -139  0.1  264   (~45 yalms away)
   Neither carries a floor_id - which map they sit on is unconfirmed.
 
-TODO - the other six quests. Scripts are in scripts/quests/sandoria (A Knight's Test, Father and
-Son, Sharpening the Sword, A Boy's Dream, Under Oath) and scripts/quests/jeuno (Borghertz's
-Stalwart Hands).
+DONE - A Knight's Test, Log 0 / Quest 29:
+  Balasiel 627          accept, first time             -> KI Book of Tasks, quest:begin
+  Balasiel 635          accept, after declining once   -> same
+  Balasiel 670          under-level brush-off, no handler, not a step
+  Baunise  634          -> KI Book of the West
+  Cahaurme 633          -> KI Book of the East
+  Balasiel 628          hand in Knight's Soul          -> quest:complete, unlockJob(PLD),
+                                                          deletes all four key items
+  Balasiel 669          "still looking?" without the soul, no handler
+  Reward: Kite Shield, title Tried and Tested Knight, KI Job Gesture Paladin, San d'Oria fame +20.
+
+  627/635 carry the SAME option branch as A Squire's Test's 616/631 - option 0 accepts, anything
+  else sets Option=1 and 635 is the come-back-later id. Rather than repeat that quest's
+  false-positive-on-decline caveat, step 1 waits on trigger_on_keyitem_obtain for the Book of
+  Tasks, which only lands on an actual accept. Prefer that shape wherever an accept hands over a
+  key item.
+
+  Baunise and Cahaurme are independent of each other - either order. The well is gated on holding
+  BOTH books, and its onTrigger has no else branch, so without them clicking it is silent: no
+  message, no cutscene. That is in the step text because it reads like a broken ???.
+
+TODO - the other five quests. Scripts are in scripts/quests/sandoria (Father and Son, Sharpening
+the Sword, A Boy's Dream, Under Oath) and scripts/quests/jeuno (Borghertz's Stalwart Hands).
 
 ## Missing: key item ids
-None of these are in data/keyitems.lua, so no keyitems_needed / trigger_on_keyitem_obtain:
-  Stalactite Dew, Book of Tasks, Book of the West, Book of the East, Knight's Soul,
-  Ordelle Whetstone, Knight's Boots, Mique's Paintbrush, Strange Sheet of Paper,
-  Knight's Confession, Old Gauntlets, Shadow Flames
+Ids come from LandSandBoat scripts/enum/key_item.lua. Now in data/keyitems.lua:
+  141 Stalactite Dew, 143 Book of Tasks, 144 Book of the East, 145 Book of the West,
+  146 Knight's Soul
+Note 144/145 are east-then-west, which is the reverse of how the walkthrough lists them.
+
+Read off the same enum for the later quests but NOT yet added to keyitems.lua, because nothing
+uses them and they have not been cross-checked against a second source the way 141-146 were
+(those sit directly under the 131-136 orb block this file already had right):
+  210 Old Gauntlets, 211 Shadow Flames, 218 Knight's Boots, 219 Mique's Paintbrush,
+  220 Strange Sheet of Paper, 221 Knight's Confession, 233 Ordelle Whetstone
+Confirm before use. Those quests are blocked on their event ids anyway.
 
 ## Missing: locations.lua entries
 onmob_target does NOTHING without a locations.lua entry - questhelper.lua:509 gates on
-`location_data[name]`, so a bare display name is a silent no-op, not a live highlight. Sobane and
-Balasiel exist. Needs !pos for:
-  NPCs    Ailbeche, Exoroche, Baunise, Cahaurme, Vemalpeau, Najjar, Ullasa,
-          Guslam, Yin Pocanakhu, Zaldon, Chanpau
-  Objects Ordelle's Caves - the two ??? on map 2, and the Stalagmite on map 1
-          Davoi - Disused Well (E-10), Village Well (G-9)
+`location_data[name]`, so a bare display name is a silent no-op, not a live highlight.
+
+Present: Sobane, Balasiel, Baunise, Cahaurme, davoi-disused-well-e10, and the two Ordelle's
+Caves ???. The three added for A Knight's Test came from the !pos comments in that quest's own
+server file, which is the cheapest source there is - check the header of each script before
+hunting coordinates in game.
+
+Still needs !pos for:
+  NPCs    Ailbeche, Exoroche, Vemalpeau, Najjar, Ullasa, Guslam, Yin Pocanakhu, Zaldon, Chanpau
+  Objects Ordelle's Caves - the Stalagmite on map 1
+          Davoi - Village Well (G-9)
           Port Jeuno - the ??? by the Duty-Free Shop (H-8)
           Castle Zvahl Baileys - the torch at (F-8)
 
 ## Levels - VERIFY
 Confirmed from the server: A Squire's Test II is Lv10 (`player:getMainLvl() >= 10` on Balasiel's
 onTrigger). A Boy's Dream, Under Oath and Borghertz's Stalwart Hands are Lv50 Paladin from the
-quests themselves. All four carry requirements.level.
+quests themselves.
 
-A Squire's Test, A Knight's Test and Sharpening the Sword still have NO requirements block,
-because the level is unconfirmed and a wrong "Recommended Level" row is worse than none. Note
-A Squire's Test's own script has no level check at all - its only gate is quest status - so it
-may genuinely have none. Any fame requirement is unknown too.
+A Knight's Test now carries requirements.level = 30. Its gate is
+`getMainLvl() >= xi.settings.main.ADVANCED_JOB_LEVEL`, NOT a literal - 30 is the retail value and
+the default, and the wiki agrees, but a server that has retuned that setting makes the row wrong.
+It is the only requirements.level in this file that is a setting rather than a number, so it is
+the first thing to re-check if someone reports the gate firing at a different level.
+
+A Squire's Test and Sharpening the Sword still have NO requirements block, because the level is
+unconfirmed and a wrong "Recommended Level" row is worse than none. Note A Squire's Test's own
+script has no level check at all - its only gate is quest status - so it may genuinely have none.
+Any fame requirement is unknown too.
 
 Polevik (Lv65+ advice) and the Davoi well NMs (Lv55+ party) are fight guidance in the step text,
 not quest requirements - do not promote them to requirements.level.
