@@ -26,26 +26,17 @@ return {
             },
         },
         reward = {
-            text = "Notable Drops:", -- lowercase 'text'
             items = {
                 {
                     name = "Bounding Boots",
-                    type = "FEET",
+                    type = "Feet",
                     races = "All Races",
-                    stats = { "DEF:+3", "DEX:+3", "AGI:+3" },
+                    -- stats come from the item's own description now. jobs stays authored on
+                    -- purpose: item_info's JOBS bitmask is unverified, and a wrong job line on
+                    -- the addon's best-known NM drop is worse than a redundant one.
                     jobs = "WAR/RDM/THF/PLD/DRK/BST/BRD/RNG/SAM/NIN/DRG/BLU/COR/DNC",
-                    note = "Drop Rate: ~6.7%"
-                }
-                --,
-                -- {
-                --     name = "Lizard Hide",
-                --     type = "MATERIAL",
-                --     --races = "", -- Can be empty string if not applicable
-                --     --stats = {}, -- Can be empty table
-                --     --level = 0,  -- Or some other indicator for N/A if you prefer
-                --     --jobs = "All Jobs",
-                --     note = "Common drop"
-                -- }
+                    note = "Drop rate ~6.7%"
+                },
             }
         }
     },
@@ -129,25 +120,12 @@ return {
             items = {
                 {
                     name = "Steam Clock",
-                    type = "ITEM",
-                    note = "Drop Rate: ~100%"
-                }
-                --,
-                -- {
-                --     name = "Lizard Hide",
-                --     type = "MATERIAL",
-                --     --races = "", -- Can be empty string if not applicable
-                --     --stats = {}, -- Can be empty table
-                --     --level = 0,  -- Or some other indicator for N/A if you prefer
-                --     --jobs = "All Jobs",
-                --     note = "Common drop"
-                -- }
+                    type = "Furnishing",
+                    -- No stats line: furnishings carry flavour prose in the description field
+                    -- rather than stats, and item_info gates that on the item decoding a job mask.
+                    note = "Drop rate ~100%"
+                },
             }
-            -- text = "Steam Clock",
-            -- images = {
-            --
-            -- },
-
         }
     },
     ["Carnero"] = {
@@ -162,9 +140,7 @@ return {
                        "===== Battle Strategy =====\n \n" ..
                        "- Carnero is a level 11-12 Sheep.\n" ..
                        "- Can be challenging due to high attack power; recommended for players level 15 and above.\n" ..
-                       "- Be cautious of its 'Sheep Song' ability, which can put players to sleep and it can link with other nearby Sheep.\n \n" ..
-                       "===== Drops =====\n \n" ..
-                       "- Katayama Ichimonji\n \n",
+                       "- Be cautious of its 'Sheep Song' ability, which can put players to sleep and it can link with other nearby Sheep.\n \n",
                 images = {
                     {
                         zone_name = "South Gustaberg",
@@ -179,8 +155,12 @@ return {
             },
         },
         reward = {
-            images = {
-            },
+            items = {
+                {
+                    name = "Katayama",
+                    type = "Great Katana",
+                },
+            }
         }
     },
     ["Tococo"] = {
@@ -194,9 +174,7 @@ return {
                        "===== Battle Strategy =====\n \n" ..
                        "- Tococo is a level 4-5 Lesser Bird.\n" ..
                        "- Can be soloed by players around level 5-10.\n" ..
-                       "- Be cautious of its 'Pecking Flurry' ability, which can deal multiple hits.\n \n" ..
-                       "===== Drops =====\n \n" ..
-                       "- Armiger's Lace\n \n",
+                       "- Be cautious of its 'Pecking Flurry' ability, which can deal multiple hits.\n \n",
                 images = {
                     {
                         zone_name = "South Gustaberg",
@@ -212,8 +190,11 @@ return {
             },
         },
         reward = {
-            images = {
-            },
+            items = {
+                {
+                    name = "Armiger's Lace",
+                },
+            }
         }
     },
 }
