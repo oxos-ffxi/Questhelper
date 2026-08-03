@@ -150,8 +150,6 @@ See:
 
 This addon wouldn't have been possible without the incredible work and support from the Ashita community. Special thanks to:
 
-### Core Contributors
-
 - **[Atom0s](https://github.com/atom0s)** - Floor ID detection and Texture loading code samples via Ashita Discord
 - **[Thorny](https://github.com/ThornyFFXI)** - Key items packet handling, and Ashita development support via Ashita Discord
 - **[Loonsies](https://github.com/loonsies/boussole)** - DAT map loading implementation from [Boussole](https://github.com/loonsies/boussole)
