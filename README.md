@@ -18,7 +18,11 @@ Guides are written in a readable Lua format, so anyone can extend or add their o
 
 
 **Some help with the moutain...**
-https://github.com/user-attachments/assets/a28e2438-a4f6-4489-b669-f720379a4330
+
+
+https://github.com/user-attachments/assets/9adad046-2d7d-4914-a8d2-8087700cd908
+
+
 
 
 **Syncs to your characters quest/mission progress automagically**
