@@ -116,6 +116,14 @@ Then:
 
 Guide data lives in `addons/QuestHelper/data/` as `.lua` files — drop new files in the matching category folder and they are picked up automatically.
 
+### Ashita compatibility
+
+Ashita v4. Played and tested against the builds live servers ship — `plugins/Addons.dll` dated February 2024 through March 2026.
+
+Newer Ashita builds also work. Around mid-2026 Ashita moved to ImGui 1.92, which removed the `SetWindowFontScale` binding; addons that call it unguarded throw `attempt to call field 'SetWindowFontScale' (a nil value)` on `d3d_present` and get unloaded. QuestHelper checks for the binding rather than assuming it, so it loads and runs either way.
+
+> On those newer builds the **UI Scale** setting still resizes windows, but text stays at the default size. Everything else is unaffected, and at the default scale of 1.0 there is no visible difference.
+
 ---
 
 ## Commands
