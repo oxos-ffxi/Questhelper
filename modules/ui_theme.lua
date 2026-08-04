@@ -24,6 +24,17 @@ local function has(fn)
     return type(imgui[fn]) == 'function'
 end
 
+-- Ashita 4.3 moved to ImGui 1.92, which changed several binding signatures. sol
+-- rejects a wrong-shaped call outright rather than coercing, so the version has to
+-- be known up front - feature detection cannot see an argument list change.
+local is43 = (function()
+    local ok, v = pcall(function()
+        return AshitaCore:GetPluginManager():Get('addons'):GetInterfaceVersion()
+    end)
+    return ok and type(v) == 'number' and v >= 4.3
+end)()
+ui_theme.is43 = is43
+
 local C = {
     Text            = colIdx('ImGuiCol_Text', 0),
     TextDisabled    = colIdx('ImGuiCol_TextDisabled', 1),
@@ -260,6 +271,31 @@ end
 -- direct kills the render callback. No-op there: windows still scale, fonts don't.
 function ui_theme.fontScale(scale)
     if has('SetWindowFontScale') then imgui.SetWindowFontScale(scale) end
+end
+
+-- 4.3 dropped Image's tint argument; tinting moved to ImageWithBg, which takes a
+-- background colour before the tint. Transparent background keeps the old look.
+function ui_theme.image(tex, size, uv0, uv1, tint)
+    uv0, uv1 = uv0 or {0, 0}, uv1 or {1, 1}
+    if tint == nil then
+        return imgui.Image(tex, size, uv0, uv1)
+    end
+    if is43 then
+        if has('ImageWithBg') then
+            return imgui.ImageWithBg(tex, size, uv0, uv1, {0, 0, 0, 0}, tint)
+        end
+        return imgui.Image(tex, size, uv0, uv1)
+    end
+    return imgui.Image(tex, size, uv0, uv1, tint)
+end
+
+-- BeginChild's third argument was a bool border before 4.3 and is a child_flags
+-- bitmask after. ImGuiChildFlags_Borders is 1, and only exists on 4.3.
+function ui_theme.beginChild(id, size, border, flags)
+    if is43 then
+        return imgui.BeginChild(id, size, border and colIdx('ImGuiChildFlags_Borders', 1) or 0, flags or 0)
+    end
+    return imgui.BeginChild(id, size, border, flags or 0)
 end
 
 -- Brighter blue rule with room either side. Parts the reference sections from the

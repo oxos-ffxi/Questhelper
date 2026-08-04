@@ -589,7 +589,7 @@ local function render_log_tab()
     local s = { auto_scroll }
     if imgui.Checkbox("Auto-scroll", s) then auto_scroll = s[1] end
     imgui.Separator()
-    imgui.BeginChild("QHLog", { 0, 0 }, false, 0)
+    theme.beginChild("QHLog", { 0, 0 }, false, 0)
     for _, line in ipairs(log_lines) do
         imgui.Text(line)
     end
@@ -865,7 +865,7 @@ local function render_position_tab()
     if #viz.entries > 0 then
         imgui.Separator()
         imgui.Text(string.format("%d entries — hit 'Copy All' to grab:", #viz.entries))
-        imgui.BeginChild("QHViz", { 0, 0 }, true, 0)
+        theme.beginChild("QHViz", { 0, 0 }, true, 0)
         local to_remove = nil
         for i, line in ipairs(viz.entries) do
             if imgui.SmallButton(string.format("X##vr%d", i)) then to_remove = i end
@@ -936,7 +936,7 @@ local function render_jobs_tab()
         tostring(player_module.getMainJobLevel() or "unknown")))
 
     imgui.Separator()
-    imgui.BeginChild("QHVJobsList", { 0, 0 }, false, 0)
+    theme.beginChild("QHVJobsList", { 0, 0 }, false, 0)
     for job = 1, 22 do
         local level = levels[job] or 0
         local line  = string.format("[%2d] %-13s Lv.%-3d", job, player_module.JOB_NAMES[job] or "?", level)
@@ -974,7 +974,7 @@ local function render_validate_tab(quest_state_mod)
     if imgui.BeginTabBar("QHValidateTabs") then
         -- 1: zone names
         if imgui.BeginTabItem(string.format("Zones (%d)##vz", #val.errors)) then
-            imgui.BeginChild("QHVZones", { 0, 0 }, false, 0)
+            theme.beginChild("QHVZones", { 0, 0 }, false, 0)
             imgui.TextColored({ 0.6, 0.6, 0.6, 1.0 },
                 "route_to / zone_trigger / image zone_name / kill_requirement must exist in zones.lua.")
             if not val.ran then
@@ -1011,7 +1011,7 @@ local function render_validate_tab(quest_state_mod)
 
         -- 2: live drawing
         if imgui.BeginTabItem("Drawing##vd") then
-            imgui.BeginChild("QHVDraw", { 0, 0 }, false, 0)
+            theme.beginChild("QHVDraw", { 0, 0 }, false, 0)
             render_zone_beams(quest_state_mod)
             imgui.EndChild()
             imgui.EndTabItem()
@@ -1019,7 +1019,7 @@ local function render_validate_tab(quest_state_mod)
 
         -- 3: image state vs step position
         if imgui.BeginTabItem(string.format("Step Images (%d)##vs", #val.state_issues)) then
-            imgui.BeginChild("QHVState", { 0, 0 }, false, 0)
+            theme.beginChild("QHVState", { 0, 0 }, false, 0)
             render_findings(val.state_issues, "Every image state matches its step position.", {
                 "An image only shows when its 'state' equals the step number (or is absent).",
                 "Inserting a step without renumbering silently hides the maps after it.",
@@ -1030,7 +1030,7 @@ local function render_validate_tab(quest_state_mod)
 
         -- 4: onmob_target keys
         if imgui.BeginTabItem(string.format("Beam Targets (%d)##vt", #val.target_issues)) then
-            imgui.BeginChild("QHVTarget", { 0, 0 }, false, 0)
+            theme.beginChild("QHVTarget", { 0, 0 }, false, 0)
             render_findings(val.target_issues, "Every onmob_target key exists in locations.lua.", {
                 "onmob_target and vday_targets names must be keys in locations.lua.",
                 "A name with no entry draws no beam and reports nothing in game.",
@@ -1041,7 +1041,7 @@ local function render_validate_tab(quest_state_mod)
 
         -- 5: trigger combinations
         if imgui.BeginTabItem(string.format("Triggers (%d)##vg", #val.trigger_issues)) then
-            imgui.BeginChild("QHVTrig", { 0, 0 }, false, 0)
+            theme.beginChild("QHVTrig", { 0, 0 }, false, 0)
             render_findings(val.trigger_issues, "No steps pair talk and event triggers.", {
                 "trigger_on_talk and trigger_on_event_id are AND-ed - a step with both waits for BOTH.",
                 "If the server never sends one, the step can never complete. Usually you want just one.",
@@ -1052,7 +1052,7 @@ local function render_validate_tab(quest_state_mod)
 
         -- 6: live job levels behind skip_if_any_job_level
         if imgui.BeginTabItem("Jobs##vjl") then
-            imgui.BeginChild("QHVJobs", { 0, 0 }, false, 0)
+            theme.beginChild("QHVJobs", { 0, 0 }, false, 0)
             render_jobs_tab()
             imgui.EndChild()
             imgui.EndTabItem()
@@ -1095,7 +1095,7 @@ local function render_sync_tab()
         "linked = we know its server id (same on every character)    done = the server says THIS character finished it")
 
     imgui.Separator()
-    imgui.BeginChild("QHSyncResults", { 0, 0 }, false, 0)
+    theme.beginChild("QHSyncResults", { 0, 0 }, false, 0)
 
     local text = sync_ui.search[1] or ""
     if text == "" then
@@ -1287,7 +1287,7 @@ local function render_target_tab()
     if #loc.entries > 0 then
         imgui.Separator()
         imgui.Text(string.format("%d entries — hit 'Copy All' to grab:", #loc.entries))
-        imgui.BeginChild("QHLoc", { 0, 0 }, true, 0)
+        theme.beginChild("QHLoc", { 0, 0 }, true, 0)
         local to_remove = nil
         for i, entry in ipairs(loc.entries) do
             if imgui.SmallButton(string.format("X##lr%d", i)) then to_remove = i end

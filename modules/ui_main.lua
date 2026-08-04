@@ -782,7 +782,7 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
         imgui.Separator()
 
         -- Begin scrollable content area (everything below the top bar scrolls)
-        imgui.BeginChild("##ScrollableContent", {0, 0}, false, 0)
+        theme.beginChild("##ScrollableContent", {0, 0}, false, 0)
 
         -- HANDHELD: Steps and Map take turns in this window. Two buttons rather than
         -- a real tab bar - ImGui's tabs bring their own accent colour and an underline
@@ -1545,7 +1545,7 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                     if use_scrollable_text then
                         -- Scale container height with UI scale
                         local container_height = 350 * ui_scale
-                        imgui.BeginChild("##StepTextScroll", {-1, container_height}, true, 0)
+                        theme.beginChild("##StepTextScroll", {-1, container_height}, true, 0)
                         -- Apply font scaling to child window
                         theme.fontScale(ui_scale)
                     end

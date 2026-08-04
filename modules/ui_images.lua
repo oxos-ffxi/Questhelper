@@ -315,7 +315,7 @@ function ui_images.renderContent(currentTopCategory, currentSubfile, current_mis
             local map_opacity = ui_main_settings and ui_main_settings.map_opacity or 1.0
 
             -- Render the image with opacity
-            imgui.Image(tex_id, {w, h}, {0, 0}, {1, 1}, {1, 1, 1, map_opacity})
+            theme.image(tex_id, {w, h}, {0, 0}, {1, 1}, {1, 1, 1, map_opacity})
 
             -- Frame it: a dark line then a pale blue one, the same edge the windows
             -- use. Colours are ABGR, as everywhere else we touch the draw list.

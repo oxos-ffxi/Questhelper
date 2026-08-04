@@ -2121,7 +2121,13 @@ end)
 -- Load Event
 --------------------------------------------------------------------------------
 ashita.events.register('load', 'load_callback', function()
-    print(string.format("[%s] v%s loading...", addon.name, addon.version))
+    -- Ashita interface version goes in the banner so bug reports carry the build.
+    -- 4.3 dropped several imgui bindings, so it's the first thing worth knowing.
+    local ok, iv = pcall(function()
+        return AshitaCore:GetPluginManager():Get('addons'):GetInterfaceVersion()
+    end)
+    print(string.format("[%s] v%s loading... (Ashita interface %s)", addon.name, addon.version,
+                        ok and tostring(iv) or 'unknown'))
 
     -- Load all data
     quest_data = quest_data_loader.loadQuestData(addon.name)
