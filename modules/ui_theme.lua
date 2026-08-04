@@ -255,6 +255,13 @@ function ui_theme.displaySize()
     return nil
 end
 
+-- Per-window font scale, when the binding has it. ImGui 1.92 obsoleted
+-- SetWindowFontScale, so recent Ashita builds don't export it and calling it
+-- direct kills the render callback. No-op there: windows still scale, fonts don't.
+function ui_theme.fontScale(scale)
+    if has('SetWindowFontScale') then imgui.SetWindowFontScale(scale) end
+end
+
 -- Brighter blue rule with room either side. Parts the reference sections from the
 -- step text, which otherwise starts hard against the last section header.
 function ui_theme.divider()

@@ -662,7 +662,7 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
     local window_open = imgui.Begin('Quest Helper', main_open, mainFlags)
 
     -- Apply font scaling for the entire window
-    imgui.SetWindowFontScale(ui_scale)
+    theme.fontScale(ui_scale)
 
     local mainX, mainY = 0, 0
     local mainW, mainH = 0, 0
@@ -1547,7 +1547,7 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                         local container_height = 350 * ui_scale
                         imgui.BeginChild("##StepTextScroll", {-1, container_height}, true, 0)
                         -- Apply font scaling to child window
-                        imgui.SetWindowFontScale(ui_scale)
+                        theme.fontScale(ui_scale)
                     end
 
                     -- Render the step text
@@ -1856,7 +1856,7 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
         local settings_open = { true }
         if imgui.Begin("QuestHelper Settings", settings_open, 0) then
             -- Apply font scaling for settings window
-            imgui.SetWindowFontScale(settings_ui_scale)
+            theme.fontScale(settings_ui_scale)
 
             settingsSection("Maps")
 

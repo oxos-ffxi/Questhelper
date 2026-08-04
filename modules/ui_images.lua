@@ -492,7 +492,7 @@ function ui_images.render(lastMainX, lastMainY, lastMainW, lastMainH, currentTop
 
     if imgui.Begin("##ImagesDrawer", true, drawerFlags) then
         -- Apply font scaling for the entire window (including buttons)
-        imgui.SetWindowFontScale(map_scale)
+        theme.fontScale(map_scale)
 
         ui_images.renderContent(currentTopCategory, currentSubfile, current_mission,
                                 quest_state, quest_data, utils, image_loader, map_renderer,
