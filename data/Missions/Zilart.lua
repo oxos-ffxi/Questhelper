@@ -13,6 +13,7 @@ return {
                 zone_trigger = "Norg",
                 trigger_on_event_id = {1},
                 route_to = "Norg",
+                zone_max_distance = 40,
                 visual_zones = {
                     -- Kazham exit south-west through Yuhtunga to the Sea Serpent Grotto entrance
                     { zone_name = "Yuhtunga Jungle", type = 'arrow', center = { x = -206.8, y = 0.0, z = 435.6 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
@@ -68,6 +69,7 @@ return {
                 text = "Step 1: Click on the 'Oaken Door' at (K-8) in Norg for a cutscene with Gilgamesh. The dialog will ask if you want to open the door, choose Yes. \n \n" ..
                        "Note: If you are on one of the numerous Rhapsodies Missions where you click on the door, you will get that cutscene first. Just touch the door again. \n \n",
                 route_to = "Norg",
+                zone_max_distance = 40,
                 visual_zones = {
                     -- Kazham exit south-west through Yuhtunga to the Sea Serpent Grotto entrance
                     { zone_name = "Yuhtunga Jungle", type = 'arrow', center = { x = -206.8, y = 0.0, z = 435.6 }, size = 4, direction = "down", floor_id = 0, colour = "yellow" },
