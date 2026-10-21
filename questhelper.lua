@@ -11,6 +11,7 @@ addon.version  = '0.1'
 
 -- Core Requirements
 local imgui        = require('imgui')
+local bit          = require('bit')
 local image_loader = require('util.images')
 local helpers      = require('util.helpers')
 
@@ -896,10 +897,23 @@ ashita.events.register('d3d_present', 'present_callback', function()
                         local px = player_module.posX
                         local ph = player_module.posY_height  -- LocalPosition.Y = horizontal depth axis
 
+                        local entMgr = AshitaCore:GetMemoryManager():GetEntity()
+
                         for i = 0, 1023 do
                             local ent = GetEntity(i)
                             if ent and ent.Name and (match_all or name_set[ent.Name]) and ent.Status ~= 2 and ent.Status ~= 3 then
-                                local lp = ent.Movement and ent.Movement.LocalPosition
+                                -- Despawned mobs linger in the entity array: require rendered (0x200), not hidden (0x4000), HP > 0.
+                                -- If the reads fail, keep the old behaviour rather than dropping the draw.
+                                local alive = true
+                                if entMgr then
+                                    local ok, rflags, hpp = pcall(function()
+                                        return entMgr:GetRenderFlags0(i), entMgr:GetHPPercent(i)
+                                    end)
+                                    if ok and rflags and hpp then
+                                        alive = bit.band(rflags, 0x200) == 0x200 and bit.band(rflags, 0x4000) == 0 and hpp > 0
+                                    end
+                                end
+                                local lp = alive and ent.Movement and ent.Movement.LocalPosition
                                 if lp then
                                     -- Horizontal-only distance check (X and LocalPosition.Y axes)
                                     local dx = lp.X - px
