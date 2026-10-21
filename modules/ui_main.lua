@@ -661,8 +661,9 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
     local main_open = { true }
     local window_open = imgui.Begin('Quest Helper', main_open, mainFlags)
 
-    -- Apply font scaling for the entire window
-    theme.fontScale(ui_scale)
+    -- Apply font scaling for the entire window. On 4.3 this is a stack push, so the
+    -- count is popped just before End() below.
+    local mainFontPushed = theme.pushFontScale(ui_scale)
 
     local mainX, mainY = 0, 0
     local mainW, mainH = 0, 0
@@ -1542,12 +1543,13 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
                     end
 
                     -- Begin scrollable container if text is too long in collapse mode
+                    local stepFontPushed = 0
                     if use_scrollable_text then
                         -- Scale container height with UI scale
                         local container_height = 350 * ui_scale
                         theme.beginChild("##StepTextScroll", {-1, container_height}, true, 0)
                         -- Apply font scaling to child window
-                        theme.fontScale(ui_scale)
+                        stepFontPushed = theme.pushFontScale(ui_scale)
                     end
 
                     -- Render the step text
@@ -1579,6 +1581,7 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
 
                     -- End scrollable container if we started one
                     if use_scrollable_text then
+                        theme.popFontScale(stepFontPushed)
                         imgui.EndChild()
                     end
 
@@ -1832,6 +1835,7 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
         imgui.EndChild()
     end
 
+    theme.popFontScale(mainFontPushed)
     imgui.End()
 
     -- Title bar X - questhelper.lua reads this and drops is_open
@@ -1854,9 +1858,10 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
         settings_just_opened = false
 
         local settings_open = { true }
+        local settingsFontPushed = 0
         if imgui.Begin("QuestHelper Settings", settings_open, 0) then
             -- Apply font scaling for settings window
-            theme.fontScale(settings_ui_scale)
+            settingsFontPushed = theme.pushFontScale(settings_ui_scale)
 
             settingsSection("Maps")
 
@@ -2012,6 +2017,7 @@ function ui_main.render(is_open, currentTopCategory, currentSubfile, current_mis
             end
         end
         -- End() must run even when Begin() returns false, or ImGui's stack unbalances
+        theme.popFontScale(settingsFontPushed)
         imgui.End()
 
         if not settings_open[1] then

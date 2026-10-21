@@ -467,7 +467,7 @@ function ui_images.render(lastMainX, lastMainY, lastMainW, lastMainH, currentTop
     -- window fits the image, the image then fits the smaller window, and it ratchets down
     -- to nothing. The window leads, the image follows - never the other way round.
     --
-    -- The padding scales with map_scale because SetWindowFontScale below scales the zone
+    -- The padding scales with map_scale because the font scaling below scales the zone
     -- caption and pagination row too. Held fixed, it reserved a full-size chrome height at
     -- every scale, which is the dead space under the map at handheld sizes. At scale 1.0
     -- this is 30 and 115, exactly as before.
@@ -490,9 +490,10 @@ function ui_images.render(lastMainX, lastMainY, lastMainW, lastMainH, currentTop
         ImGuiWindowFlags_AlwaysAutoResize
     )
 
+    local drawerFontPushed = 0
     if imgui.Begin("##ImagesDrawer", true, drawerFlags) then
         -- Apply font scaling for the entire window (including buttons)
-        theme.fontScale(map_scale)
+        drawerFontPushed = theme.pushFontScale(map_scale)
 
         ui_images.renderContent(currentTopCategory, currentSubfile, current_mission,
                                 quest_state, quest_data, utils, image_loader, map_renderer,
@@ -508,6 +509,7 @@ function ui_images.render(lastMainX, lastMainY, lastMainW, lastMainH, currentTop
             settings.save('QuestHelper_settings', quest_state.settings)
         end
     end
+    theme.popFontScale(drawerFontPushed)
     imgui.End()
     theme.pop(theme_colors, theme_vars)
 end

@@ -122,7 +122,7 @@ Runs on **Ashita 4.2 and 4.3**, tested on both.
 
 4.3 moved to ImGui 1.92, which removed `SetWindowFontScale` and changed the argument lists of `BeginChild` and `Image`. Addons that call those unguarded fail on `d3d_present` and get unloaded - `attempt to call field 'SetWindowFontScale' (a nil value)`, or `sol: no matching function call takes this number of arguments`. QuestHelper detects the interface version at load and calls the right shape for the build it is on, so a single copy works either way.
 
-> One known gap on 4.3: font scaling is skipped, so the **UI Scale** setting resizes windows but not text. At the default scale of 1.0 there is no visible difference. Everything else - maps, opacity, scrolling panes - works on both.
+Font scaling works on both. 4.2 gets `SetWindowFontScale`; on 4.3 the **Scale** setting pushes the font at an explicit size (`PushFont(nil, style.FontSizeBase * scale)`, 1.92's replacement) and pops it before the window ends. If a build exposes neither, windows still scale and the text stays at its default size rather than erroring.
 
 The version it detected is printed in the load banner (`Ashita interface 4.3`); please include that line in any bug report.
 

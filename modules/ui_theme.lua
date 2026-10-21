@@ -266,11 +266,74 @@ function ui_theme.displaySize()
     return nil
 end
 
--- Per-window font scale, when the binding has it. ImGui 1.92 obsoleted
--- SetWindowFontScale, so recent Ashita builds don't export it and calling it
--- direct kills the render callback. No-op there: windows still scale, fonts don't.
-function ui_theme.fontScale(scale)
-    if has('SetWindowFontScale') then imgui.SetWindowFontScale(scale) end
+-- Font scaling, in the two shapes the bindings come in.
+--
+-- 4.2 has SetWindowFontScale: per-window state, set once, nothing to undo. ImGui
+-- 1.92 (Ashita 4.3) removed it; the replacement is a font stack push at an explicit
+-- pixel size, which has to be popped before the window ends or ImGui asserts on a
+-- missing PopFont. Callers treat this like pushButton - keep the returned count and
+-- hand it back to popFontScale.
+local function baseFontSize()
+    -- PushFont wants the unscaled base size, which is style.FontSizeBase. GetFontSize
+    -- is the already-scaled size - equal to the base while the global scales are 1.0,
+    -- which is stock Ashita, and the best stand-in we have if the style is unreadable.
+    local ok, style = pcall(imgui.GetStyle)
+    if ok and style ~= nil then
+        local ok2, base = pcall(function() return style.FontSizeBase end)
+        if ok2 and type(base) == 'number' and base > 0 then return base end
+    end
+    local ok3, size = pcall(imgui.GetFontSize)
+    if ok3 and type(size) == 'number' and size > 0 then return size end
+    return nil
+end
+
+-- nil font means "current font, new size". A binding that won't take nil for the
+-- pointer gets the current font passed explicitly instead; the first one that the
+-- build accepts is remembered so the failing call only happens once.
+local PUSH_FONT = {
+    function(size) imgui.PushFont(nil, size) end,
+    function(size) imgui.PushFont(imgui.GetFont(), size) end,
+}
+local push_variant = nil
+
+-- Pushes are global, not per-window, so a child inside an already-scaled window is
+-- covered by that push. Nesting one anyway would be a second multiply whenever the
+-- base size came from GetFontSize.
+local font_depth = 0
+
+function ui_theme.pushFontScale(scale)
+    scale = tonumber(scale) or 1.0
+    -- Sticky per window, so it has to be reset on every frame, 1.0 included
+    if has('SetWindowFontScale') then
+        imgui.SetWindowFontScale(scale)
+        return 0
+    end
+    if scale == 1.0 or font_depth > 0 then return 0 end
+    if not (has('PushFont') and has('PopFont')) then return 0 end
+    local base = baseFontSize()
+    if base == nil then return 0 end
+
+    local size = base * scale
+    if push_variant then
+        if not pcall(PUSH_FONT[push_variant], size) then return 0 end
+    else
+        for i, push in ipairs(PUSH_FONT) do
+            if pcall(push, size) then
+                push_variant = i
+                break
+            end
+        end
+        if not push_variant then return 0 end
+    end
+    font_depth = font_depth + 1
+    return 1
+end
+
+function ui_theme.popFontScale(count)
+    for _ = 1, (count or 0) do
+        imgui.PopFont()
+        font_depth = math.max(0, font_depth - 1)
+    end
 end
 
 -- 4.3 dropped Image's tint argument; tinting moved to ImageWithBg, which takes a
